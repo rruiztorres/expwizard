@@ -32,7 +32,7 @@ export const renderDoc = {
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     });
                     // Output the document using Data-URI
-                    saveAs(out, "output.docx");
+                    saveAs(out, "Expediente_Generado.docx");
                 }
             );
         },

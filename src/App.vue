@@ -7,8 +7,11 @@
         <br/>
         <hr/>
         <br/>
-        <v-btn color="info" @click="execute">
+        <v-btn class="actionButton" color="info" @click="execute">
             Generar Word
+        </v-btn>
+        <v-btn class="actionButton" color="error">
+            Generar PDF
         </v-btn>
       </v-card>
     </v-app>
@@ -24,13 +27,21 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
       data(){
         return {
             datosDocumento: {
-            nombre_usuario: 'Raul',
-            apellido_usuario: 'Ruiz Torres',
-            cargo_usuario: 'Delineante Cartográfico',
-            titulo: 'Probando a generar documentos word',
-            placeholder: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non ante id libero convallis volutpat et nec felis. Fusce sit amet diam id odio sollicitudin pellentesque fringilla pulvinar mauris. Maecenas vel cursus elit. Pellentesque sodales quam eget sem posuere laoreet. Nulla scelerisque sem a urna aliquet, vel maximus quam maximus. Donec neque urna, egestas et varius eu, placerat ut urna. Nunc blandit nisl non semper convallis. Morbi diam massa, ullamcorper vel commodo vitae, feugiat ut erat. Vestibulum venenatis quis nisl sed facilisis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vestibulum consequat sapien quis lobortis dignissim. Donec at diam a velit aliquet fringilla. Duis convallis id ligula in gravida. Proin velit leo, tincidunt finibus quam vitae, pretium consectetur ligula. Morbi feugiat mi quis metus iaculis, sed luctus tellus blandit.',
-            información: 'Aqui metemos información relevante'
-          },
+              nombre_usuario: 'Raul',
+              apellido_usuario: 'Ruiz Torres',
+              cargo_usuario: 'Hacker 100% real no fake',
+              titulo: 'Probando a generar documentos word',
+              placeholder: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non ante id libero convallis volutpat et nec felis. Fusce sit amet diam id odio sollicitudin pellentesque fringilla pulvinar mauris. Maecenas vel cursus elit. Pellentesque sodales quam eget sem posuere laoreet. Nulla scelerisque sem a urna aliquet, vel maximus quam maximus. Donec neque urna, egestas et varius eu, placerat ut urna. Nunc blandit nisl non semper convallis. Morbi diam massa, ullamcorper vel commodo vitae, feugiat ut erat. Vestibulum venenatis quis nisl sed facilisis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vestibulum consequat sapien quis lobortis dignissim. Donec at diam a velit aliquet fringilla. Duis convallis id ligula in gravida. Proin velit leo, tincidunt finibus quam vitae, pretium consectetur ligula. Morbi feugiat mi quis metus iaculis, sed luctus tellus blandit.',
+              informacion: 'Aqui metemos información relevante',
+              objeto: [
+                { nombre: "Macarrones", cantidad: "100", unidad: "gramos" },
+                { nombre: "Judias", cantidad: "250", unidad: "gramos" },
+                { nombre: "Leche", cantidad: "2", unidad: "litros" },
+                { nombre: "Vino", cantidad: "3", unidad: "arrobas" },
+              ]
+            },
+
+            
         }
       },
 
@@ -73,5 +84,9 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
 .logoIGN>img{
   height: 5rem;
+}
+
+.actionButton{
+  margin: 0.5rem;
 }
 </style>
