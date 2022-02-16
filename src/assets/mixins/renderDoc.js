@@ -12,7 +12,7 @@ export const renderDoc = {
     methods: {
         renderDoc(object) {
             loadFile(
-                this.urlTemplate = "templates/prueba.docx",
+                this.urlTemplate = "templates/template_1.docx",
                 function (error, content) {
                     if (error) {
                         throw error;
