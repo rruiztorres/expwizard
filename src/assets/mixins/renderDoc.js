@@ -12,18 +12,20 @@ export const renderDoc = {
     methods: {
         renderDoc(object) {
             loadFile(
-                this.urlTemplate = "templates/template_1.docx",
+                this.urlTemplate = "templates/210910-PCAP-suministro abierto.docx",
                 function (error, content) {
+
                     if (error) {
                         throw error;
                     }
+
                     const zip = new PizZip(content);
                     const doc = new Docxtemplater(zip, {
                         paragraphLoop: true,
                         linebreaks: true,
                     });
 
-                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    // renderiza el documento recibe un objeto en formato JSON con las etiquetas definidas en plantilla
                     doc.render(object);
 
                     const out = doc.getZip().generate({
@@ -31,8 +33,9 @@ export const renderDoc = {
                         mimeType:
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     });
-                    // Output the document using Data-URI
-                    saveAs(out, "Expediente_Generado.docx");
+
+                    // Salida de documento
+                    saveAs(out, "GENERADO-210910-PCAP-suministro abierto.docx");
                 }
             );
         },
