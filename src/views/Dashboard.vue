@@ -1,6 +1,10 @@
 <template>
   <v-app id="agexApp">
-    <v-app-bar app>
+    <v-app-bar
+      dark
+      color="indigo accent-4" 
+      app
+    >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>AGEX</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -22,17 +26,18 @@
       
       <v-container v-else>
         <v-row class="searchBar">
-          <v-col class="searchTitle" cols="1">
-            <div>BUSQUEDA</div>
-          </v-col>
-          <v-col cols="11">
-            <v-text-field solo rounded></v-text-field>
+          <v-col cols="12">
+            <v-text-field solo rounded placeholder="BUSCAR"></v-text-field>
           </v-col>
         </v-row>
 
-        <Selector 
-          @tipoExp="seleccionTipo">
-        </Selector>
+        <v-row>
+          <v-col cols="12">
+            <Selector 
+              @tipoExp="seleccionTipo">
+            </Selector>
+          </v-col>
+        </v-row>
       </v-container>
     </v-main>
   </v-app>
@@ -66,12 +71,16 @@ import Selector from '../components/Selector.vue'
 </script>
 
 <style scoped>
-
     h1,h2,h3,h4, #agexApp {
         font-weight: 400;
     }
 
+    .appBar{
+      background-color: red;
+    }
+
     .mainApp{
+      background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
       height: 50vh;
       overflow-y: auto;
     }

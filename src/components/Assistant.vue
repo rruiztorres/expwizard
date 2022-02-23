@@ -1,14 +1,29 @@
 <template>
     <div id="mainWrapper">
-        <v-row class="rowControl">
-            <v-col cols="8">
-                <v-card-title class="fontControl">EXPEDIENTE DE SUMINISTRO ABIERTO</v-card-title>
-            </v-col>
-            <v-col class="buttonBack" cols="4">
-                <v-btn color="error" @click="back">
-                    <v-icon class="iconBack">mdi-arrow-left</v-icon>
-                    SALIR
-                    </v-btn>
+        <v-row>
+            <v-col class="buttonBack" cols="12">
+                <v-row class="titleRow">
+                    <v-col cols="12" md="7" class="col1">
+                        <h3>EXPEDIENTE DE SUMINISTRO ABIERTO</h3>
+                    </v-col>
+                    <v-col cols="12" md="5" class="col2">
+                        <v-spacer></v-spacer>
+                        <v-card-actions class="actions">
+                                <v-btn color="error" class="headButton" @click="back">
+                                    <v-icon class="iconBack">mdi-exit-run</v-icon>
+                                    SALIR
+                                </v-btn>
+                                <v-btn color="success" :disabled="true" class="headButton" @click="execute">
+                                    <v-icon class="iconBack">mdi-download</v-icon>
+                                    PROBAR
+                                </v-btn>
+                                <v-btn color="info" class="headButton">
+                                    <v-icon class="iconBack">mdi-content-save</v-icon>
+                                    GUARDAR
+                                </v-btn>
+                        </v-card-actions>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
         <v-row>
@@ -18,41 +33,29 @@
                         background-color="cyan"
                         dark
                         show-arrows
-                        fixed-tabs
                     >
                     <v-tabs-slider color="yellow"></v-tabs-slider>
                     
-                        <v-tab>Titulo 1</v-tab>
-                        <v-tab>Titulo 2</v-tab>
-                        <v-tab>Titulo 3</v-tab>
-                        <v-tab>Titulo 4</v-tab>
-                        <v-tab>Titulo 5</v-tab>
-                        <v-tab>Anexo 1</v-tab>
-                        <v-tab>Anexo 2</v-tab>
-                        <v-tab>Anexo 3</v-tab>
-                        <v-tab>Anexo 4</v-tab>
-                        <v-tab>Anexo 5</v-tab>
-                        <v-tab>Anexo 6</v-tab>
+                        <v-tab>Disposiciones Generales</v-tab>
+                        <v-tab>Preparación del contrato</v-tab>
+                        <v-tab>Adjudicación del contrato</v-tab>
+                        <v-tab>Ejecución del contrato</v-tab>
+                        <v-tab>Extinción del contrato</v-tab>
+                        <v-tab>Modelo de declaración responsable</v-tab>
+                        <v-tab>Solvencia económica y financiera</v-tab>
+                        <v-tab>Solvencia técnica y profesional</v-tab>
+                        <v-tab>Proposición económica y otros criterios</v-tab>
+                        <v-tab>Modelos de notificación de subcontratación</v-tab>
+                        <v-tab>Real Decreto Ley</v-tab>
 
                     <!--TITULO 1-->
                     <v-tab-item class="tabContent">
-                        <Titulo1/>
+                        <Titulo1
+                            @data="getData"
+                        ></Titulo1>
                     </v-tab-item>
                     </v-tabs>
-
-                    <v-card-actions class="actions">
-                        <v-btn color="info">
-                            <v-icon>mdi-arrow-left</v-icon>
-                            ATRÁS
-                        </v-btn>
-                        <v-btn color="primary">
-                            SIGUIENTE
-                            <v-icon>mdi-arrow-right</v-icon>
-                        </v-btn>
-                    </v-card-actions>
-
                 </v-sheet>
-                
             </v-col>
         </v-row>
     </div>
@@ -60,21 +63,34 @@
 
 <script> 
 import Titulo1 from "@/components/SuministroAbierto/Titulo1";
+import {renderDoc} from "@/assets/mixins/renderDoc";
+
 
     export default{
         name: 'Assistant',
 
         components: { Titulo1 },
 
+        mixins: [renderDoc],
+
         data(){
             return{
-                foo: null,
+                data: undefined,
             }
         },
 
         methods:{
             back(){
                 this.$emit("back", true)
+            },
+
+            getData(dataRecibida){
+                console.log(this.data)
+                this.data = dataRecibida;
+            },
+
+            execute(){
+                this.renderDoc(this.data);
             }
         }
     }
@@ -88,20 +104,13 @@ import Titulo1 from "@/components/SuministroAbierto/Titulo1";
         max-width: 80rem;
     }
 
-    .fontControl {
+    h2, h3{
         font-weight: 400;
     }
 
-    .rowControl {
-        margin-bottom: -2rem;
-    }
-
-    h2{
-        font-weight: 400;
-    }
     .tabContent{
-        padding: 2rem;
-        height: 70vh;
+        padding: 1rem;
+        height: 69.5vh;
         overflow-y: auto;
     }
 
@@ -113,14 +122,27 @@ import Titulo1 from "@/components/SuministroAbierto/Titulo1";
         margin-right: 1rem;
     }
 
-    .actions {
-        padding: 1rem;
-        background-color: lightblue
+    .titleRow{
+        margin: 0rem;
+        background-color: rgb(149, 214, 214) ;
+        border-radius: 4px;
     }
 
-    .actions > * {
-        display: flex;
-        flex-grow: 1;
+    .col1{
+        display:block;
+        margin: auto 0;
+    }
+
+    .col1 > *{
+        text-align: left;
+    }
+
+    .col2{
+        width: 100%;
+    }
+
+    .headButton {
+        width:33%;
     }
 </style>
 

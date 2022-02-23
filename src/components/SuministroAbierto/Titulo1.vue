@@ -1,8 +1,7 @@
 <template>
   <div>
-    <v-card id="cardWrapper">
         <!-- 1 OBJETO DEL CONTRATO -->
-        <v-card-title>1.- Objeto del contrato</v-card-title>
+        <h3>1.- Objeto del contrato</h3>
         <v-text-field 
         v-model="tituloExpediente"
         :rules="[rules.required, rules.counter]"
@@ -16,94 +15,131 @@
         </v-text-field>
 
         <v-row class="row">
-        <v-col class="colControl" cols="12" md="6">
-            <v-select
-            v-model="selectComunidades"
-            :items="comunidades"
-            multiple
-            filled
-            @mousedown.prevent
-            label="Comunidades Autonomas"
-            >
-            <template v-slot:prepend-item>
-                <v-list-item ripple @mousedown.prevent @click="toggle">
-                <v-list-item-action>
-                    <v-icon
-                    :color="
-                        selectComunidades.length > 0 ? 'indigo darken-4' : ''
-                    "
-                    >
-                    {{ icon }}
-                    </v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                    <v-list-item-title> Select / Unselect All </v-list-item-title>
-                </v-list-item-content>
-                </v-list-item>
-                <v-divider class="mt-2"></v-divider>
-            </template>
-            </v-select>
-        </v-col>
+          <v-col class="colControl" cols="12" md="6">
+              <v-select
+              v-model="selectComunidades"
+              :items="comunidades"
+              multiple
+              filled
+              @mousedown.prevent
+              label="Comunidades Autonomas"
+              >
+              <template v-slot:prepend-item>
+                  <v-list-item ripple @mousedown.prevent @click="toggleComunidades">
+                  <v-list-item-action>
+                      <v-icon
+                      :color="
+                          selectComunidades.length > 0 ? 'indigo darken-4' : ''
+                      "
+                      >
+                      {{ icon }}
+                      </v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                      <v-list-item-title> Select / Unselect All </v-list-item-title>
+                  </v-list-item-content>
+                  </v-list-item>
+                  <v-divider class="mt-2"></v-divider>
+              </template>
+              </v-select>
+          </v-col>
 
-        <v-col cols="12" md="6">
-            <v-select
-            v-model="selectProvincias"
-            :items="provincias"
-            multiple
-            filled
-            label="Provincias"
-            ></v-select>
-        </v-col>
+          <v-col cols="12" md="6">
+              <v-select
+              v-model="selectProvincias"
+              :items="provincias"
+              multiple
+              filled
+              @mousedown.prevent
+              label="Provincias"
+              >
+              <template v-slot:prepend-item>
+                  <v-list-item ripple @mousedown.prevent @click="toggleProvincias">
+                  <v-list-item-action>
+                      <v-icon
+                      :color="
+                          selectProvincias.length > 0 ? 'indigo darken-4' : ''
+                      "
+                      >
+                      {{ icon }}
+                      </v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                      <v-list-item-title> Select / Unselect All </v-list-item-title>
+                  </v-list-item-content>
+                  </v-list-item>
+                  <v-divider class="mt-2"></v-divider>
+              </template>
+              </v-select>
+          </v-col>
         </v-row>
 
-        <v-row>
-        <v-col cols="12" sm="6">
-            <v-checkbox
-            v-model="regArmonizada"
-            label="Regulación Armonizada"
-            ></v-checkbox>
-        </v-col>
-        <v-col cols="12" sm="6">
-            <v-text-field 
-            v-model="clasificacionCPV"
-            label="Clasif. CPV" filled>
-            </v-text-field>
-        </v-col>
+        <v-row class="row">
+          <v-col cols="12" sm="6">
+              <v-checkbox
+              v-model="regArmonizada"
+              label="Regulación Armonizada"
+              ></v-checkbox>
+          </v-col>
+          <v-col cols="12" sm="6">
+              <v-text-field 
+              v-model="clasificacionCPV"
+              label="Clasif. CPV" filled>
+              </v-text-field>
+          </v-col>
         </v-row>
         <br />
 
+
+
         <!-- 2 NECESIDADES DEL CONTRATO -->
-        <v-card-title>2.- Necesidades del contrato</v-card-title>
-        <v-row>
-        <v-col cols="12">
-            <v-text-field 
-            v-model="necesidadesContrato"
-            label="Necesidades del contrato" filled>
-            </v-text-field>
-        </v-col>
+        <h3>2.- Necesidades a satisfacer y circunstancias del contrato</h3>
+        <v-row class="row">
+          <v-col cols="12">
+              <v-text-field 
+              v-model="necesidadesContrato"
+              label="Necesidades del contrato" filled>
+              </v-text-field>
+          </v-col>
         </v-row>
 
         <v-row>
-        <v-col cols="12">
-            <v-text-field 
-            v-model="prepBaseSinIVA"
-            label="Importe" filled>
-            </v-text-field>
-        </v-col>
+          <v-col cols="12">
+              <v-text-field 
+              v-model="prepBaseSinIVA"
+              label="Importe" filled>
+              </v-text-field>
+          </v-col>
         </v-row>
-        
-    <v-btn color="success" @click="execute">PROBAR</v-btn>
-    </v-card>
+        <br/>
+
+
+
+        <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
+        <h3>3.- Presupuesto de licitación y anualidades</h3>
+        <v-row class="row">
+          <v-col cols="12">
+            <v-text-field 
+              label="Placeholder" filled>
+            </v-text-field>
+          </v-col>
+        </v-row>
+
+        <v-btn color="success" class="headButton" @click="execute">
+            <v-icon class="iconBack">mdi-download</v-icon>
+            PROBAR
+        </v-btn>
   </div>
 </template>
 
 <script>
-    import {renderDoc} from "@/assets/mixins/renderDoc";
+import {renderDoc} from "@/assets/mixins/renderDoc";
 
 export default {
 name: "Titulo1",
 
 mixins: [renderDoc],
+
   data() {
     return {
       rules: {
@@ -117,24 +153,24 @@ mixins: [renderDoc],
         clave: '',
         selectComunidades: "",
         comunidades: [
-            "Andalucia", "Aragón", "Principado de Asturias","Islas Baleares",
-            "Canarias", "Cantabria", "Castilla-La Mancha", "Castilla y León",
-            "Cataluña", "Comunidad Valenciana", "Extremadura", "Galicia",
-            "La Rioja", "Comunidad de Madrid", "Región de Murcia",
-            "Comunidad Foral de Navarra", "País Vasco","Ceuta","Melilla",
+            " Andalucia", " Aragón", " Principado de Asturias"," Islas Baleares",
+            " Canarias", " Cantabria", " Castilla-La Mancha", " Castilla y León",
+            " Cataluña", " Comunidad Valenciana", " Extremadura", " Galicia",
+            " La Rioja", " Comunidad de Madrid", " Región de Murcia",
+            " Comunidad Foral de Navarra", " País Vasco"," Ceuta"," Melilla",
         ],
         selectProvincias: "",
         provincias: [
-            "Álava ", "Albacete ", "Alicante ", "Almería ", "Asturias ",
-            "Ávila ", "Badajoz ", "Barcelona ", "Bizkaia ", "Burgos ",
-            "Cáceres ", "Cádiz ", "Cantabria ", "Castellón ", "Ciudad Real ",
-            "Córdoba ", "A Coruña ", "Cuenca ", "Girona ", "Granada ",
-            "Guadalajara ", "Gipuzkoa ", "Huelva ", "Huesca ", "Illes Balears ",
-            "Jaén ", "León ", "Lleida ", "Lugo ", "Madrid ", "Málaga ",
-            "Murcia ", "Navarra ", "Ourense ", "Palencia ", "Las Palmas ",
-            "Pontevedra ", "La Rioja ", "Salamanca ", "Segovia ", "Sevilla ",
-            "Soria ", "Tarragona ", "Santa Cruz de Tenerife ",
-            "Teruel ", "Toledo ", "Valencia ", "Valladolid ", "Zamora ", "Zaragoza ",
+            " Álava", " Albacete", " Alicante", " Almería", " Asturias",
+            " Ávila", " Badajoz", " Barcelona", " Bizkaia", " Burgos",
+            " Cáceres", " Cádiz", " Cantabria", " Castellón", " Ciudad Real",
+            " Córdoba", " A Coruña", " Cuenca", " Girona", " Granada",
+            " Guadalajara", " Gipuzkoa", " Huelva", " Huesca", " Illes Balears",
+            " Jaén", " León", " Lleida", " Lugo", " Madrid", " Málaga",
+            " Murcia", " Navarra", " Ourense", " Palencia", " Las Palmas",
+            " Pontevedra", " La Rioja", " Salamanca", " Segovia", " Sevilla",
+            " Soria", " Tarragona", " Santa Cruz de Tenerife",
+            " Teruel", " Toledo", " Valencia", " Valladolid", " Zamora", " Zaragoza",
         ],
         regArmonizada: false,
         regNoArmonizada: true,
@@ -157,10 +193,20 @@ mixins: [renderDoc],
       return this.selectComunidades.length === this.comunidades.length;
     },
 
+    selectAllProvincias() {
+      return this.selectProvincias.length === this.provincias.length;
+    },
+
     icon() {
-      if (this.selectAllComunidades) return "mdi-close-box";
+      if (this.selectAllComunidades || this.selectAllProvincias) return "mdi-close-box";
       return "mdi-checkbox-blank-outline";
     },
+  },
+
+  watch:{
+    data(){
+      this.$emit("data", this.data)
+    }
   },
 
   methods: {
@@ -172,7 +218,7 @@ mixins: [renderDoc],
       this.selectProvincias = "";
     },
 
-    toggle() {
+    toggleComunidades() {
       this.$nextTick(() => {
         if (this.selectAllComunidades) {
           this.selectComunidades = [];
@@ -182,33 +228,39 @@ mixins: [renderDoc],
       });
     },
 
-    execute(){
-        this.data = {
-            tituloExpediente: this.tituloExpediente,
-            clave: this.clave,
-            comunidadesAutonomas: this.selectComunidades,
-            provincias: this.selectProvincias,
-            regArmonizada: this.regArmonizada,
-            regNoArmonizada: !this.regArmonizada,
-            clasificacionCPV: this.clasificacionCPV,
-            necesidadesContrato: this.necesidadesContrato,
-            prepBaseSinIVA: this.prepBaseSinIVA,
-
-            //CALCULO EN TIEMPO DE EJECUCIÓN
-            prepBaseIVA: (this.prepBaseSinIVA*0.21).toFixed(2),
-            prepBaseIVAinc: (this.prepBaseSinIVA*1.21).toFixed(2),
-            costesDirectos: (this.prepBaseSinIVA*0.81).toFixed(2),
-            costesGenerales: (this.prepBaseSinIVA*0.13).toFixed(2),
-            beneficioIndustrial: (this.prepBaseSinIVA*0.06).toFixed(2),
-            totalCostes: undefined,
+    toggleProvincias() {
+      this.$nextTick(() => {
+        if (this.selectAllProvincias) {
+          this.selectProvincias = [];
+        } else {
+          this.selectProvincias = this.provincias.slice();
         }
+      });
+    },
 
-        this.data.totalCostes = (parseFloat(this.data.costesGenerales) + parseFloat(this.data.beneficioIndustrial)).toFixed(2), 
-        
-        //RENDERIZAR
-        this.renderDoc(this.data)
-        
-        },
+    execute(){
+      this.data = {
+          tituloExpediente: this.tituloExpediente,
+          clave: this.clave,
+          comunidadesAutonomas: this.selectComunidades,
+          provincias: this.selectProvincias,
+          regArmonizada: this.regArmonizada,
+          regNoArmonizada: !this.regArmonizada,
+          clasificacionCPV: this.clasificacionCPV,
+          necesidadesContrato: this.necesidadesContrato,
+          prepBaseSinIVA: this.prepBaseSinIVA,
+
+          //CALCULO EN TIEMPO DE EJECUCIÓN
+          prepBaseIVA: (this.prepBaseSinIVA*0.21).toFixed(2),
+          prepBaseIVAinc: (this.prepBaseSinIVA*1.21).toFixed(2),
+          costesDirectos: (this.prepBaseSinIVA*0.81).toFixed(2),
+          costesGenerales: (this.prepBaseSinIVA*0.13).toFixed(2),
+          beneficioIndustrial: (this.prepBaseSinIVA*0.06).toFixed(2),
+          totalCostes: undefined,
+        }
+      this.data.totalCostes = (parseFloat(this.data.costesGenerales) + parseFloat(this.data.beneficioIndustrial)).toFixed(2);    
+      this.renderDoc(this.data)
+      },
   },
 };
 </script>
@@ -216,6 +268,11 @@ mixins: [renderDoc],
 <style scoped>
 #cardWrapper {
   padding: 1rem;
+}
+
+h3{
+  font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
 .row {
