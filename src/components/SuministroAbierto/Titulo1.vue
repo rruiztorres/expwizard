@@ -2,88 +2,54 @@
   <div>
         <!-- 1 OBJETO DEL CONTRATO -->
         <h3>1.- Objeto del contrato</h3>
-        <v-text-field 
-        v-model="tituloExpediente"
+        <v-text-field
+        v-model="datos.tituloExpediente"
         :rules="[rules.required, rules.counter]"
         label="Titulo del Expediente" counter filled>
         </v-text-field>
 
         <v-text-field
-        v-model="clave"
-        :rules="[rules.required]"
+        v-model="datos.clave"
         label="Clave" filled>
         </v-text-field>
 
         <v-row class="row">
           <v-col class="colControl" cols="12" md="6">
               <v-select
-              v-model="selectComunidades"
               :items="comunidades"
+              v-model="datos.selectComunidadesAutonomas"
               multiple
               filled
               @mousedown.prevent
               label="Comunidades Autonomas"
               >
-              <template v-slot:prepend-item>
-                  <v-list-item ripple @mousedown.prevent @click="toggleComunidades">
-                  <v-list-item-action>
-                      <v-icon
-                      :color="
-                          selectComunidades.length > 0 ? 'indigo darken-4' : ''
-                      "
-                      >
-                      {{ icon }}
-                      </v-icon>
-                  </v-list-item-action>
-                  <v-list-item-content>
-                      <v-list-item-title> Select / Unselect All </v-list-item-title>
-                  </v-list-item-content>
-                  </v-list-item>
-                  <v-divider class="mt-2"></v-divider>
-              </template>
               </v-select>
           </v-col>
 
           <v-col cols="12" md="6">
               <v-select
-              v-model="selectProvincias"
               :items="provincias"
+              v-model="datos.selectProvincias"
               multiple
               filled
               @mousedown.prevent
               label="Provincias"
-              >
-              <template v-slot:prepend-item>
-                  <v-list-item ripple @mousedown.prevent @click="toggleProvincias">
-                  <v-list-item-action>
-                      <v-icon
-                      :color="
-                          selectProvincias.length > 0 ? 'indigo darken-4' : ''
-                      "
-                      >
-                      {{ icon }}
-                      </v-icon>
-                  </v-list-item-action>
-                  <v-list-item-content>
-                      <v-list-item-title> Select / Unselect All </v-list-item-title>
-                  </v-list-item-content>
-                  </v-list-item>
-                  <v-divider class="mt-2"></v-divider>
-              </template>
-              </v-select>
+              ></v-select>
           </v-col>
         </v-row>
 
         <v-row class="row">
           <v-col cols="12" sm="6">
               <v-checkbox
-              v-model="regArmonizada"
+              v-model="datos.regArmonizada"
               label="Regulación Armonizada"
               ></v-checkbox>
           </v-col>
           <v-col cols="12" sm="6">
-              <v-text-field 
-              v-model="clasificacionCPV"
+              <v-text-field
+              v-model="datos.clasifCPV"
+              append-icon="mdi-magnify"
+              @click:append="dummy"
               label="Clasif. CPV" filled>
               </v-text-field>
           </v-col>
@@ -97,17 +63,10 @@
         <v-row class="row">
           <v-col cols="12">
               <v-text-field 
-              v-model="necesidadesContrato"
-              label="Necesidades del contrato" filled>
-              </v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-              <v-text-field 
-              v-model="prepBaseSinIVA"
-              label="Importe" filled>
+              v-model="datos.necesidadesContrato"
+              label="Necesidades del contrato" 
+              filled
+              >
               </v-text-field>
           </v-col>
         </v-row>
@@ -117,28 +76,249 @@
 
         <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
         <h3>3.- Presupuesto de licitación y anualidades</h3>
-        <v-row class="row">
-          <v-col cols="12">
-            <v-text-field 
-              label="Placeholder" filled>
-            </v-text-field>
+        <v-row>
+          <v-col cols="12" md="6">
+              <v-text-field 
+              v-model="datos.presupuestoBaseLicitacion"
+              label="Presupuesto base de licitación (€)" 
+              filled
+              >
+              </v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+              <v-text-field 
+              label="Aplicación presupuestaria" 
+              filled
+              >
+              </v-text-field>
           </v-col>
         </v-row>
 
-        <v-btn color="success" class="headButton" @click="execute">
-            <v-icon class="iconBack">mdi-download</v-icon>
-            PROBAR
-        </v-btn>
+
+        <br/>
+        <h5>Tramitación a efectos presupuestarios</h5>
+        <v-row class="row">
+          <v-col cols="12" sm="3">
+              <v-radio-group
+                v-model="datos.tramitacion"
+              >
+                <v-radio
+                  label="Tramitación ordinaria"
+                  value="ordinaria"
+                ></v-radio>
+                <v-radio
+                  label="Tramitación anticipada"
+                  value="anticipada"
+                ></v-radio>
+              </v-radio-group>
+                
+          </v-col>
+        </v-row>
+
+        <br/>
+        <h5>Desglose</h5>
+         <v-row class="row">
+          <v-col cols="12" sm="3">
+              <v-radio-group
+                v-model="datos.desglose"
+              >
+                <v-radio
+                  label="Procede"
+                  :value="true"
+                ></v-radio>
+                <v-radio
+                  label="No procede"
+                  :value="false"
+                ></v-radio>
+              </v-radio-group>      
+          </v-col>
+          <v-col cols="12" sm="3" v-if="datos.desglose === true">
+              <v-radio-group
+                v-model="datos.tipoDesglose"
+              >
+                <v-radio
+                  label="Por género"
+                  value="genero"
+                ></v-radio>
+                <v-radio
+                  label="Por Categoría profesional"
+                  value="categoria"
+                ></v-radio>
+              </v-radio-group>      
+          </v-col>
+          <v-col cols="12" sm="6" v-if="datos.desglose === true && datos.tipoDesglose === 'genero'">
+              <v-radio-group
+                v-model="datos.tipoDesgloseGenero"
+              >
+                <v-radio
+                  label="No consta diferencia de costes por razón de género"
+                  value="no consta diferencia"
+                ></v-radio>
+                <v-radio
+                  label="Existe diferencia de costes por razón de género"
+                  value="consta diferencia"
+                ></v-radio>
+              </v-radio-group>      
+          </v-col>
+        </v-row>
+
+        <br/>
+        <h5>Anualidades</h5>
+         <v-row class="row">
+            <v-col cols="12" md="2">
+              <v-select
+              dense
+              filled
+              :items="anualidades"
+              v-model="selectAnualidades"
+              >
+              </v-select>
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-btn
+                class="actionButton"
+                color="info" 
+                large
+                width="100%"
+                :disabled="datos.presupuestoBaseLicitacion <= 0 || datos.presupuestoBaseLicitacion === undefined"
+                @click="makeAnualidades"
+                >
+                CALCULAR 
+                <v-icon class="icon">mdi-calculator</v-icon>
+              </v-btn>
+              
+              <v-btn 
+                class="actionButton"
+                :color="colorValidar" 
+                width="100%"
+                large
+                :disabled="datos.anualidades.length === 0"
+                @click="validarAnualidades"
+                >
+                VALIDAR 
+                <v-icon class="icon">mdi-check</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col cols="12" md="8">
+              <v-alert type="error" v-if="alertValidar==true">{{alertMessage}}{{prespuestoNoAsign}}</v-alert>
+
+              <v-data-table
+                class="dataTable"
+                :headers="anualidadesHeaders"
+                :items="datos.anualidades"
+                hide-default-footer
+              > 
+                <template v-slot:[`item.importeSinIVA`]="props">
+                  <v-edit-dialog
+                    :return-value.sync="props.item.importeSinIVA"
+                  >
+                    <span class="editField">{{ parseFloat(props.item.importeSinIVA) }}</span>
+                    <template v-slot:input>
+                      <v-text-field
+                        v-model="props.item.importeSinIVA"
+                        label="Editar"
+                        single-line
+                      ></v-text-field>
+                    </template>
+                  </v-edit-dialog>
+                </template>
+                
+                <template v-slot:[`item.IVA`]="{ item }">
+                    {{ returnIVA(item.importeSinIVA) }}        
+                </template>
+
+                <template v-slot:[`item.importeConIVA`]="{ item }">
+                    <b>{{ returnTotal(item.importeSinIVA) }}</b>      
+                </template>
+              </v-data-table>
+            </v-col>
+         </v-row>
+         <br/>
+
+         <!-- 4 VALOR ESTIMADO -->
+        <h3>4.- Valor Estimado</h3>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field 
+              label="Importe máx. por modificaciones previstas sin IVA (€)" 
+              filled
+              >
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <br/>
+
+         <!-- 5 DIVISIÓN EN LOTES -->
+        <h3>5.- División en lotes</h3>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-radio-group
+              v-model="datos.divisionLotes"
+            >
+              <v-radio
+                label="No es posible"
+                value="no es posible"
+              ></v-radio>
+              <v-radio
+                label="Si es posible, pero no se divide en lotes"
+                value="posible no divisible"
+              ></v-radio>
+              <v-radio
+                label="Si es posible y se divide en lotes"
+                value="posible divisible"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <v-col cols="12" md="6" v-if="datos.divisionLotes === 'no es posible'">
+            <h5>Justificación</h5>
+            <v-radio-group
+              v-model="datos.divisionNoPosible"
+            >
+              <v-radio
+                label="La naturaleza o el objeto del contrato no lo permite"
+                value="naturaleza objeto"
+              ></v-radio>
+              <v-radio
+                label="Otra causa:"
+                value="otra causa"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <v-col cols="12" md="6" v-if="datos.divisionLotes === 'posible no divisible'">
+            <h5>Justificación</h5>
+            <v-radio-group
+              v-model="datos.divisionPosibleDivisible"
+            >
+              <v-radio
+                label="Conlleva riesgo restringir competencia"
+                value="restringe competencias"
+              ></v-radio>
+              <v-radio
+                label="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
+                value="pone riesgo ejecución"
+              ></v-radio>
+
+            </v-radio-group>
+          </v-col>
+        </v-row>
+
+         <v-dialog
+        :value="showCPVSelect">
+          <CPVTable></CPVTable>
+        </v-dialog>
+
   </div>
+ 
 </template>
 
 <script>
-import {renderDoc} from "@/assets/mixins/renderDoc";
+import CPVTable from "@/components/common/CPVTable"
 
 export default {
 name: "Titulo1",
-
-mixins: [renderDoc],
+components: {CPVTable},
 
   data() {
     return {
@@ -147,122 +327,140 @@ mixins: [renderDoc],
         counter: (value) => value.length <= 200 || "Máximo 200 caracteres",
       },
 
-        
+      anualidades: [1,2,3,4,5],
+      selectAnualidades: 1,
+      colorValidar: "success",
+      alertValidar: false,
+      alertMessage: "El presupuesto base de licitación y las anualidades no coinciden. Presupuesto sin asignar: ",
+      prespuestoNoAsign: 0,
+      showCPVSelect: false,
+
+      anualidadesHeaders: [
+        {text: 'Año', align: 'start', sortable: false, value:'year'},
+        {text: 'Importe (sin IVA)', align: 'start', sortable: false, value:'importeSinIVA'},
+        {text: 'IVA (€)', align: 'start', sortable: false, value: 'IVA'},
+        {text: 'Importe (con IVA)', align: 'start', sortable: false, value:'importeConIVA'},
+      ],
+      
+      comunidades: [
+          " Andalucia", " Aragón", " Principado de Asturias"," Islas Baleares",
+          " Canarias", " Cantabria", " Castilla-La Mancha", " Castilla y León",
+          " Cataluña", " Comunidad Valenciana", " Extremadura", " Galicia",
+          " La Rioja", " Comunidad de Madrid", " Región de Murcia",
+          " Comunidad Foral de Navarra", " País Vasco"," Ceuta"," Melilla",
+      ],
+      
+      provincias: [
+          " Álava", " Albacete", " Alicante", " Almería", " Asturias",
+          " Ávila", " Badajoz", " Barcelona", " Bizkaia", " Burgos",
+          " Cáceres", " Cádiz", " Cantabria", " Castellón", " Ciudad Real",
+          " Córdoba", " A Coruña", " Cuenca", " Girona", " Granada",
+          " Guadalajara", " Gipuzkoa", " Huelva", " Huesca", " Illes Balears",
+          " Jaén", " León", " Lleida", " Lugo", " Madrid", " Málaga",
+          " Murcia", " Navarra", " Ourense", " Palencia", " Las Palmas",
+          " Pontevedra", " La Rioja", " Salamanca", " Segovia", " Sevilla",
+          " Soria", " Tarragona", " Santa Cruz de Tenerife",
+          " Teruel", " Toledo", " Valencia", " Valladolid", " Zamora", " Zaragoza",
+      ],
+
+      datos: {
         //SECCION 1
         tituloExpediente: '',
         clave: '',
-        selectComunidades: "",
-        comunidades: [
-            " Andalucia", " Aragón", " Principado de Asturias"," Islas Baleares",
-            " Canarias", " Cantabria", " Castilla-La Mancha", " Castilla y León",
-            " Cataluña", " Comunidad Valenciana", " Extremadura", " Galicia",
-            " La Rioja", " Comunidad de Madrid", " Región de Murcia",
-            " Comunidad Foral de Navarra", " País Vasco"," Ceuta"," Melilla",
-        ],
-        selectProvincias: "",
-        provincias: [
-            " Álava", " Albacete", " Alicante", " Almería", " Asturias",
-            " Ávila", " Badajoz", " Barcelona", " Bizkaia", " Burgos",
-            " Cáceres", " Cádiz", " Cantabria", " Castellón", " Ciudad Real",
-            " Córdoba", " A Coruña", " Cuenca", " Girona", " Granada",
-            " Guadalajara", " Gipuzkoa", " Huelva", " Huesca", " Illes Balears",
-            " Jaén", " León", " Lleida", " Lugo", " Madrid", " Málaga",
-            " Murcia", " Navarra", " Ourense", " Palencia", " Las Palmas",
-            " Pontevedra", " La Rioja", " Salamanca", " Segovia", " Sevilla",
-            " Soria", " Tarragona", " Santa Cruz de Tenerife",
-            " Teruel", " Toledo", " Valencia", " Valladolid", " Zamora", " Zaragoza",
-        ],
+        selectComunidadesAutonomas: '',
+        selectProvincias: '',
         regArmonizada: false,
-        regNoArmonizada: true,
-        clasificacionCPV: undefined,
+        clasifCPV: '',
 
         //SECCION 2
         necesidadesContrato: '',
-        prepBaseSinIVA: undefined,
-        prepBaseIVA: undefined,             //Se calcula en execute()
-        prepBaseIVAinc: undefined,          //Se calcula en execute()
-        costesDirectos: undefined,          //Se calcula en execute()
-        costesGenerales: undefined,         //Se calcula en execute()
-        beneficioIndustrial: undefined,     //Se calcula en execute()
-        totalCostes: undefined,             //Se calcula en execute()
+
+        //SECCION 3
+        presupuestoBaseLicitacion: undefined,
+        tramitacion: 'ordinaria',
+        desglose: false,
+        tipoDesglose: undefined,
+        tipoDesgloseGenero: undefined,
+        anualidades: [],
+
+        //SECCION 4
+        divisionLotes: undefined,
+        divisionNoPosible: undefined,
+        divisionPosibleDivisible: undefined,
+      }
     };
   },
 
-  computed: {
-    selectAllComunidades() {
-      return this.selectComunidades.length === this.comunidades.length;
-    },
-
-    selectAllProvincias() {
-      return this.selectProvincias.length === this.provincias.length;
-    },
-
-    icon() {
-      if (this.selectAllComunidades || this.selectAllProvincias) return "mdi-close-box";
-      return "mdi-checkbox-blank-outline";
-    },
-  },
-
   watch:{
-    data(){
-      this.$emit("data", this.data)
-    }
+    datos: {
+      deep: true,
+      handler(datos){
+      //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
+        this.$emit('datos', datos)
+      }
+    },
   },
+
 
   methods: {
-    deleteSelComunidades() {
-      this.selectComunidades = "";
+    dummy(){
+      this.showCPVSelect = true;
     },
 
-    deleteSelProvincias() {
-      this.selectProvincias = "";
+    validarAnualidades(){
+      this.total = 0;
+
+      for (this.index in this.datos.anualidades){
+        this.total = this.total + parseFloat(this.datos.anualidades[this.index].importeSinIVA);
+      }
+
+      if(this.total != this.datos.presupuestoBaseLicitacion){
+        this.prespuestoNoAsign = parseFloat((this.datos.presupuestoBaseLicitacion - this.total).toFixed(2));
+        this.colorValidar = "red"
+        this.alertValidar = true; 
+          
+      } else {
+        this.alertValidar = false;
+        this.colorValidar = "success"
+        return true
+      }
     },
 
-    toggleComunidades() {
-      this.$nextTick(() => {
-        if (this.selectAllComunidades) {
-          this.selectComunidades = [];
-        } else {
-          this.selectComunidades = this.comunidades.slice();
+    returnIVA(base){
+      this.iva = parseFloat((base * 0.21).toFixed(2));
+      return this.iva;
+    },
+
+    returnTotal(base){
+      this.total = parseFloat(base);
+      this.iva = this.returnIVA(base);
+      return parseFloat((this.total + this.iva).toFixed(2));
+    },
+
+    makeAnualidades(){
+      //REINICIO DATOS 
+      this.datos.anualidades = [];
+      
+      if(this.datos.presupuestoBaseLicitacion > 0){     
+        let fecha = new Date();
+        let year = fecha.getFullYear();
+        this.importeSinIVA = parseFloat((this.datos.presupuestoBaseLicitacion / this.selectAnualidades).toFixed(2));
+
+        for (let i = 0; i < this.selectAnualidades; i++){
+          this.datos.anualidades.push(
+            {
+              year: year + i,
+              importeSinIVA: this.importeSinIVA,
+            }
+          )
         }
-      });
+        
+      }
     },
 
-    toggleProvincias() {
-      this.$nextTick(() => {
-        if (this.selectAllProvincias) {
-          this.selectProvincias = [];
-        } else {
-          this.selectProvincias = this.provincias.slice();
-        }
-      });
-    },
-
-    execute(){
-      this.data = {
-          tituloExpediente: this.tituloExpediente,
-          clave: this.clave,
-          comunidadesAutonomas: this.selectComunidades,
-          provincias: this.selectProvincias,
-          regArmonizada: this.regArmonizada,
-          regNoArmonizada: !this.regArmonizada,
-          clasificacionCPV: this.clasificacionCPV,
-          necesidadesContrato: this.necesidadesContrato,
-          prepBaseSinIVA: this.prepBaseSinIVA,
-
-          //CALCULO EN TIEMPO DE EJECUCIÓN
-          prepBaseIVA: (this.prepBaseSinIVA*0.21).toFixed(2),
-          prepBaseIVAinc: (this.prepBaseSinIVA*1.21).toFixed(2),
-          costesDirectos: (this.prepBaseSinIVA*0.81).toFixed(2),
-          costesGenerales: (this.prepBaseSinIVA*0.13).toFixed(2),
-          beneficioIndustrial: (this.prepBaseSinIVA*0.06).toFixed(2),
-          totalCostes: undefined,
-        }
-      this.data.totalCostes = (parseFloat(this.data.costesGenerales) + parseFloat(this.data.beneficioIndustrial)).toFixed(2);    
-      this.renderDoc(this.data)
-      },
   },
 };
+
 </script>
 
 <style scoped>
@@ -275,11 +473,35 @@ h3{
   margin-bottom: 0.5rem;
 }
 
+h5 {
+  font-weight: 500;
+  opacity: 0.6;
+}
+
 .row {
-  margin-bottom: -2rem;
+  margin-bottom: -2.5rem;
 }
 
 .colControl {
   margin-bottom: -1rem;
+}
+
+.dataTable {
+  background-color: rgba(211, 211, 211, 0.589) !important;
+}
+
+.icon {
+  margin-left: 0.5rem;  
+}
+
+.actionButton{
+  margin-bottom: 0.25rem;
+}
+
+.editField{
+  background-color: white;
+  box-shadow: 0px 0px 3px 1px gray;
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 </style>

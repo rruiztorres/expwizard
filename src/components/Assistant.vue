@@ -13,7 +13,7 @@
                                     <v-icon class="iconBack">mdi-exit-run</v-icon>
                                     SALIR
                                 </v-btn>
-                                <v-btn color="success" :disabled="true" class="headButton" @click="execute">
+                                <v-btn color="success" :disabled="datosRecibidos === undefined" class="headButton" @click="execute">
                                     <v-icon class="iconBack">mdi-download</v-icon>
                                     PROBAR
                                 </v-btn>
@@ -51,7 +51,7 @@
                     <!--TITULO 1-->
                     <v-tab-item class="tabContent">
                         <Titulo1
-                            @data="getData"
+                            @datos="getData"
                         ></Titulo1>
                     </v-tab-item>
                     </v-tabs>
@@ -75,7 +75,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
         data(){
             return{
-                data: undefined,
+                datosRecibidos: undefined,
             }
         },
 
@@ -84,9 +84,8 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 this.$emit("back", true)
             },
 
-            getData(dataRecibida){
-                console.log(this.data)
-                this.data = dataRecibida;
+            getData(data){
+                this.datosRecibidos = data;
             },
 
             execute(){
