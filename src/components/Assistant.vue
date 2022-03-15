@@ -33,27 +33,53 @@
                         background-color="cyan"
                         dark
                         show-arrows
+                        fixed-tabs
+                        center-active
+                        centered
                     >
                     <v-tabs-slider color="yellow"></v-tabs-slider>
                     
-                        <v-tab>Disposiciones Generales</v-tab>
-                        <v-tab>Preparación del contrato</v-tab>
-                        <v-tab>Adjudicación del contrato</v-tab>
-                        <v-tab>Ejecución del contrato</v-tab>
-                        <v-tab>Extinción del contrato</v-tab>
-                        <v-tab>Modelo de declaración responsable</v-tab>
-                        <v-tab>Solvencia económica y financiera</v-tab>
-                        <v-tab>Solvencia técnica y profesional</v-tab>
-                        <v-tab>Proposición económica y otros criterios</v-tab>
-                        <v-tab>Modelos de notificación de subcontratación</v-tab>
-                        <v-tab>Real Decreto Ley</v-tab>
+                        <v-tab>Objeto y necesidades</v-tab>
+                        <v-tab>Presupuesto, lotes e incompatibilidades</v-tab>
+                        <v-tab>Capacidad y solvencia</v-tab>
+                        <v-tab>Garantías y Adjudicación</v-tab>
+                        <v-tab>Puntuación</v-tab>
+                        <v-tab>Ofertas Anormales</v-tab>
 
-                    <!--TITULO 1-->
+
+                    <!--OBJETO Y NECESIDADES-->
                     <v-tab-item class="tabContent">
-                        <Titulo1
+                        <ObjetoNecesidades
                             @datos="getData"
-                        ></Titulo1>
+                        ></ObjetoNecesidades>
                     </v-tab-item>
+
+                    <!--PRESUPUESTO Y ANUALIDADES-->
+                    <v-tab-item class="tabContent">
+                        <PresupuestoAnualidades></PresupuestoAnualidades>
+                    </v-tab-item>
+
+                    <!--TRAMITACION E INCOMPATIBILIDADES-->
+                    <v-tab-item class="tabContent">
+                        <CapacidadSolvencia></CapacidadSolvencia>
+                    </v-tab-item>
+
+                    <!--GARANTIAS-->
+                    <v-tab-item class="tabContent">
+                        <Garantias></Garantias>
+                    </v-tab-item>
+
+                     <!--PUNTUACION SEGUN JUICIO VALOR-->
+                    <v-tab-item class="tabContent">
+                        <Puntuacion></Puntuacion>
+                    </v-tab-item>
+
+                     <!--OFERTAS ANORMALES-->
+                    <v-tab-item class="tabContent">
+                        <OfertasAnormales></OfertasAnormales>
+                    </v-tab-item>
+
+
                     </v-tabs>
                 </v-sheet>
             </v-col>
@@ -62,14 +88,27 @@
 </template>
 
 <script> 
-import Titulo1 from "@/components/SuministroAbierto/Titulo1";
+import ObjetoNecesidades from "@/components/SuministroAbierto/ObjetoNecesidades";
+import PresupuestoAnualidades from "@/components/SuministroAbierto/PresupuestoAnualidades";
+import CapacidadSolvencia from "@/components/SuministroAbierto/CapacidadSolvencia";
+import Garantias from "@/components/SuministroAbierto/Garantias";
+import Puntuacion from "@/components/SuministroAbierto/Puntuacion";
+import OfertasAnormales from "@/components/SuministroAbierto/OfertasAnormales";
+
 import {renderDoc} from "@/assets/mixins/renderDoc";
 
 
     export default{
         name: 'Assistant',
 
-        components: { Titulo1 },
+        components: { 
+            ObjetoNecesidades, 
+            PresupuestoAnualidades, 
+            CapacidadSolvencia, 
+            Garantias,
+            Puntuacion,
+            OfertasAnormales,
+        },
 
         mixins: [renderDoc],
 
