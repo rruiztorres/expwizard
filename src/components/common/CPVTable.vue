@@ -24,15 +24,13 @@
 
         <v-data-table
             class="showTable"
-            dense
             :headers="CPVheaders"
             :search="search"
             :items="cpvItems"
             show-select
+            dense
             v-model="selected"
             :items-per-page="itemsPerPage"
-            show-header
-            hide-default-footer
             :key="codigo"
         >
             <template v-slot:no-data>
@@ -56,7 +54,7 @@
     }
 
     #cpvTable{
-        max-width: 90rem;
+        max-width: 80rem;
         margin: 0 auto;
         background-color: white;
     }
@@ -83,13 +81,12 @@ export default{
     name: 'CPVTable',
     data(){
         return {
-            itemsPerPage: 100,
+            itemsPerPage: 50,
             search: '',
             selected: [],
             CPVheaders: [
-                {text: 'Clave', align: 'start', sortable: true, value:'codigo'},
+                {text: 'Clave', align: 'start', sortable: true, value:'codigo', width:'10%'},
                 {text: 'Descripcion', align: 'start', sortable: true, value:'descripcion'},
-                {text: 'Grupo', align: 'start', sortable: true, value:'grupo'},
             ],
             cpvItems: [],
             codigo: '',
@@ -116,7 +113,7 @@ export default{
         exportCPV(){
             this.cpvCodes = [];
             for (this.index in this.selected) {
-                this.cpvCodes.push(this.selected[this.index].codigo + " " + this.selected[this.index].descripcion)
+                this.cpvCodes.push(this.selected[this.index].codigo + " ");
             }
             this.$emit("cpvCodes", this.cpvCodes)
             this.closeDialog();

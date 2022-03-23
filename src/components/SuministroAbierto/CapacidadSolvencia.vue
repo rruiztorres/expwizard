@@ -127,6 +127,7 @@
         data(){
             return {
                 datos: {
+                    componente:'CapacidadSolvencia',
                     requisitos: '',
                     especificados: '',
                     profesional: '',
@@ -140,7 +141,17 @@
                     especificarHabilitación: '',
                 }
             }
-        }
+        },
+
+        watch:{
+            datos: {
+                deep: true,
+                handler(datos){
+                //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
+                    this.$emit('datos', datos)
+                }
+            },
+        },
     }
 </script>
 

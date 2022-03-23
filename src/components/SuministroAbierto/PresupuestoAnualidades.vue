@@ -2,17 +2,25 @@
   <div>
     <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
     <h3>3.- Presupuesto de licitación y anualidades</h3>
+    <br/>
     <v-row>
       <v-col cols="12" md="4">
         <v-text-field
           v-model="datos.presupuestoBaseLicitacion"
           label="Presupuesto base de licitación (€)"
           filled
+          type="number"
         >
         </v-text-field>
       </v-col>
       <v-col cols="12" md="4">
-        <v-text-field label="Aplicación presupuestaria" filled> </v-text-field>
+        <v-select 
+          filled 
+          label="Aplicación presupuestaria" 
+          :items="itemsAplicacionPrep" 
+          v-model="datos.aplicacionPrep"
+        >
+        </v-select>
       </v-col>
 
       <v-col cols="12" sm="4">
@@ -21,6 +29,52 @@
           <v-radio label="Tramitación anticipada" value="anticipada"></v-radio>
         </v-radio-group>
       </v-col>
+    </v-row>
+
+    <v-row class="row">
+      <v-col cols="12" md="6">
+        <v-simple-table class="dataTable">
+          <caption class="caption"><b>Presupuesto Base de Licitación</b></caption>
+          <thead>
+            <tr>
+              <th>Importe sin IVA</th>
+              <th>IVA (21%)</th>
+              <th>Total (IVA inc.)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{datos.presupuestoBaseLicitacion}}</td>
+              <td>{{datos.presupuestoBaseLicitacionIVA}}</td>
+              <td><b>{{datos.presupuestoBaseLicitacionTotal}}</b></td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+      </v-col>
+
+      <v-col cols="12" md="6">
+        <v-simple-table class="dataTable">
+          <caption class="caption"><b>Presupuesto Base de Licitación (desglose)</b></caption>
+          <thead>
+            <tr>
+              <th>Costes directos</th>
+              <th>Costes generales (13%)</th>
+              <th>Beneficio industrial (6%)</th>
+              <th>Total costes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{datos.costesDirectos}}</td>
+              <td>{{datos.costesGenerales}}</td>
+              <td>{{datos.beneficioIndustrial}}</td>
+              <td>{{datos.totalCostes}}</td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+      </v-col>
+
+
     </v-row>
 
     <br />
@@ -73,10 +127,6 @@
         </v-btn>
       </v-col>
       <v-col cols="12" md="8">
-        <v-alert :type="typeAlert" v-if="alertValidar == true">{{
-          mensajeValidar
-        }}</v-alert>
-
         <v-data-table
           class="dataTable"
           :headers="anualidadesHeaders"
@@ -106,15 +156,8 @@
             <b>{{ returnTotal(item.importeSinIVA) }}</b>
           </template>
         </v-data-table>
-
-        <!--TOTALES-->
-        <v-data-table
-          :headers="totalsHeaders"
-          hide-default-header
-          hide-default-footer
-          :items="datos.totals"
-        >
-        </v-data-table>
+        <br/>
+        <v-alert v-if="presupuestoSinAsignar !== undefined" :type=returnColorValidate(presupuestoSinAsignar)>{{'Presupuesto sin asignar: '}}{{presupuestoSinAsignar}}</v-alert>
       </v-col>
     </v-row>
 
@@ -157,6 +200,7 @@
 
     <!-- 4 VALOR ESTIMADO -->
     <h3>4.- Valor Estimado</h3>
+    <br/>
     <v-row>
       <v-col cols="12">
         <v-text-field
@@ -256,57 +300,33 @@ export default {
       colorValidar: "success",
       alertValidar: false,
       alertMessage: "",
+      itemsAplicacionPrep: ['495A1718620', '495A1718630'],
+      presupuestoSinAsignar: undefined,
+
 
       anualidadesHeaders: [
-        { text: "Año", align: "start", sortable: false, value: "year" },
-        {
-          text: "Importe (sin IVA)",
-          align: "end",
-          sortable: false,
-          value: "importeSinIVA",
-        },
-        { text: "IVA (€)", align: "end", sortable: false, value: "IVA" },
-        {
-          text: "Importe (con IVA)",
-          align: "end",
-          sortable: false,
-          value: "importeConIVA",
-        },
-      ],
-
-      totalsHeaders: [
-        { text: "Año", align: "start", sortable: false, value: "total" },
-        {
-          text: "Importe (sin IVA)",
-          align: "end",
-          sortable: false,
-          value: "totalsIVA",
-        },
-        { text: "IVA (€)", align: "end", sortable: false, value: "IVAtotal" },
-        {
-          text: "Importe (con IVA)",
-          align: "end",
-          sortable: false,
-          value: "totalcIVA",
-        },
+        { text: "Año", align: "start", sortable: false, value: "year", divider: true,},
+        { text: "Importe (sin IVA)", align: "end", sortable: false, value: "importeSinIVA", width: "20%", divider: true, },
+        { text: "IVA (€)", align: "end", sortable: false, value: "IVA", width: "25%", divider: true, },
+        { text: "Importe (con IVA)", align: "end", sortable: false, value: "importeConIVA", width: "25%" },
       ],
 
       datos: {
+        componente: 'PresupuestoAnualidades',
         //SECCION 3
         presupuestoBaseLicitacion: undefined,
+        presupuestoBaseLicitacionIVA: undefined,
+        costesDirectos: undefined,
+        costesGenerales: undefined,
+        beneficioIndustrial: undefined,
+        totalCostes: undefined,
+        aplicacionPrep: '',
         tramitacion: "ordinaria",
         desglose: false,
         tipoDesglose: undefined,
         tipoDesgloseGenero: undefined,
         anualidades: [],
-        totals: [
-          {
-            total: "TOTAL",
-            totalsIVA: 0,
-            IVAtotal: 0,
-            totalcIVA: 0,
-          },
-        ],
+        totals: [],
 
         //SECCION 4
         divisionLotes: undefined,
@@ -316,7 +336,52 @@ export default {
     };
   },
 
+  watch:{
+    datos: {
+      deep: true,
+      handler(datos){
+        //CALCULO VALORES AUTOMATICOS
+        this.datos.presupuestoBaseLicitacionIVA = (this.datos.presupuestoBaseLicitacion * 0.21).toFixed(2)
+        this.datos.presupuestoBaseLicitacionTotal = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + (parseFloat(this.datos.presupuestoBaseLicitacionIVA))).toFixed(2),
+        this.datos.beneficioIndustrial = parseFloat((this.datos.totalCostes * 0.06).toFixed(2)),
+        this.datos.costesGenerales = parseFloat((this.datos.totalCostes * 0.13).toFixed(2)),
+        this.datos.costesDirectos = parseFloat((this.datos.totalCostes - (this.datos.costesGenerales + this.datos.beneficioIndustrial)).toFixed(2))
+        this.datos.totalCostes = this.datos.presupuestoBaseLicitacion;
+
+        if(this.datos.anualidades[0] !== undefined){
+          this.calcNoAsign()
+        }
+
+      
+      //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
+        this.$emit('datos', datos)
+      }
+    },
+
+  },
+  
   methods: {
+    calcNoAsign(){
+      this.presupuestoSinAsignar = 0;
+      for(this.index in this.datos.anualidades){
+        this.presupuestoSinAsignar = this.presupuestoSinAsignar + parseFloat(this.datos.anualidades[this.index].importeSinIVA);
+      }
+      this.presupuestoSinAsignar = (this.datos.presupuestoBaseLicitacion - this.presupuestoSinAsignar).toFixed(2);
+      return this.presupuestoSinAsignar;      
+    },
+
+    returnColorValidate(presupuesto){
+      if(presupuesto > 0 || presupuesto < 0){
+        return 'error'
+      } else {
+        return 'success'
+      }
+    },
+
+    validarAnualidades(){
+      return true
+    },
+
     makeAnualidades() {
       this.datos.anualidades = [];
 
@@ -333,43 +398,10 @@ export default {
         };
         this.datos.anualidades.push(newData);
       }
+
+      this.calcNoAsign();
     },
-
-    validarAnualidades() {
-      for (this.index in this.datos.anualidades) {
-        this.datos.totals[0].totalsIVA =
-          this.datos.totals[0].totalsIVA +
-          parseFloat(this.datos.anualidades[this.index].importeSinIVA);
-      }
-
-      this.datos.totals[0].IVAtotal = parseFloat(
-        (this.datos.totals[0].totalsIVA * 0.21).toFixed(2)
-      );
-      this.datos.totals[0].totalcIVA = parseFloat(
-        (
-          this.datos.totals[0].IVAtotal + this.datos.totals[0].totalsIVA
-        ).toFixed(2)
-      );
-
-      if (
-        this.datos.presupuestoBaseLicitacion -
-          this.datos.totals[0].totalsIVA !==
-        0
-      ) {
-        this.colorValidar = "red";
-        this.typeAlert = "error";
-        this.mensajeValidar = `El presupuesto base de licitación y las anualidades no coinciden. Existe una diferencia de: ${
-          this.datos.presupuestoBaseLicitacion - this.datos.totals[0].totalsIVA
-        }`;
-        this.alertValidar = true;
-      } else {
-        this.alertValidar = true;
-        this.mensajeValidar = "Datos correctos";
-        this.typeAlert = "success";
-        this.colorValidar = "success";
-        return true;
-      }
-    },
+  
 
     deleteAnualidades() {
       this.datos.anualidades = [];
@@ -426,5 +458,9 @@ export default {
   border: 1px solid lightgray;
   border-radius: 4px;
   padding: 1rem 0rem 1rem 0rem;
+}
+
+.caption {
+  margin: 0.5rem;
 }
 </style>

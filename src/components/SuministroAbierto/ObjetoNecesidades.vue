@@ -5,7 +5,8 @@
         <v-text-field
         v-model="datos.tituloExpediente"
         :rules="[rules.required, rules.counter]"
-        label="Titulo del Expediente" counter filled>
+        label="Titulo del Expediente" counter filled               
+        >
         </v-text-field>
 
         <v-text-field
@@ -49,7 +50,9 @@
               <v-text-field
               v-model="datos.clasifCPV"
               append-icon="mdi-magnify"
-              @click:append="dummy"
+              prepend-icon="mdi-delete-empty"
+              @click:prepend="deleteCPVCodes"
+              @click:append="showCPVCodes"
               label="Clasif. CPV" filled>
               </v-text-field>
           </v-col>
@@ -121,6 +124,7 @@ components: {CPVTable},
       ],
 
       datos: {
+        componente: 'ObjetoNecesidades',
         //SECCION 1
         tituloExpediente: '',
         clave: '',
@@ -147,13 +151,16 @@ components: {CPVTable},
 
 
   methods: {
-    dummy(){
+    deleteCPVCodes(){
+      this.datos.clasifCPV= '';
+    },
+
+    showCPVCodes(){
       this.showCPVSelect = true;
     },
 
     getCPV(data){
       this.datos.clasifCPV = data;
-      console.log(this.datos)
     },
 
     closeDialog(closed){

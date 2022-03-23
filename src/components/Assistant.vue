@@ -13,7 +13,7 @@
                                     <v-icon class="iconBack">mdi-exit-run</v-icon>
                                     SALIR
                                 </v-btn>
-                                <v-btn color="success" :disabled="datosRecibidos === undefined" class="headButton" @click="execute">
+                                <v-btn color="success" class="headButton" @click="execute">
                                     <v-icon class="iconBack">mdi-download</v-icon>
                                     PROBAR
                                 </v-btn>
@@ -43,8 +43,10 @@
                         <v-tab>Presupuesto, lotes e incompatibilidades</v-tab>
                         <v-tab>Capacidad y solvencia</v-tab>
                         <v-tab>Garantías y Adjudicación</v-tab>
-                        <v-tab>Puntuación</v-tab>
-                        <v-tab>Ofertas Anormales</v-tab>
+                        <v-tab>Puntuación y Ofertas anormales</v-tab>
+                        <v-tab>Plazos y Responsable</v-tab>
+                        <v-tab>Pagos, Rev. precios y Abonos a cuenta</v-tab>
+                        <v-tab>Ejecución y otros</v-tab>
 
 
                     <!--OBJETO Y NECESIDADES-->
@@ -56,27 +58,51 @@
 
                     <!--PRESUPUESTO Y ANUALIDADES-->
                     <v-tab-item class="tabContent">
-                        <PresupuestoAnualidades></PresupuestoAnualidades>
+                        <PresupuestoAnualidades
+                            @datos="getData"
+                        ></PresupuestoAnualidades>
                     </v-tab-item>
 
                     <!--TRAMITACION E INCOMPATIBILIDADES-->
                     <v-tab-item class="tabContent">
-                        <CapacidadSolvencia></CapacidadSolvencia>
+                        <CapacidadSolvencia
+                            @datos="getData"
+                        ></CapacidadSolvencia>
                     </v-tab-item>
 
                     <!--GARANTIAS-->
                     <v-tab-item class="tabContent">
-                        <Garantias></Garantias>
+                        <Garantias
+                            @datos="getData"
+                        ></Garantias>
                     </v-tab-item>
 
-                     <!--PUNTUACION SEGUN JUICIO VALOR-->
+                     <!--PUNTUACION Y OFERTAS ANORMALES-->
                     <v-tab-item class="tabContent">
-                        <Puntuacion></Puntuacion>
+                        <PuntuacionOfertasAnormales
+                            @datos="getData"
+                        ></PuntuacionOfertasAnormales>
                     </v-tab-item>
 
-                     <!--OFERTAS ANORMALES-->
+                    <!--PLAZOS Y RESPONSABLE-->
                     <v-tab-item class="tabContent">
-                        <OfertasAnormales></OfertasAnormales>
+                        <PlazosResponsable
+                            @datos="getData"
+                        ></PlazosResponsable>
+                    </v-tab-item>
+
+                    <!--REGIMEN PAGOS REVISION PRECIOS-->
+                    <v-tab-item class="tabContent">
+                        <RegimenPagosRevision
+                            @datos="getData"
+                        ></RegimenPagosRevision>
+                    </v-tab-item>
+
+                    <!--EJECUCION Y OTROS-->
+                    <v-tab-item class="tabContent">
+                        <EjecucionYotros
+                            @datos="getData"
+                        ></EjecucionYotros>
                     </v-tab-item>
 
 
@@ -92,8 +118,10 @@ import ObjetoNecesidades from "@/components/SuministroAbierto/ObjetoNecesidades"
 import PresupuestoAnualidades from "@/components/SuministroAbierto/PresupuestoAnualidades";
 import CapacidadSolvencia from "@/components/SuministroAbierto/CapacidadSolvencia";
 import Garantias from "@/components/SuministroAbierto/Garantias";
-import Puntuacion from "@/components/SuministroAbierto/Puntuacion";
-import OfertasAnormales from "@/components/SuministroAbierto/OfertasAnormales";
+import PuntuacionOfertasAnormales from "@/components/SuministroAbierto/PuntuacionOfertasAnormales";
+import PlazosResponsable from "@/components/SuministroAbierto/PlazosResponsable";
+import RegimenPagosRevision from "@/components/SuministroAbierto/RegimenPagosRevision";
+import EjecucionYotros from "@/components/SuministroAbierto/EjecucionYotros";
 
 import {renderDoc} from "@/assets/mixins/renderDoc";
 
@@ -106,16 +134,60 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             PresupuestoAnualidades, 
             CapacidadSolvencia, 
             Garantias,
-            Puntuacion,
-            OfertasAnormales,
+            PuntuacionOfertasAnormales,
+            PlazosResponsable,
+            RegimenPagosRevision,
+            EjecucionYotros,
         },
 
         mixins: [renderDoc],
 
         data(){
             return{
-                datosRecibidos: undefined,
+                datosObjetoNecesidades: undefined,
+                datosPresupuestoAnualidades: undefined,
+                datosCapacidadSolvencia: undefined,
+                datosGarantias: undefined,
+                datosPuntuacionOfertasAnormales: undefined,
+                datosPlazoResponsable: undefined,
+                datosRegimenPagosRevision: undefined,
+                datosEjecucionYotros: undefined,
             }
+        },
+
+        watch:{
+                //debug
+                datosObjetoNecesidades(){
+                    console.log("datosObjetoNecesidades", this.datosObjetoNecesidades)
+                },
+                
+                datosPresupuestoAnualidades(){
+                    console.log("datosPresupuestoAnualidades", this.datosPresupuestoAnualidades)
+                },
+                
+                datosCapacidadSolvencia(){
+                    console.log("datosCapacidadSolvencia", this.datosCapacidadSolvencia)
+                },
+                
+                datosGarantias(){
+                    console.log("datosGarantias", this.datosGarantias)
+                },
+                
+                datosPuntuacionOfertasAnormales(){
+                    console.log("datosPuntuacionOfertasAnormales", this.datosPuntuacionOfertasAnormales)
+                },
+                
+                datosPlazoResponsable(){
+                    console.log("datosPlazoResponsable", this.datosPlazoResponsable)
+                },
+                
+                datosRegimenPagosRevision(){
+                    console.log("datosRegimenPagosRevision", this.datosRegimenPagosRevision)
+                },
+                
+                datosEjecucionYotros(){
+                    console.log("datosEjecucionYotros", this.datosEjecucionYotros)
+                },
         },
 
         methods:{
@@ -124,10 +196,28 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             },
 
             getData(data){
-                this.datosRecibidos = data;
+                if (data.componente === 'ObjetoNecesidades'){this.datosObjetoNecesidades = Object.assign(data)}
+                else if (data.componente === 'PresupuestoAnualidades'){this.datosPresupuestoAnualidades = Object.assign(data)}
+                else if (data.componente === 'CapacidadSolvencia'){this.datosCapacidadSolvencia = Object.assign(data)}
+                else if (data.componente === 'Garantias'){this.datosGarantias = Object.assign(data)}
+                else if (data.componente === 'PuntuacionOfertasAnormales'){this.datosPuntuacionOfertasAnormales = Object.assign(data)}
+                else if (data.componente === 'PlazoResponsable'){this.datosPlazoResponsable = Object.assign(data)}
+                else if (data.componente === 'RegimenPagosRevision'){this.datosRegimenPagosRevision = Object.assign(data)}
+                else if (data.componente === 'EjecucionYotros'){this.datosEjecucionYotros = Object.assign(data)}
             },
 
             execute(){
+                this.data = [
+                    this.datosObjetoNecesidades,
+                    this.datosPresupuestoAnualidades,
+                    this.datosCapacidadSolvencia,
+                    this.datosGarantias,
+                    this.datosPuntuacionOfertasAnormales,
+                    this.datosPlazoResponsable,
+                    this.datosRegimenPagosRevision,
+                    this.datosEjecucionYotros,
+                ];
+
                 this.renderDoc(this.data);
             }
         }
