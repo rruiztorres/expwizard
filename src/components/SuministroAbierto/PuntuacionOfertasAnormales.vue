@@ -149,6 +149,7 @@ export default {
             ],
 
             datos:{
+                componente: 'PuntuacionOfertasAnormales',
                 criteriosPuntuacion: [
                     { id: 1, criterios: '', extension: '' },
                     { id: 2, criterios: '', extension: '' },
@@ -169,7 +170,11 @@ export default {
             },
             
         }
-    }
+    },
+
+    beforeDestroy(){
+        this.$emit('datos', this.datos)
+    },
 }
 </script>
 

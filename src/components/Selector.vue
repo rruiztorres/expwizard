@@ -1,113 +1,18 @@
 <template>
     <div>
         <br/>
-        <h3>Expedientes de tipo prueba</h3>
+        <h3>Modelos de Expedientes</h3>
         <hr/>
         <br/>
         <v-row class="row">
             <v-col cols="12" sm="6" md="4" lg="2">
                 <v-card class="selection" @click="selectTipo()" elevation="0">
-                    <v-card-title>Suministro Abierto</v-card-title>
+                    <v-card-title>PCAP</v-card-title>
                     <div class="imgContainer">
                         <img src="@/assets/word_logo.png">
                     </div>
                 </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>          
-        </v-row>
-
-        <br/>
-        <h3>Mas expedientes para elegir</h3>
-        <hr/>
-        <br/>
-        <v-row class="row">
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" elevation="0">
-                    <v-card-title>Otro tipo</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
-                </v-card>
-            </v-col>          
+            </v-col>    
         </v-row>
     </div>
 </template>

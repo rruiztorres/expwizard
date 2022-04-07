@@ -39,47 +39,60 @@
                     >
                     <v-tabs-slider color="yellow"></v-tabs-slider>
                     
-                        <v-tab>Objeto y necesidades</v-tab>
-                        <v-tab>Presupuesto, lotes e incompatibilidades</v-tab>
-                        <v-tab>Capacidad y solvencia</v-tab>
-                        <v-tab>Garantías y Adjudicación</v-tab>
-                        <v-tab>Puntuación y Ofertas anormales</v-tab>
-                        <v-tab>Plazos y Responsable</v-tab>
-                        <v-tab>Pagos, Rev. precios y Abonos a cuenta</v-tab>
-                        <v-tab>Ejecución y otros</v-tab>
+                        <v-tab @click="activateTab(1)">Objeto y necesidades</v-tab>
+                        <v-tab @click="activateTab(2)">Presupuesto, lotes e incompatibilidades</v-tab>
+                        <v-tab @click="activateTab(3)">Capacidad y solvencia</v-tab>
+                        <v-tab @click="activateTab(4)">Garantías y Adjudicación</v-tab>
+                        <v-tab @click="activateTab(5)">Puntuación y Ofertas anormales</v-tab>
+                        <v-tab @click="activateTab(6)">Plazos y Responsable</v-tab>
+                        <v-tab @click="activateTab(7)">Pagos, Rev. precios y Abonos a cuenta</v-tab>
+                        <v-tab @click="activateTab(8)">Ejecución y otros</v-tab>
+                        <v-tab @click="activateTab(9)">Finalizar</v-tab>
 
 
                     <!--OBJETO Y NECESIDADES-->
                     <v-tab-item class="tabContent">
                         <ObjetoNecesidades
+                            v-if="activeTab == 1"
                             @datos="getData"
+                            :datosGuardados="datosObjetoNecesidades"
                         ></ObjetoNecesidades>
                     </v-tab-item>
 
                     <!--PRESUPUESTO Y ANUALIDADES-->
                     <v-tab-item class="tabContent">
                         <PresupuestoAnualidades
+                            v-if="activeTab == 2"
                             @datos="getData"
+                            :datosGuardados="datosPresupuestoAnualidades"
                         ></PresupuestoAnualidades>
                     </v-tab-item>
 
-                    <!--TRAMITACION E INCOMPATIBILIDADES-->
+                    <!--CAPACIDAD Y SOLVENCIA-->
                     <v-tab-item class="tabContent">
                         <CapacidadSolvencia
+                            v-if="activeTab == 3"
                             @datos="getData"
+                            :datosGuardados="datosCapacidadSolvencia"
+                            :presBase="datosPresupuestoAnualidades"
+                            :objetoNecesidades="datosObjetoNecesidades"
                         ></CapacidadSolvencia>
                     </v-tab-item>
 
                     <!--GARANTIAS-->
                     <v-tab-item class="tabContent">
                         <Garantias
+                            v-if="activeTab == 4"
                             @datos="getData"
+                            :datosGuardados="datosGarantias"
+                            :presBase="datosPresupuestoAnualidades"
                         ></Garantias>
                     </v-tab-item>
 
                      <!--PUNTUACION Y OFERTAS ANORMALES-->
                     <v-tab-item class="tabContent">
                         <PuntuacionOfertasAnormales
+                            v-if="activeTab == 5"
                             @datos="getData"
                         ></PuntuacionOfertasAnormales>
                     </v-tab-item>
@@ -87,6 +100,7 @@
                     <!--PLAZOS Y RESPONSABLE-->
                     <v-tab-item class="tabContent">
                         <PlazosResponsable
+                            v-if="activeTab == 6"
                             @datos="getData"
                         ></PlazosResponsable>
                     </v-tab-item>
@@ -94,6 +108,7 @@
                     <!--REGIMEN PAGOS REVISION PRECIOS-->
                     <v-tab-item class="tabContent">
                         <RegimenPagosRevision
+                            v-if="activeTab == 7"
                             @datos="getData"
                         ></RegimenPagosRevision>
                     </v-tab-item>
@@ -101,8 +116,14 @@
                     <!--EJECUCION Y OTROS-->
                     <v-tab-item class="tabContent">
                         <EjecucionYotros
+                            v-if="activeTab == 8"
                             @datos="getData"
                         ></EjecucionYotros>
+                    </v-tab-item>
+
+                    <!--FINALIZAR-->
+                    <v-tab-item class="tabContent">
+
                     </v-tab-item>
 
 
@@ -127,7 +148,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
 
     export default{
-        name: 'Assistant',
+        name: 'SuministroAbierto',
 
         components: { 
             ObjetoNecesidades, 
@@ -144,6 +165,8 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
         data(){
             return{
+                activeTab: 1,
+
                 datosObjetoNecesidades: undefined,
                 datosPresupuestoAnualidades: undefined,
                 datosCapacidadSolvencia: undefined,
@@ -157,6 +180,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
         watch:{
                 //debug
+                /*
                 datosObjetoNecesidades(){
                     console.log("datosObjetoNecesidades", this.datosObjetoNecesidades)
                 },
@@ -188,11 +212,16 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 datosEjecucionYotros(){
                     console.log("datosEjecucionYotros", this.datosEjecucionYotros)
                 },
+                */
         },
 
         methods:{
             back(){
                 this.$emit("back", true)
+            },
+
+            activateTab(tab){
+                this.activeTab = tab;
             },
 
             getData(data){
@@ -217,8 +246,8 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                     this.datosRegimenPagosRevision,
                     this.datosEjecucionYotros,
                 ];
-
-                this.renderDoc(this.data);
+                console.log(this.data)
+                //this.renderDoc(this.data);
             }
         }
     }

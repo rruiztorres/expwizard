@@ -112,6 +112,7 @@
         data(){
             return {
                 datos: {
+                    componente: 'EjecucionYotros',
                     comprobacionPagos: '',
                     condicionesEspeciales: '',
                     exigidosFijo: '',
@@ -128,14 +129,8 @@
             }
         },
 
-        watch:{
-            datos: {
-            deep: true,
-            handler(datos){
-            //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
-                this.$emit('datos', datos)
-            }
-            },
+        beforeDestroy(){
+            this.$emit('datos', this.datos)
         },
     }
 </script>

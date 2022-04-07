@@ -114,6 +114,7 @@
                 ],
 
                 datos:{
+                    componente:'PlazoResponsable',
                     plazoAdjudicacion: '',
                     plazoAdjudicacionJustificar: '',
                     selectSubdireccion: 'Secretaria General',
@@ -129,14 +130,8 @@
             }
         },
 
-        watch:{
-            datos: {
-            deep: true,
-            handler(datos){
-            //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
-                this.$emit('datos', datos)
-            }
-            },
+        beforeDestroy(){
+            this.$emit('datos', this.datos)
         },
     }
 </script>

@@ -79,7 +79,7 @@
 
     <br />
 
-    <v-row class="row anualidades">
+    <v-row class="rowGroup">
       <v-col cols="12">
         <h5 class="subtitle">Anualidades</h5>
       </v-col>
@@ -87,7 +87,7 @@
         <v-select dense filled :items="anualidades" v-model="selectAnualidades">
         </v-select>
       </v-col>
-      <v-col cols="12" md="2">
+      <v-col cols="12" md="3">
         <v-btn
           class="actionButton"
           color="info"
@@ -105,15 +105,22 @@
 
         <v-btn
           class="actionButton"
-          :color="colorValidar"
           width="100%"
+          :color="colorAnualidades()"
           large
-          :disabled="datos.anualidades.length === 0"
-          @click="validarAnualidades"
-        >
-          VALIDAR
-          <v-icon class="icon">mdi-check</v-icon>
+          :disabled="presupuestoSinAsignar !== '0.00'"
+          @click="storeDatosAnualidades"
+        > 
+          <div v-if="anualidadesGuardadas == false" >
+          GUARDAR
+          <v-icon class="icon">mdi-content-save</v-icon>
+          </div>
+          <div v-else>
+          DATOS GUARDADOS
+          <v-icon class="icon">mdi-check-all</v-icon>
+          </div>
         </v-btn>
+
         <v-btn
           class="actionButton"
           color="error"
@@ -126,14 +133,14 @@
           <v-icon class="icon">mdi-delete</v-icon>
         </v-btn>
       </v-col>
-      <v-col cols="12" md="8">
+      <v-col cols="12" md="7">
         <v-data-table
           class="dataTable"
           :headers="anualidadesHeaders"
           :items="datos.anualidades"
           hide-default-footer
         >
-          <template v-slot:[`item.importeSinIVA`]="props">
+          <template v-slot:[`item.importeSinIVA`]="props" v-if="anualidadesGuardadas == false">
             <v-edit-dialog :return-value.sync="props.item.importeSinIVA">
               <span class="editField">{{
                 parseFloat(props.item.importeSinIVA)
@@ -157,14 +164,20 @@
           </template>
         </v-data-table>
         <br/>
-        <v-alert v-if="presupuestoSinAsignar !== undefined" :type=returnColorValidate(presupuestoSinAsignar)>{{'Presupuesto sin asignar: '}}{{presupuestoSinAsignar}}</v-alert>
+        <v-alert v-if="presupuestoSinAsignar !== undefined && anualidadesGuardadas === false" :type=returnColorValidate(presupuestoSinAsignar)>
+          <div v-if="presupuestoSinAsignar > 0">{{'Presupuesto sin asignar: '}}{{presupuestoSinAsignar}}</div>
+          <div v-if="presupuestoSinAsignar < 0">{{'Las anualidades exceden el presupuesto base, diferencia: '}}{{presupuestoSinAsignar}}</div>
+          <div v-if="presupuestoSinAsignar == 0">
+            Datos correctos, haga clic en "GUARDAR" para almacenar anualidades              
+          </div>
+        </v-alert>
       </v-col>
     </v-row>
 
     <br />
     <h5>Desglose</h5>
-    <v-row class="row">
-      <v-col cols="12" sm="3">
+    <v-row class="rowGroup">
+      <v-col cols="12" sm="2">
         <v-radio-group v-model="datos.desglose">
           <v-radio label="Procede" :value="true"></v-radio>
           <v-radio label="No procede" :value="false"></v-radio>
@@ -195,27 +208,65 @@
           ></v-radio>
         </v-radio-group>
       </v-col>
+      <v-col
+        v-if="datos.desglose === true && datos.tipoDesglose === 'categoria'"
+        cols="12"
+        md="7"
+      ><v-textarea label="Indicar como se desglosa:" filled></v-textarea>
+      </v-col>
     </v-row>
     <br />
 
     <!-- 4 VALOR ESTIMADO -->
     <h3>4.- Valor Estimado</h3>
-    <br/>
+    <h5>4.1 Importe del valor estimado del contrato</h5>
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12" md="5">
         <v-text-field
           label="Importe máx. por modificaciones previstas sin IVA (€)"
           filled
+          type="number"
+          v-model="datos.maxModificacionesPrevistas"
         >
         </v-text-field>
+      </v-col>
+      <v-col cols="12" md="7">
+        <v-simple-table class="dataTable">
+          <caption class="caption"><b>Importe del valor estimado del contrato</b></caption>
+          <thead>
+            <tr>
+              <th>Importe del suministro</th>
+              <th>Importe máximo por modificaciones previstas</th>
+              <th>TOTAL VALOR ESTIMADO DEL CONTRATO, sin IVA (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{datos.presupuestoBaseLicitacion}}</td>
+              <td>{{datos.maxModificacionesPrevistas}}</td>
+              <td><b>{{datos.totalEstimado}}</b></td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+      </v-col>
+    </v-row>
+    <br/>
+    <h5>4.2 Método de cálculo del valor estimado</h5>
+    <v-row>
+      <v-col cols="12">
+        <v-textarea 
+          filled auto-grow
+          v-model="datos.metodoCalculo"
+          ></v-textarea>
       </v-col>
     </v-row>
     <br />
 
     <!-- 5 DIVISIÓN EN LOTES -->
     <h3>5.- División en lotes</h3>
-    <v-row>
-      <v-col cols="12" md="6">
+    <v-row class="rowGroup">
+      <v-col cols="12" md="3">
+        <h5>¿Existe posibilidad de división?</h5>
         <v-radio-group v-model="datos.divisionLotes">
           <v-radio label="No es posible" value="no es posible"></v-radio>
           <v-radio
@@ -229,79 +280,150 @@
         </v-radio-group>
       </v-col>
 
-      <v-col cols="12" md="6" v-if="datos.divisionLotes === 'no es posible'">
-        <h5>Justificación</h5>
-        <v-radio-group v-model="datos.divisionNoPosible">
-          <v-radio
-            label="La naturaleza o el objeto del contrato no lo permite"
-            value="naturaleza objeto"
-          ></v-radio>
-          <v-radio label="Otra causa:" value="otra causa"></v-radio>
-        </v-radio-group>
-      </v-col>
+        <v-col cols="12" md="4" v-if="datos.divisionLotes === 'no es posible'">
+          <h5>Justificación si no es posible:</h5>
+          <v-radio-group v-model="datos.divisionNoPosible">
+            <v-radio
+              label="La naturaleza o el objeto del contrato no lo permite"
+              value="naturaleza objeto"
+            ></v-radio>
+            <v-radio label="Otra causa:" value="otra causa"></v-radio>
+          </v-radio-group>
+        </v-col>
 
-      <v-col
-        cols="12"
-        md="6"
-        v-if="datos.divisionLotes === 'posible no divisible'"
-      >
-        <h5>Justificación</h5>
-        <v-radio-group v-model="datos.divisionPosibleDivisible">
-          <v-radio
-            label="Conlleva riesgo restringir competencia"
-            value="restringe competencias"
-          ></v-radio>
-          <v-radio
-            label="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
-            value="pone riesgo ejecución"
-          ></v-radio>
-        </v-radio-group>
-      </v-col>
+          <v-col cols="12" md="5" v-if="datos.divisionLotes === 'no es posible' && datos.divisionNoPosible === 'otra causa'">
+            <h5>Si es otra causa, justificar:</h5>
+            <v-textarea filled v-model="datos.justificacionNoDivisionLotes"></v-textarea>           
+          </v-col>
+
+            <!-- POSIBLE NO DIVISIBLE -->
+            <v-col
+              cols="12"
+              md="4"
+              v-if="datos.divisionLotes === 'posible no divisible'"
+            >
+              <h5>Justificación si es posible pero no se divide:</h5>
+              <v-radio-group v-model="datos.divisionPosibleDivisible">
+                <v-radio
+                  label="Conlleva riesgo restringir competencia"
+                  value="restringe competencias"
+                ></v-radio>
+                <v-radio
+                  label="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
+                  value="pone riesgo ejecución"
+                ></v-radio>
+                <v-radio
+                  label="Otra causa"
+                  value="otra causa"
+                ></v-radio>
+              </v-radio-group>
+            </v-col>
+
+            <v-col cols="12" md="5" 
+            v-if="datos.divisionLotes === 'posible no divisible' && 
+            datos.divisionPosibleDivisible === 'otra causa'"
+            >
+              <h5>Si es otra causa, justificar:</h5>
+              <v-textarea filled></v-textarea>
+            </v-col>
+
+            <!-- POSIBLE DIVISIBLE -->
+
+            <v-col
+              cols="12"
+              md="9"
+              v-if="datos.divisionLotes === 'posible divisible'"
+            >
+              <h5>Identificación de los lotes:</h5>
+              <v-textarea filled auto-grow v-model="datos.identificacionLotes"></v-textarea>
+            </v-col>
     </v-row>
+    <br />
 
-    <v-row>
-      <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
-      <v-col cols="12" md="6">
-          <h3>6.- Documentos que revisten carácter contractual</h3>
-          <v-radio-group>
+     <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
+    <h3>6.- Documentos que revisten carácter contractual</h3>
+    <v-row class="rowGroup">
+      <v-col cols="12" md="9">
+        <p>A los efectos del artículo 35 de la LCSP, la relación de documentos que revisten carácter contractual 
+        enumerada en el orden en que aparecen a continuación:</p>
+        <v-textarea 
+        filled auto-grow
+        v-model="datos.relacionDocsContractual"
+        >
+        </v-textarea>
+      </v-col>
+      <v-col cols="12" md="3">
+      <h5>Dicha relación tendrá caracter:</h5>
+          <v-radio-group v-model="datos.docsCaracterContractual">
               <v-radio label="Jerarquizada" value="jerarquizada"></v-radio>
               <v-radio label="No jerarquizada" value="no jerarquizada"></v-radio>
           </v-radio-group>
       </v-col>
+    </v-row>
+    <br />
 
-      <!-- 7 TRAMITACIÓN DEL PROCEDIMIENTO -->
-      <v-col cols="12" md="6">
-          <h3>7.- Tramitación del procedimiento</h3>
-          <v-radio-group>
+    <!-- 7 TRAMITACIÓN DEL PROCEDIMIENTO -->
+    <h3>7.- Tramitación del procedimiento</h3>
+    <v-row class="rowGroup">
+      <v-col cols="12" md="2">
+        <h5>Seleccionar tramitación</h5>
+          <v-radio-group v-model="datos.tramitacionProc">
               <v-radio label="Ordinaria" value="ordinaria"></v-radio>
               <v-radio label="Urgente" value="urgente"></v-radio>
           </v-radio-group>
       </v-col>
+      <v-col cols="12" md="10" v-if="datos.tramitacionProc === 'urgente'">
+        <h5>Se acompañará de la correspondiente declaración de urgencia</h5>
+        <p>
+          En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato
+          se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP
+        </p>
+        <v-btn color="info"><v-icon style="margin-right: 0.5rem;">mdi-content-save</v-icon>CARGAR DECLARACIÓN</v-btn>
+      </v-col>
+    </v-row>
+    <br />
+    
+    <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
+    <h3>8.- Incompatibilidades para la licitación</h3>
+    <v-row class="rowGroup"> 
+      <v-col cols="12" md="4">
+        <i>
+          Participación en la licitación de las empresas que hubieran participado previamente en la 
+          elaboración de las especificaciones técnicas o de los documentos preparatorios del contrato
+          o hubieran asesorado al órgano de contratación durante la preparación del procedimiento de 
+          contratación [artículo 70.1 LCSP]
+        </i>
+      </v-col>
 
-      <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
-      <v-col cols="12" md="6">
-          <h3>8.- Incompatibilidades para la licitación</h3>
-          <v-radio-group>
-              <v-radio label="No tiene consideración" value="no tiene consideracion"></v-radio>
-              <v-radio label="Tiene consideración" value="tiene consideracion"></v-radio>
+      <v-col cols="12" md="4">
+        <h5>Consideración:</h5>
+          <v-radio-group v-model="datos.participacionEmpresas">
+              <v-radio label="No tiene consideración el contrato que se licita" value="no tiene"></v-radio>
+              <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" value="si tiene"></v-radio>
           </v-radio-group>
       </v-col>
-  </v-row>
+
+      <v-col cols="12" md="4" v-if="datos.participacionEmpresas === 'si tiene'">
+        <h5>Empresas que deben ser excluidas de dicha licitación:</h5>
+        <v-textarea filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 export default {
   name: "PresupuestoAnualidades",
+  props:['datosGuardados'],
+  
   data() {
     return {
       anualidades: [1, 2, 3, 4, 5],
       selectAnualidades: 1,
-      colorValidar: "success",
-      alertValidar: false,
       alertMessage: "",
-      itemsAplicacionPrep: ['495A1718620', '495A1718630'],
+      itemsAplicacionPrep: ['495A1718620', '495A1718630', '1718495A620'],
       presupuestoSinAsignar: undefined,
+      anualidadesGuardadas: false,
 
 
       anualidadesHeaders: [
@@ -313,6 +435,7 @@ export default {
 
       datos: {
         componente: 'PresupuestoAnualidades',
+
         //SECCION 3
         presupuestoBaseLicitacion: undefined,
         presupuestoBaseLicitacionIVA: undefined,
@@ -322,16 +445,33 @@ export default {
         totalCostes: undefined,
         aplicacionPrep: '',
         tramitacion: "ordinaria",
-        desglose: false,
+        desglose: true,
         tipoDesglose: undefined,
         tipoDesgloseGenero: undefined,
         anualidades: [],
-        totals: [],
 
         //SECCION 4
+        maxModificacionesPrevistas: undefined,
+        totalEstimado: undefined,
+        metodoCalculo: 'Para calcular el valor estimado se han tenido en cuenta los costes derivados de la aplicación de la normativa laboral vigente. Además, se han tenido en cuenta los apartados 2 y 10 del artículo 101 de la LCSP.',
+      
+        //SECCIÓN 5
         divisionLotes: undefined,
         divisionNoPosible: undefined,
         divisionPosibleDivisible: undefined,
+        justificacionNoDivisionLotes: undefined,
+        identificacionLotes: undefined,
+
+        //SECCION 6
+        relacionDocsContractual: undefined,
+        ddocsCaracterContractual: undefined,
+
+        //SECCION 7
+        tramitacionProc: undefined,
+
+        //SECCION 8
+        participacionEmpresas: undefined,
+        empresasExcluidas: undefined,
       },
     };
   },
@@ -341,26 +481,64 @@ export default {
       deep: true,
       handler(datos){
         //CALCULO VALORES AUTOMATICOS
-        this.datos.presupuestoBaseLicitacionIVA = (this.datos.presupuestoBaseLicitacion * 0.21).toFixed(2)
-        this.datos.presupuestoBaseLicitacionTotal = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + (parseFloat(this.datos.presupuestoBaseLicitacionIVA))).toFixed(2),
-        this.datos.beneficioIndustrial = parseFloat((this.datos.totalCostes * 0.06).toFixed(2)),
-        this.datos.costesGenerales = parseFloat((this.datos.totalCostes * 0.13).toFixed(2)),
-        this.datos.costesDirectos = parseFloat((this.datos.totalCostes - (this.datos.costesGenerales + this.datos.beneficioIndustrial)).toFixed(2))
-        this.datos.totalCostes = this.datos.presupuestoBaseLicitacion;
+        datos.presupuestoBaseLicitacionIVA = (this.datos.presupuestoBaseLicitacion * 0.21).toFixed(2)
+        datos.presupuestoBaseLicitacionTotal = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + (parseFloat(this.datos.presupuestoBaseLicitacionIVA))).toFixed(2),
+        datos.totalCostes = this.datos.presupuestoBaseLicitacion;
+          datos.costesDirectos = parseFloat((parseFloat(this.datos.totalCostes)/1.19).toFixed(2));
+          datos.costesGenerales = parseFloat((this.datos.costesDirectos * 0.13).toFixed(3));
+          datos.beneficioIndustrial = parseFloat((this.datos.costesDirectos * 0.06).toFixed(3));
+          
+        
 
-        if(this.datos.anualidades[0] !== undefined){
+        if(datos.anualidades[0] !== undefined){
           this.calcNoAsign()
         }
-
-      
-      //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
-        this.$emit('datos', datos)
+        datos.totalEstimado = this.calculoEstimado(this.datos.maxModificacionesPrevistas, this.datos.presupuestoBaseLicitacion);
       }
     },
+  },
 
+  beforeDestroy(){
+    this.$emit('datos', this.datos)
+  },
+
+  created(){
+    this.initialize();
   },
   
   methods: {
+    initialize(){
+      if(this.datosGuardados !== undefined){
+        this.datos = this.datosGuardados
+      }
+    },
+
+    colorAnualidades(){
+      if(this.anualidadesGuardadas === false){
+        return "success"
+      } else {
+        return "gray"
+      }
+    },
+
+    calculoEstimado(modificaciones, base){
+      if (modificaciones === undefined){
+        return base;
+      } else {
+        return parseFloat((parseFloat(modificaciones) + parseFloat(base)).toFixed(2));
+      }
+    },
+
+    storeDatosAnualidades(){
+      for (this.index in this.datos.anualidades){
+        this.datos.anualidades[this.index].importeSinIVA = parseFloat(this.datos.anualidades[this.index].importeSinIVA);
+        this.datos.anualidades[this.index].IVA = parseFloat((this.datos.anualidades[this.index].importeSinIVA * 0.21).toFixed(2));
+        this.datos.anualidades[this.index].importeConIVA = parseFloat((parseFloat(this.datos.anualidades[this.index].importeSinIVA) + this.datos.anualidades[this.index].IVA).toFixed(2));
+      }
+      this.anualidadesGuardadas = true;
+      this.$emit("datos", this.datos)
+    },
+
     calcNoAsign(){
       this.presupuestoSinAsignar = 0;
       for(this.index in this.datos.anualidades){
@@ -378,14 +556,10 @@ export default {
       }
     },
 
-    validarAnualidades(){
-      return true
-    },
-
     makeAnualidades() {
       this.datos.anualidades = [];
+      this.anualidadesGuardadas = false;
 
-      this.alertValidar = false;
       let fecha = new Date();
       let ano = fecha.getFullYear();
 
@@ -405,6 +579,8 @@ export default {
 
     deleteAnualidades() {
       this.datos.anualidades = [];
+      this.presupuestoSinAsignar = undefined;
+      this.anualidadesGuardadas = false;
     },
 
     returnIVA(base) {
@@ -454,13 +630,21 @@ export default {
   margin: 0rem;
 }
 
-.anualidades {
-  border: 1px solid lightgray;
-  border-radius: 4px;
-  padding: 1rem 0rem 1rem 0rem;
+.rowGroup {
+    margin-top: 0.1rem;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    padding: 1rem 0rem 1rem 0rem;
 }
 
 .caption {
   margin: 0.5rem;
+}
+
+.rowGroup {
+    margin-top: 0.1rem;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    padding: 1rem 0rem 1rem 0rem;
 }
 </style>

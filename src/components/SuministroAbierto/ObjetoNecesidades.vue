@@ -92,6 +92,7 @@ import CPVTable from "@/components/common/CPVTable"
 export default {
 name: "ObjetoNecesidades",
 components: {CPVTable},
+props:['datosGuardados'],
 
   data() {
     return {
@@ -139,18 +140,21 @@ components: {CPVTable},
     };
   },
 
-  watch:{
-    datos: {
-      deep: true,
-      handler(datos){
-      //DEFINIR CONDICIONES PARA QUE NO SE EMITAN DATOS INCOMPLETOS
-        this.$emit('datos', datos)
-      }
-    },
+  created(){
+    this.initialize();
   },
 
+  beforeDestroy(){
+    this.$emit('datos', this.datos)
+  },
 
   methods: {
+    initialize(){
+      if(this.datosGuardados !== undefined){
+        this.datos = this.datosGuardados
+      }
+    },
+
     deleteCPVCodes(){
       this.datos.clasifCPV= '';
     },

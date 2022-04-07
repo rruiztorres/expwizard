@@ -20,8 +20,8 @@
     </v-navigation-drawer>    
     <v-main class="grey lighten-2 mainApp">
       <v-container v-if="selector === false">
-        <Assistant @back="verSeleccion">
-        </Assistant>
+        <SuministroAbierto @back="verSeleccion">
+        </SuministroAbierto>
       </v-container>
       
       <v-container v-else>
@@ -44,11 +44,11 @@
 </template>
 
 <script>
-import Assistant from "@/components/Assistant"
+import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto"
 import Selector from '../components/Selector.vue'
 
   export default {
-    components: {Assistant, Selector},
+    components: {SuministroAbierto, Selector},
 
     data () {
         return {
