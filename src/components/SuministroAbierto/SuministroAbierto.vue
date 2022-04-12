@@ -42,12 +42,13 @@
                         <v-tab @click="activateTab(1)">Objeto y necesidades</v-tab>
                         <v-tab @click="activateTab(2)">Presupuesto, lotes e incompatibilidades</v-tab>
                         <v-tab @click="activateTab(3)">Capacidad y solvencia</v-tab>
-                        <v-tab @click="activateTab(4)">Garantías y Adjudicación</v-tab>
-                        <v-tab @click="activateTab(5)">Puntuación y Ofertas anormales</v-tab>
-                        <v-tab @click="activateTab(6)">Plazos y Responsable</v-tab>
-                        <v-tab @click="activateTab(7)">Pagos, Rev. precios y Abonos a cuenta</v-tab>
-                        <v-tab @click="activateTab(8)">Ejecución y otros</v-tab>
-                        <v-tab @click="activateTab(9)">Finalizar</v-tab>
+                        <v-tab @click="activateTab(4)">Garantías y criterios adjudicación</v-tab>
+                        <v-tab @click="activateTab(5)">Plazos y Responsable</v-tab>
+                        <v-tab @click="activateTab(6)">Pagos, Rev. precios y Abonos a cuenta</v-tab>
+                        <v-tab @click="activateTab(7)">Ejecución y otros</v-tab>
+                        <v-tab @click="activateTab(8)">Modificaciones y penalidades</v-tab>
+                        <v-tab @click="activateTab(9)">Cesión, subcontratación, otros</v-tab>
+                        <v-tab @click="activateTab(10)">Finalizar</v-tab>
 
 
                     <!--OBJETO Y NECESIDADES-->
@@ -89,41 +90,57 @@
                         ></Garantias>
                     </v-tab-item>
 
-                     <!--PUNTUACION Y OFERTAS ANORMALES-->
-                    <v-tab-item class="tabContent">
-                        <PuntuacionOfertasAnormales
-                            v-if="activeTab == 5"
-                            @datos="getData"
-                        ></PuntuacionOfertasAnormales>
-                    </v-tab-item>
-
                     <!--PLAZOS Y RESPONSABLE-->
                     <v-tab-item class="tabContent">
                         <PlazosResponsable
-                            v-if="activeTab == 6"
+                            v-if="activeTab == 5"
                             @datos="getData"
+                            :datosGuardados="datosPlazoResponsable"
                         ></PlazosResponsable>
                     </v-tab-item>
 
                     <!--REGIMEN PAGOS REVISION PRECIOS-->
                     <v-tab-item class="tabContent">
                         <RegimenPagosRevision
-                            v-if="activeTab == 7"
+                            v-if="activeTab == 6"
                             @datos="getData"
+                            :datosGuardados="datosRegimenPagosRevision"
                         ></RegimenPagosRevision>
                     </v-tab-item>
 
                     <!--EJECUCION Y OTROS-->
                     <v-tab-item class="tabContent">
                         <EjecucionYotros
-                            v-if="activeTab == 8"
+                            v-if="activeTab == 7"
                             @datos="getData"
+                            :datosGuardados="datosEjecucionYotros"
                         ></EjecucionYotros>
                     </v-tab-item>
 
+                    <!--MODIFICACIONES Y PENALIDADES-->
+                    <v-tab-item class="tabContent">
+                        <ModificacionesPenalidades
+                         v-if="activeTab == 8"
+                         @datos="getData"
+                         :datosGuardados="datosModificacionesPenalidades"
+                         :presBase="datosPresupuestoAnualidades"
+                        ></ModificacionesPenalidades>
+                    </v-tab-item>
+
+                    <!--CESION SUBCONTRATACION OTROS -->
+                    <v-tab-item class="tabContent">
+                        <CesionSubcontrataOtros
+                            @datos="getData"
+                            :datosGuardados="datosCesionSubcontrataOtros"
+                        ></CesionSubcontrataOtros>
+                    </v-tab-item>
+
+
+
+
                     <!--FINALIZAR-->
                     <v-tab-item class="tabContent">
-
+                        <h1>Componente</h1>
                     </v-tab-item>
 
 
@@ -139,10 +156,11 @@ import ObjetoNecesidades from "@/components/SuministroAbierto/ObjetoNecesidades"
 import PresupuestoAnualidades from "@/components/SuministroAbierto/PresupuestoAnualidades";
 import CapacidadSolvencia from "@/components/SuministroAbierto/CapacidadSolvencia";
 import Garantias from "@/components/SuministroAbierto/Garantias";
-import PuntuacionOfertasAnormales from "@/components/SuministroAbierto/PuntuacionOfertasAnormales";
 import PlazosResponsable from "@/components/SuministroAbierto/PlazosResponsable";
 import RegimenPagosRevision from "@/components/SuministroAbierto/RegimenPagosRevision";
 import EjecucionYotros from "@/components/SuministroAbierto/EjecucionYotros";
+import ModificacionesPenalidades from "@/components/SuministroAbierto/ModificacionesPenalidades";
+import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcontrataOtros";
 
 import {renderDoc} from "@/assets/mixins/renderDoc";
 
@@ -155,10 +173,11 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             PresupuestoAnualidades, 
             CapacidadSolvencia, 
             Garantias,
-            PuntuacionOfertasAnormales,
             PlazosResponsable,
             RegimenPagosRevision,
             EjecucionYotros,
+            ModificacionesPenalidades,
+            CesionSubcontrataOtros,
         },
 
         mixins: [renderDoc],
@@ -171,10 +190,11 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 datosPresupuestoAnualidades: undefined,
                 datosCapacidadSolvencia: undefined,
                 datosGarantias: undefined,
-                datosPuntuacionOfertasAnormales: undefined,
                 datosPlazoResponsable: undefined,
                 datosRegimenPagosRevision: undefined,
                 datosEjecucionYotros: undefined,
+                datosModificacionesPenalidades: undefined,
+                datosCesionSubcontrataOtros: undefined,
             }
         },
 
@@ -196,11 +216,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 datosGarantias(){
                     console.log("datosGarantias", this.datosGarantias)
                 },
-                
-                datosPuntuacionOfertasAnormales(){
-                    console.log("datosPuntuacionOfertasAnormales", this.datosPuntuacionOfertasAnormales)
-                },
-                
+                                
                 datosPlazoResponsable(){
                     console.log("datosPlazoResponsable", this.datosPlazoResponsable)
                 },
@@ -229,10 +245,11 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 else if (data.componente === 'PresupuestoAnualidades'){this.datosPresupuestoAnualidades = Object.assign(data)}
                 else if (data.componente === 'CapacidadSolvencia'){this.datosCapacidadSolvencia = Object.assign(data)}
                 else if (data.componente === 'Garantias'){this.datosGarantias = Object.assign(data)}
-                else if (data.componente === 'PuntuacionOfertasAnormales'){this.datosPuntuacionOfertasAnormales = Object.assign(data)}
                 else if (data.componente === 'PlazoResponsable'){this.datosPlazoResponsable = Object.assign(data)}
                 else if (data.componente === 'RegimenPagosRevision'){this.datosRegimenPagosRevision = Object.assign(data)}
                 else if (data.componente === 'EjecucionYotros'){this.datosEjecucionYotros = Object.assign(data)}
+                else if (data.componente === 'ModificacionesPenalidades'){this.datosModificacionesPenalidades = Object.assign(data)}
+                else if (data.componente === 'CesionSubcontrataOtros'){this.datosCesionSubcontrataOtros = Object.assign(data)}
             },
 
             execute(){
@@ -241,10 +258,11 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                     this.datosPresupuestoAnualidades,
                     this.datosCapacidadSolvencia,
                     this.datosGarantias,
-                    this.datosPuntuacionOfertasAnormales,
                     this.datosPlazoResponsable,
                     this.datosRegimenPagosRevision,
                     this.datosEjecucionYotros,
+                    this.datosModificacionesPenalidades,
+                    this.datosCesionSubcontrataOtros,
                 ];
                 console.log(this.data)
                 //this.renderDoc(this.data);

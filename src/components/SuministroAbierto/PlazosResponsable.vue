@@ -1,9 +1,9 @@
 <template>
     <div>
+        <!-- 16.- PLAZO PARA LA ADJUDICACION -->
         <h3>16.- Plazo para la adjudicación</h3>
-        <br/>
         <v-row class="rowGroup">
-            <v-col cols="12" md="4">
+            <v-col cols="12" md="3">
                 <h5 class="subtitle">Se adjudicará el contrato dentro del plazo:</h5>
                 <v-radio-group v-model="datos.plazoAdjudicacion">
                     <v-radio label="General de 2 meses" value="general"></v-radio>
@@ -11,15 +11,17 @@
                 </v-radio-group>
             </v-col>
             <v-col cols="12" md="4" v-if="datos.plazoAdjudicacion === 'otro'">
-                <h5 class="subtitle">Si es otro, especificar:</h5>
+                <h5 class="subtitle">Si es otro plazo, especificar:</h5>
+                <br/>
                 <v-text-field filled label="plazo" v-model="datos.plazoAdjudicacionJustificar"></v-text-field>
             </v-col>
         </v-row>
         <br/>
 
+
+        <!-- 17.- RESPONSABLE DEL CONTRATO -->
         <h3>17.- Responsable del contrato</h3>
-        <br/>
-        <v-row>
+        <v-row class="rowGroup">
             <v-col cols="12" md="4">
                 <v-text-field filled label="Nombre y apellidos"></v-text-field>
             </v-col>
@@ -33,28 +35,20 @@
         </v-row>
         <br/>
 
+        <!-- 18.- PLAZO DE EJECUCIÓN O DURACION -->
         <h3>18.- Plazo de ejecución o duración</h3>
-        <br/>
         <v-row class="rowGroup">
-            <v-col cols="12" md="4">
-                <h5 class="subtitle">Este contrato de suministro se define como:</h5>
+            <v-col cols="12" md="3">
+                <h5 class="subtitle">Se define como:</h5>
                 <v-radio-group v-model="datos.definicion">
                     <v-radio label="Un contrato con plazo de ejecución" value="plazoEjecucion"></v-radio>
                     <v-radio label="Un contrato con plazo de duración" value="plazoDuracion"></v-radio>
                 </v-radio-group>
             </v-col>
-
-            <!--PLAZO DE EJECUCION-->
-            <v-col cols="12" md="4" v-if="datos.definicion === 'plazoEjecucion'">
-                <h5 class="subtitle">Definir tipo:</h5>
-                <v-radio-group v-model="datos.plazoEjecucion">
-                    <v-radio label="Plazo máximo de ejecución" value="plazoMaximoEjecucion"></v-radio>
-                    <v-radio label="Plazos parciales" value="plazosParciales"></v-radio>
-                </v-radio-group>
-            </v-col>
-                
-                <v-col cols="12" md="4" v-if="datos.definicion === 'plazoEjecucion' && datos.plazoEjecucion ==='plazoMaximoEjecucion'">
-                    <h5 class="subtitle">Introducir plazo máximo:</h5>
+              
+                <v-col cols="12" md="3" v-if="datos.definicion === 'plazoEjecucion'">
+                    <h5 class="subtitle">Introducir plazo máximo ejecución:</h5>
+                    <br/>
                     <v-text-field filled label="Meses" v-model="datos.plazoMaximoEjecucion"></v-text-field>
                 </v-col>
 
@@ -64,25 +58,47 @@
                 </v-col>
             
             <!--PLAZOS DE DURACION-->
-            <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion'">
-                <h5 class="subtitle">Definir plazo:</h5>
-                <v-text-field filled label="Meses" v-model="datos.plazoDuracion"></v-text-field>
-            </v-col>
-
             <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
-                <h5 class="subtitle">Prorroga:</h5>
-                <v-radio-group v-model="datos.prorroga">
-                    <v-radio label="No se prevee" value="no"></v-radio>
-                    <v-radio label="Si se prevee" value="si"></v-radio>
+                <h5 class="subtitle">Seleccionar modalidad</h5>
+                <v-radio-group v-model="datos.modalidad">
+                    <v-radio label="Plazo en meses" value="plazo"></v-radio>
+                    <v-radio label="Periodo" value="periodo"></v-radio>
                 </v-radio-group>
             </v-col>
 
-                <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.prorroga === 'si'">
+                <!--PLAZOS MESES-->
+                <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'plazo'">
+                    <h5 class="subtitle">Introducir plazo en meses</h5>
+                    <br/>
+                    <v-text-field filled label="Meses" v-model="datos.plazoMeses"></v-text-field>
+                </v-col>
+
+                <!--PLAZOS PERIODO-->
+                <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
+                    <h5 class="subtitle">Indique inicio y fin:</h5>
+                    <br/>
+                    <v-text-field filled label="Inicio" v-model="datos.plazoMeses"></v-text-field>
+                    <v-text-field filled label="Fin" v-model="datos.plazoMeses"></v-text-field>
+                </v-col>
+
+                <!-- PRORROGA -->
+                <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
+                    <h5 class="subtitle">Prorroga:</h5>
+                    <v-radio-group v-model="datos.prorroga">
+                        <v-radio label="No se prevee" value="no"></v-radio>
+                        <v-radio label="Si se prevee" value="si"></v-radio>
+                    </v-radio-group>
+                </v-col>
+
+                <!-- PLAZO PRORROGA -->
+                <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion' && datos.prorroga === 'si'">
                     <h5 class="subtitle">Definir plazo prorroga</h5>
+                    <br/>
                     <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
                 </v-col>            
         </v-row>
         <br/>
+
 
         <v-row class="rowGroup">
             <v-col cols="12" md="5">
@@ -93,9 +109,10 @@
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="4" v-if="datos.plazoInicio === 'otro'">
+            <v-col cols="12" md="3" v-if="datos.plazoInicio === 'otro'">
                 <h5 class="subtitle">Si se fija en otro plazo indicar fecha</h5>
-                <v-text-field filled label="fecha"></v-text-field>
+                <br/>
+                <v-text-field filled label="Fecha" v-model="datos.fechaInicio"></v-text-field>
             </v-col>
         </v-row>
     </div>
@@ -105,6 +122,7 @@
 
     export default {
         name: 'PlazosResponsable',
+        props: ['datosGuardados'],
         data(){
             return {
                 subdirecciones: [   
@@ -112,6 +130,7 @@
                     'Cartografía y Observación del territorio',
                     'Secretaria General',
                 ],
+                modalidades: ['Plazo', 'Periodo'],
 
                 datos:{
                     componente:'PlazoResponsable',
@@ -121,11 +140,12 @@
                     definicion: '',
                     plazoEjecucion: '',
                     plazoMaximoEjecucion: '',
-                    plazosParciales: '',
-                    plazoDuracion: '',
-                    prorroga: '',
+                    modalidad: 'plazo',
+                    plazoMeses: '',
+                    prorroga: 'no',
                     prorrogaMeses: '',
                     plazoInicio: '',
+                    fechaInicio: '',
                 }
             }
         },
@@ -133,6 +153,18 @@
         beforeDestroy(){
             this.$emit('datos', this.datos)
         },
+
+        created(){
+            this.initialize();
+        },
+
+        methods:{
+            initialize(){
+                if(this.datosGuardados !== undefined){
+                    this.datos = this.datosGuardados
+                }
+            },
+        }
     }
 </script>
 

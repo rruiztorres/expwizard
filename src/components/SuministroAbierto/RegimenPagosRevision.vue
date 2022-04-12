@@ -13,10 +13,11 @@
                 </v-radio-group>
             </v-col>
         </v-row>
-        <br/>
+        <br/><br/>
+
         <v-row class="rowGroup">
-            <v-col cols="12" md="2">
-                <h5 class="subtitle">La periodicidad sera:</h5>
+            <v-col cols="12" md="3">
+                <h5 class="subtitle">La periodicidad de los pagos sera:</h5>
                  <v-radio-group v-model="datos.periodicidad">
                     <v-radio label="Mensual" value="mensual"></v-radio>
                     <v-radio label="Otra" value="otra"></v-radio>
@@ -24,28 +25,111 @@
             </v-col>
 
             <v-col cols="12" md="2" v-if="datos.periodicidad === 'otra'">
-                <h5 class="subtitle bSpacer">Seleccionar periodos</h5>
+                <h5 class="subtitle bSpacer">Seleccionar nº pagos</h5>
                 <v-select
-                filled
-                    label="periodos"
+                    filled
+                    label="Nº Pagos"
                     :items="periodicidades"
                     v-model="selectPeriodicidad"
                 >
                 </v-select>
             </v-col>
 
-            <v-col cols="12" md="8" v-if="datos.periodicidad === 'otra'">
-                <h5 class="subtitle bSpacer">Especificar:</h5>
+            <v-col cols="12" v-if="datos.periodicidad === 'otra'">
+                <h5 class="subtitle bSpacer">Especificar pagos:</h5>
                 <v-data-table
                     class="dataTable"
                     hide-default-footer  
                     :headers="periodicidadHeaders"
                     :items="datos.otraPeriodicidad"
-                ></v-data-table>
+                >
+                    <!--EDITAR AÑO-->
+                    <template v-slot:[`item.year`]="props">
+                        <v-edit-dialog :return-value.sync="props.item.year" class="yearBox">
+                        <div class="editField">{{props.item.year}}</div>
+                            <template v-slot:input>
+                                <v-text-field
+                                v-model="props.item.year"
+                                label="Editar año"
+                                single-line
+                                ></v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+
+                    <!--EDITAR CONCEPTO-->
+                    <template v-slot:[`item.concepto`]="props">
+                        <v-edit-dialog :return-value.sync="props.item.concepto" class="conceptoBox">
+                        <div class="editField">{{props.item.concepto}}</div>
+                            <template v-slot:input>
+                                <v-text-field
+                                v-model="props.item.concepto"
+                                label="Editar concepto"
+                                single-line
+                                ></v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+
+                    <!--EDITAR OBSERVACIONES-->
+                    <template v-slot:[`item.observaciones`]="props">
+                        <v-edit-dialog :return-value.sync="props.item.observaciones" class="observacionesBox">
+                        <div class="editField">{{props.item.observaciones}}</div>
+                            <template v-slot:input>
+                                <v-text-field
+                                v-model="props.item.observaciones"
+                                label="Editar observaciones"
+                                single-line
+                                ></v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+
+                    <!--EDITAR PRECIO SIN IVA-->
+                    <template v-slot:[`item.importeSIVA`]="props">
+                        <v-edit-dialog :return-value.sync="props.item.importeSIVA" class="noIVABox">
+                        <div class="editField">{{props.item.importeSIVA}}</div>
+                            <template v-slot:input>
+                                <v-text-field
+                                v-model="props.item.importeSIVA"
+                                label="Editar importe sin IVA"
+                                single-line
+                                ></v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                    </template>
+
+                    <!--CALCULO AUTOMATICO IVA-->
+                    <template v-slot:[`item.IVA`]="props">
+                        <v-edit-dialog :return-value.sync="props.item.IVA" class="IVABox">
+                        <div>{{returnIVAcalc(props.item.importeSIVA)}}</div>
+                        </v-edit-dialog>
+                    </template>
+
+                    <!--CALCULO AUTOMATICO TOTAL-->
+                    <template v-slot:[`item.total`]="props">
+                        <v-edit-dialog :return-value.sync="props.item.total" class="totalBox">
+                        <div>{{returnTotal(props.item.importeSIVA)}}</div>
+                        </v-edit-dialog>
+                    </template>
+
+                    <!--ACTIONS-->
+                    <template v-slot:[`item.actions`]="{ item }">
+                        <v-btn 
+                        small icon
+                        :disabled="activeDelete"
+                        @click="deletePeriodo(item)"
+                        >
+                        <v-icon color="red">mdi-delete</v-icon>
+                        </v-btn>
+                    </template>
+
+                </v-data-table>
             </v-col>
         </v-row>
-        <br/>
+        <br/><br/>
 
+        <!-- 20.- REVISIÓN DE PRECIOS -->
         <h3 class="bSpacer">20.- Revisión de precios</h3>
         <v-row class="rowGroup">
             <v-col cols="12" md="2">
@@ -74,10 +158,10 @@
 
         <h3 class="bSpacer">21.- Abonos a cuenta [art. 198.2 LCSP]</h3>
         <v-row class="rowGroup">
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="8">
                 <v-radio-group v-model="datos.abonosAcuenta">
                     <v-radio label="No proceden" value="no"></v-radio>
-                    <v-radio label="Si proceden, en las condiciones previstas en el punto 19" value="si"></v-radio>
+                    <v-radio label="Si proceden, en las condiciones previstas en el punto 19 de este pliego." value="si"></v-radio>
                 </v-radio-group>
             </v-col>
         </v-row>
@@ -88,21 +172,25 @@
 <script> 
     export default {
         name: 'RegimenPagosRevision',
+        props: ['datosGuardados'],
 
         watch:{
             selectPeriodicidad(){
                 this.datos.otraPeriodicidad = [];
-
+                this.activeDelete = false;
                 this.newDate = new Date();
                 this.newYear = this.newDate.getFullYear();
 
                 for(let i=0; i<this.selectPeriodicidad; i++){
                         this.nuevoPeriodo = {
+                        id: i,
                         year: this.newYear + i,
-                        concepto: '',
-                        importeSIVA: '',
+                        concepto: '...',
+                        observaciones: '...',
+                        importeSIVA: 0,
                         IVA: '',
                         total: '',
+                        
                     }
                     this.datos.otraPeriodicidad.push(this.nuevoPeriodo)
                 }
@@ -113,26 +201,67 @@
             this.$emit('datos', this.datos)
         },
 
+        created(){
+            this.initialize();
+        },
+
+        methods: {
+            initialize(){
+                if(this.datosGuardados !== undefined){
+                    this.datos = this.datosGuardados
+                }
+            },
+
+            returnIVAcalc(base){
+                if (base !== 0){
+                    this.base = (parseFloat(base)).toFixed(2)
+                    return (this.base * 0.21).toFixed(2);
+                }
+            },
+
+            returnTotal(base){
+                if (base !== 0){
+                    this.base = (parseFloat(base)).toFixed(2)
+                    return (this.base * 1.21).toFixed(2);
+                }
+            },
+
+            deletePeriodo(item){
+                if(this.datos.otraPeriodicidad.length > 1){
+                        for(this.index in this.datos.otraPeriodicidad){
+                        if(item.id === this.datos.otraPeriodicidad[this.index].id){
+                            this.datos.otraPeriodicidad.splice(this.index,1)
+                        }
+                    }
+                } else {
+                    this.activeDelete = true;
+                }
+            }
+        },
+
         data(){
             return {
                 periodicidadHeaders: [
-                    {text: 'Año', sortable: true, value: 'year'},
-                    {text: 'Concepto', sortable: true, value: 'concepto'},
-                    {text: 'Importe sin IVA (€)', sortable: true, value: 'importeSIVA'},
-                    {text: 'IVA (€)', sortable: true, value: 'IVA'},
-                    {text: 'Importe con IVA (€)', sortable: true, value: 'total'},
-                    {text: 'Datos', sortable: false, value: 'actions'}
+                    {text: 'Año', sortable: false, value: 'year'},
+                    {text: 'Concepto', sortable: false, value: 'concepto'},
+                    {text: 'Observaciones', sortable: false, value: 'observaciones'},
+                    {text: 'Importe sin IVA (€)', sortable: false, value: 'importeSIVA'},
+                    {text: 'IVA (€)', sortable: false, value: 'IVA'},
+                    {text: 'Importe con IVA (€)', sortable: false, value: 'total'},  
+                    {text: 'Borrar', sortable: false, value: 'actions'},  
                 ],
 
                 periodicidades: [1,2,3,4,5],
                 selectPeriodicidad: 0,
 
+                activeDelete: false,
+
                 datos: {
                     componente:'RegimenPagosRevision',
                     formaPago: '',
-                    periodicidad: '',
+                    periodicidad: 'otra',
                     otraPeriodicidad: [],
-                    revision: '',
+                    revision: 'no',
                     revisionJustificacion: '',
                     revisionTipo: '',
                     revisionFormula: '',
@@ -142,3 +271,26 @@
         },
     }
 </script>
+
+<style scoped>
+    .editField {
+        color: blue;
+        text-decoration: underline;
+    }
+
+    .yearBox {
+        width: 15%;
+    }
+
+    .conceptoBox {
+        width: 40%;
+    }
+
+    .observacionesBox{
+        width: 30%;
+    }
+
+    .noIVABox, .IVABox, .totalBox {
+        width: 5%;
+    }
+</style>
