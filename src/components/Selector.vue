@@ -6,11 +6,27 @@
         <br/>
         <v-row class="row">
             <v-col cols="12" sm="6" md="4" lg="2">
-                <v-card class="selection" @click="selectTipo()" elevation="0">
+                <v-card color="green" dark class="selection" @click="selectTipo()" elevation="0">
                     <v-card-title>PCAP</v-card-title>
-                    <div class="imgContainer">
-                        <img src="@/assets/word_logo.png">
-                    </div>
+                    <v-card-text>
+                        <v-icon class="iconSel">mdi-note-text-outline</v-icon>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4" lg="2">
+                <v-card color="red" dark class="selection" elevation="0">
+                    <v-card-title>SERVICIOS</v-card-title>
+                    <v-card-text>
+                        <v-icon class="iconSel">mdi-note-text-outline</v-icon>
+                    </v-card-text>
+                </v-card>
+            </v-col> 
+            <v-col cols="12" sm="6" md="4" lg="2">
+                <v-card color="blue" dark class="selection" elevation="0">
+                    <v-card-title>OTROS</v-card-title>
+                    <v-card-text>
+                        <v-icon class="iconSel">mdi-note-text-outline</v-icon>
+                    </v-card-text>
                 </v-card>
             </v-col>    
         </v-row>
@@ -40,13 +56,7 @@
 h1, h2, h3, h4 {
     font-weight: 400;
 }
-.imgContainer{
-    padding: 1rem;
-}
 
-.imgContainer>img {
-    width: 100%;
-}
 
 .selection{
     opacity: 0.7;
@@ -59,5 +69,9 @@ h1, h2, h3, h4 {
 .row{
     width: 80vw;
     margin: 0 auto;
+}
+
+.iconSel {
+    font-size: 8rem !important;
 }
 </style>

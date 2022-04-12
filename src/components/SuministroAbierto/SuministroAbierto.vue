@@ -17,9 +17,11 @@
                                     <v-icon class="iconBack">mdi-download</v-icon>
                                     PROBAR
                                 </v-btn>
-                                <v-btn color="info" class="headButton">
-                                    <v-icon class="iconBack">mdi-content-save</v-icon>
-                                    GUARDAR
+                                <v-btn 
+                                @click="goToEnd(9)"
+                                color="info" class="headButton">
+                                    <v-icon class="iconBack">mdi-check-all</v-icon>
+                                    FINALIZAR
                                 </v-btn>
                         </v-card-actions>
                     </v-col>
@@ -36,8 +38,10 @@
                         fixed-tabs
                         center-active
                         centered
+                        v-model="tab"
+                        @change="goToEnd(tab)"
                     >
-                    <v-tabs-slider color="yellow"></v-tabs-slider>
+                        <v-tabs-slider color="yellow"> </v-tabs-slider>
                     
                         <v-tab @click="activateTab(1)">Objeto y necesidades</v-tab>
                         <v-tab @click="activateTab(2)">Presupuesto, lotes e incompatibilidades</v-tab>
@@ -51,99 +55,99 @@
                         <v-tab @click="activateTab(10)">Finalizar</v-tab>
 
 
-                    <!--OBJETO Y NECESIDADES-->
-                    <v-tab-item class="tabContent">
-                        <ObjetoNecesidades
-                            v-if="activeTab == 1"
-                            @datos="getData"
-                            :datosGuardados="datosObjetoNecesidades"
-                        ></ObjetoNecesidades>
-                    </v-tab-item>
+                        <!--OBJETO Y NECESIDADES-->
+                        <v-tab-item class="tabContent">
+                            <ObjetoNecesidades
+                                v-if="activeTab == 1"
+                                @datos="getData"
+                                :datosGuardados="datosObjetoNecesidades"
+                            ></ObjetoNecesidades>
+                        </v-tab-item>
 
-                    <!--PRESUPUESTO Y ANUALIDADES-->
-                    <v-tab-item class="tabContent">
-                        <PresupuestoAnualidades
-                            v-if="activeTab == 2"
-                            @datos="getData"
-                            :datosGuardados="datosPresupuestoAnualidades"
-                        ></PresupuestoAnualidades>
-                    </v-tab-item>
+                        <!--PRESUPUESTO Y ANUALIDADES-->
+                        <v-tab-item class="tabContent">
+                            <PresupuestoAnualidades
+                                v-if="activeTab == 2"
+                                @datos="getData"
+                                :datosGuardados="datosPresupuestoAnualidades"
+                            ></PresupuestoAnualidades>
+                        </v-tab-item>
 
-                    <!--CAPACIDAD Y SOLVENCIA-->
-                    <v-tab-item class="tabContent">
-                        <CapacidadSolvencia
-                            v-if="activeTab == 3"
+                        <!--CAPACIDAD Y SOLVENCIA-->
+                        <v-tab-item class="tabContent">
+                            <CapacidadSolvencia
+                                v-if="activeTab == 3"
+                                @datos="getData"
+                                :datosGuardados="datosCapacidadSolvencia"
+                                :presBase="datosPresupuestoAnualidades"
+                                :objetoNecesidades="datosObjetoNecesidades"
+                            ></CapacidadSolvencia>
+                        </v-tab-item>
+
+                        <!--GARANTIAS-->
+                        <v-tab-item class="tabContent">
+                            <Garantias
+                                v-if="activeTab == 4"
+                                @datos="getData"
+                                :datosGuardados="datosGarantias"
+                                :presBase="datosPresupuestoAnualidades"
+                            ></Garantias>
+                        </v-tab-item>
+
+                        <!--PLAZOS Y RESPONSABLE-->
+                        <v-tab-item class="tabContent">
+                            <PlazosResponsable
+                                v-if="activeTab == 5"
+                                @datos="getData"
+                                :datosGuardados="datosPlazoResponsable"
+                            ></PlazosResponsable>
+                        </v-tab-item>
+
+                        <!--REGIMEN PAGOS REVISION PRECIOS-->
+                        <v-tab-item class="tabContent">
+                            <RegimenPagosRevision
+                                v-if="activeTab == 6"
+                                @datos="getData"
+                                :datosGuardados="datosRegimenPagosRevision"
+                            ></RegimenPagosRevision>
+                        </v-tab-item>
+
+                        <!--EJECUCION Y OTROS-->
+                        <v-tab-item class="tabContent">
+                            <EjecucionYotros
+                                v-if="activeTab == 7"
+                                @datos="getData"
+                                :datosGuardados="datosEjecucionYotros"
+                            ></EjecucionYotros>
+                        </v-tab-item>
+
+                        <!--MODIFICACIONES Y PENALIDADES-->
+                        <v-tab-item class="tabContent">
+                            <ModificacionesPenalidades
+                            v-if="activeTab == 8"
                             @datos="getData"
-                            :datosGuardados="datosCapacidadSolvencia"
+                            :datosGuardados="datosModificacionesPenalidades"
                             :presBase="datosPresupuestoAnualidades"
-                            :objetoNecesidades="datosObjetoNecesidades"
-                        ></CapacidadSolvencia>
-                    </v-tab-item>
+                            ></ModificacionesPenalidades>
+                        </v-tab-item>
 
-                    <!--GARANTIAS-->
-                    <v-tab-item class="tabContent">
-                        <Garantias
-                            v-if="activeTab == 4"
-                            @datos="getData"
-                            :datosGuardados="datosGarantias"
-                            :presBase="datosPresupuestoAnualidades"
-                        ></Garantias>
-                    </v-tab-item>
+                        <!--CESION SUBCONTRATACION OTROS -->
+                        <v-tab-item class="tabContent">
+                            <CesionSubcontrataOtros
+                                v-if="activeTab == 9"
+                                @datos="getData"
+                                :datosGuardados="datosCesionSubcontrataOtros"
+                            ></CesionSubcontrataOtros>
+                        </v-tab-item>
 
-                    <!--PLAZOS Y RESPONSABLE-->
-                    <v-tab-item class="tabContent">
-                        <PlazosResponsable
-                            v-if="activeTab == 5"
-                            @datos="getData"
-                            :datosGuardados="datosPlazoResponsable"
-                        ></PlazosResponsable>
-                    </v-tab-item>
-
-                    <!--REGIMEN PAGOS REVISION PRECIOS-->
-                    <v-tab-item class="tabContent">
-                        <RegimenPagosRevision
-                            v-if="activeTab == 6"
-                            @datos="getData"
-                            :datosGuardados="datosRegimenPagosRevision"
-                        ></RegimenPagosRevision>
-                    </v-tab-item>
-
-                    <!--EJECUCION Y OTROS-->
-                    <v-tab-item class="tabContent">
-                        <EjecucionYotros
-                            v-if="activeTab == 7"
-                            @datos="getData"
-                            :datosGuardados="datosEjecucionYotros"
-                        ></EjecucionYotros>
-                    </v-tab-item>
-
-                    <!--MODIFICACIONES Y PENALIDADES-->
-                    <v-tab-item class="tabContent">
-                        <ModificacionesPenalidades
-                         v-if="activeTab == 8"
-                         @datos="getData"
-                         :datosGuardados="datosModificacionesPenalidades"
-                         :presBase="datosPresupuestoAnualidades"
-                        ></ModificacionesPenalidades>
-                    </v-tab-item>
-
-                    <!--CESION SUBCONTRATACION OTROS -->
-                    <v-tab-item class="tabContent">
-                        <CesionSubcontrataOtros
-                            @datos="getData"
-                            :datosGuardados="datosCesionSubcontrataOtros"
-                        ></CesionSubcontrataOtros>
-                    </v-tab-item>
-
-
-
-
-                    <!--FINALIZAR-->
-                    <v-tab-item class="tabContent">
-                        <h1>Componente</h1>
-                    </v-tab-item>
-
-
+                        <!--FINALIZAR-->
+                        <v-tab-item 
+                        class="tabContent">
+                            <Finalizar
+                            v-if="activeTab == 10"
+                            >
+                            </Finalizar>
+                        </v-tab-item>
                     </v-tabs>
                 </v-sheet>
             </v-col>
@@ -161,6 +165,7 @@ import RegimenPagosRevision from "@/components/SuministroAbierto/RegimenPagosRev
 import EjecucionYotros from "@/components/SuministroAbierto/EjecucionYotros";
 import ModificacionesPenalidades from "@/components/SuministroAbierto/ModificacionesPenalidades";
 import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcontrataOtros";
+import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
 import {renderDoc} from "@/assets/mixins/renderDoc";
 
@@ -178,6 +183,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             EjecucionYotros,
             ModificacionesPenalidades,
             CesionSubcontrataOtros,
+            Finalizar,
         },
 
         mixins: [renderDoc],
@@ -185,6 +191,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
         data(){
             return{
                 activeTab: 1,
+                tab: 0,
 
                 datosObjetoNecesidades: undefined,
                 datosPresupuestoAnualidades: undefined,
@@ -199,6 +206,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
         },
 
         watch:{
+                
                 //debug
                 /*
                 datosObjetoNecesidades(){
@@ -232,6 +240,12 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
         },
 
         methods:{
+
+            goToEnd(data){
+                this.tab = data;
+                this.activeTab = data + 1;
+            },
+
             back(){
                 this.$emit("back", true)
             },
@@ -266,7 +280,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 ];
                 console.log(this.data)
                 //this.renderDoc(this.data);
-            }
+            },
         }
     }
 
