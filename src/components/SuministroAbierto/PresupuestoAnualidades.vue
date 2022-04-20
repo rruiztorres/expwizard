@@ -221,16 +221,16 @@
     <h3>4.- Valor Estimado</h3>
     <h5>4.1 Importe del valor estimado del contrato</h5>
     <v-row>
-      <v-col cols="12" md="5">
+      <v-col cols="12" md="4">
         <v-text-field
-          label="Importe máx. por modificaciones previstas sin IVA (€)"
+          label="Importe máx. por modificaciones"
           filled
           type="number"
           v-model="datos.maxModificacionesPrevistas"
         >
         </v-text-field>
       </v-col>
-      <v-col cols="12" md="7">
+      <v-col cols="12" md="8">
         <v-simple-table class="dataTable">
           <caption class="caption"><b>Importe del valor estimado del contrato</b></caption>
           <thead>
@@ -386,13 +386,13 @@
     <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
     <h3>8.- Incompatibilidades para la licitación</h3>
     <v-row class="rowGroup"> 
-      <v-col cols="12" md="4">
-        <i>
-          Participación en la licitación de las empresas que hubieran participado previamente en la 
+      <v-col cols="12">
+        <h5 class="subtitle">
+          8.1.- Participación en la licitación de las empresas que hubieran participado previamente en la 
           elaboración de las especificaciones técnicas o de los documentos preparatorios del contrato
           o hubieran asesorado al órgano de contratación durante la preparación del procedimiento de 
           contratación [artículo 70.1 LCSP]
-        </i>
+        </h5>
       </v-col>
 
       <v-col cols="12" md="4">
@@ -403,7 +403,7 @@
           </v-radio-group>
       </v-col>
 
-      <v-col cols="12" md="4" v-if="datos.participacionEmpresas === 'si tiene'">
+      <v-col cols="12" md="8" v-if="datos.participacionEmpresas === 'si tiene'">
         <h5>Empresas que deben ser excluidas de dicha licitación:</h5>
         <v-textarea filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
       </v-col>
@@ -459,7 +459,7 @@ export default {
         divisionLotes: undefined,
         divisionNoPosible: undefined,
         divisionPosibleDivisible: undefined,
-        justificacionNoDivisionLotes: undefined,
+        justificacionNoDivisionLotes: '',
         identificacionLotes: undefined,
 
         //SECCION 6
@@ -484,9 +484,9 @@ export default {
         datos.presupuestoBaseLicitacionIVA = (this.datos.presupuestoBaseLicitacion * 0.21).toFixed(2)
         datos.presupuestoBaseLicitacionTotal = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + (parseFloat(this.datos.presupuestoBaseLicitacionIVA))).toFixed(2),
         datos.totalCostes = this.datos.presupuestoBaseLicitacion;
-          datos.costesDirectos = parseFloat((parseFloat(this.datos.totalCostes)/1.19).toFixed(2));
-          datos.costesGenerales = parseFloat((this.datos.costesDirectos * 0.13).toFixed(3));
-          datos.beneficioIndustrial = parseFloat((this.datos.costesDirectos * 0.06).toFixed(3));
+          datos.costesDirectos = parseFloat((this.datos.totalCostes / 1.19).toFixed(2));
+          datos.costesGenerales = parseFloat((datos.costesDirectos * 0.12999999).toFixed(2));
+          datos.beneficioIndustrial = parseFloat((datos.costesDirectos * 0.05999999).toFixed(2));
           
         
 
@@ -510,6 +510,7 @@ export default {
     initialize(){
       if(this.datosGuardados !== undefined){
         this.datos = this.datosGuardados
+        console.log(this.datos)
       }
     },
 

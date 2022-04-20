@@ -16,8 +16,9 @@
       fixed
       temporary
     >
-      <!--  -->
-    </v-navigation-drawer>    
+      <UserMenu></UserMenu>
+    </v-navigation-drawer>  
+      
     <v-main class="grey lighten-2 mainApp">
       <v-container v-if="selector === false">
         <SuministroAbierto @back="verSeleccion">
@@ -25,12 +26,6 @@
       </v-container>
       
       <v-container v-else>
-        <v-row class="searchBar">
-          <v-col cols="12">
-            <v-text-field solo rounded placeholder="BUSCAR"></v-text-field>
-          </v-col>
-        </v-row>
-
         <v-row>
           <v-col cols="12">
             <Selector 
@@ -44,11 +39,16 @@
 </template>
 
 <script>
+import UserMenu from "@/components/common/UserMenu"
 import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto"
-import Selector from '../components/Selector.vue'
+import Selector from "@/components/common/Selector"
 
   export default {
-    components: {SuministroAbierto, Selector},
+    components: {
+      UserMenu, 
+      SuministroAbierto, 
+      Selector
+    },
 
     data () {
         return {
@@ -107,19 +107,6 @@ import Selector from '../components/Selector.vue'
     .sheet:hover{
         opacity: 0.7;
         box-shadow: 1px 1px 8px 1px black;
-    }
-
-    .searchBar {
-      margin-top: 1rem;
-      height: 5rem;
-    }
-
-    .searchTitle{
-      height: 100%;
-    }
-
-    .searchTitle > * {
-      margin-top: 0.8rem;
     }
 
 </style>
