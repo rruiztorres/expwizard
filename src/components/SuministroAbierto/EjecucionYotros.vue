@@ -156,7 +156,7 @@
             return {
                 datos: {
                     componente: 'EjecucionYotros',
-                    comprobacionPagos: '',
+                    comprobacionPagos: 'no',
                     condicionesEspeciales: '',
                     exigidosFijo: '',
                     exigidosMedia: '',

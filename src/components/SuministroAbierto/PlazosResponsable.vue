@@ -134,7 +134,7 @@
 
                 datos:{
                     componente:'PlazoResponsable',
-                    plazoAdjudicacion: '',
+                    plazoAdjudicacion: 'general',
                     plazoAdjudicacionJustificar: '',
                     selectSubdireccion: 'Secretaria General',
                     definicion: '',

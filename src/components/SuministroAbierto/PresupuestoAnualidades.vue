@@ -464,13 +464,13 @@ export default {
 
         //SECCION 6
         relacionDocsContractual: undefined,
-        ddocsCaracterContractual: undefined,
+        docsCaracterContractual: "jerarquizada",
 
         //SECCION 7
         tramitacionProc: undefined,
 
         //SECCION 8
-        participacionEmpresas: undefined,
+        participacionEmpresas: "no tiene",
         empresasExcluidas: undefined,
       },
     };

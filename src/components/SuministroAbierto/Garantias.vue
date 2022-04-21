@@ -194,7 +194,7 @@
         <h3>13.- Umbral mínimo en los criterios cualitativos que dependen de un jucio de valor</h3>
         <v-row class="rowGroup">
             <v-col cols="12">
-                <v-radio-group value="umbralJuicioValor">
+                <v-radio-group v-model="datos.umbralJuicioValor">
                     <v-radio label="No se establece umbral mínimo" value="no"></v-radio>
                     <v-radio label="Se establece umbral mínimo del 50% de la puntuación en el conjunto de los criterios cualitativos [artículo 146.3 LCSP]. Los criterios cualitativos que se tendrán en cuenta son los que depende de un juicio de valor (archivo electrónico o sobre nº2)" value="si"></v-radio>
                 </v-radio-group>
@@ -387,16 +387,16 @@
                     { id: 1, criterios: '', extension: '', puntuacion: undefined },
                     { id: 2, criterios: '', extension: '', puntuacion: undefined },
                     ],
-                    umbralJuicioValor: undefined,
+                    umbralJuicioValor: "si",
                     criteriosPuntuacionFormula: [
                     { id: 1, criterios: '', extension: '', puntuacion: undefined },
                     { id: 2, criterios: '', extension: '', puntuacion: undefined },
                     ],
-                    criterio: '',
-                    reduccion: '',
+                    criterio: 'art85',
+                    reduccion: 'no',
                     justificacionReduccion: '',
                     umbralTemeridad: '',
-                    seguimiento: '',
+                    seguimiento: 'limite20%',
                     limiteSeguimiento: '',
                 }
             }

@@ -206,7 +206,7 @@
                     obligacionMediosMateriales: '',
                     obligacionNombresCualificacion: '',
                     especificarObligacion: '',
-                    habilitacionExigible: '',
+                    habilitacionExigible: 'ninguna',
                     especificarHabilitación: '',
                 }
             }
