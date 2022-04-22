@@ -30,7 +30,7 @@
                 <h5 class="subtitle">10.2.- Definitiva [art. 107.1 y 107.3 LCSP]</h5>
                 <v-radio-group v-model="datos.definitiva">
                     <v-radio label="No se exige" value="no"></v-radio>
-                    <v-radio :label="textoDefinitiva" value="si"></v-radio>
+                    <v-radio label="Si se exige" value="si"></v-radio>
                 </v-radio-group>
             </v-col>
 
@@ -48,7 +48,7 @@
                 <h5 class="subtitle">10.3.- Complementaria [art. 107.2 LCSP]</h5>
                 <v-radio-group v-model="datos.complementaria">
                     <v-radio label="No se exige" value="no"></v-radio>
-                    <v-radio :label="textoComplementaria" value="si"></v-radio>
+                    <v-radio label="Si se exige" value="si"></v-radio>
                 </v-radio-group>
             </v-col>
 
@@ -340,8 +340,6 @@
                     importeMax: (value) => this.maxExigido(value) || "El importe máximo exigido no puede ser superior al 3% del presupuesto base de licitación (IVA excluido)",
                 },
 
-                textoDefinitiva: undefined,
-                textoComplementaria: undefined,
                 alertCriteriosCualPretTitle: 'ATENCIÓN',
                 alertCriteriosFormaTitle: 'ATENCIÓN',
                 alertCriteriosCualPre: false,
@@ -470,16 +468,6 @@
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
-                }
-                //Calculo según datos recibidos
-                if(this.presBase !== undefined){
-                    this.datos.importeExigidoDefinitiva = ((parseFloat(this.presBase.presupuestoBaseLicitacion)) * 0.05).toFixed(2);
-                    this.datos.importeExigidoComplementaria = this.datos.importeExigidoDefinitiva
-                    this.textoDefinitiva = `Si se exige, por importe de ${this.datos.importeExigidoDefinitiva} €`;
-                    this.textoComplementaria = `Si se exige, por importe de ${this.datos.importeExigidoComplementaria} €`;
-                } else {
-                    this.textoDefinitiva = "Si se exige (presupuesto base aun no introducido)";
-                    this.textoComplementaria = "Si se exige (presupuesto base aun no introducido)";
                 }
             },
 

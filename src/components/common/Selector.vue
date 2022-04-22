@@ -69,10 +69,7 @@
             },
 
             resBusqueda(componente){
-                console.log("buscando...")
                 this.coincidencia = this.textoBuscar.indexOf(componente);
-                console.log(this.coincidencia, componente)
-                
                 return true
             }
         }

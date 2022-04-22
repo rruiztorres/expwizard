@@ -32,27 +32,25 @@
             <v-col cols="12">
                 <v-sheet elevation="6">
                     <v-tabs
-                        background-color="cyan"
+                        background-color="#00BCD4"
                         dark
                         show-arrows
                         fixed-tabs
-                        center-active
-                        centered
                         v-model="tab"
                         @change="goToEnd(tab)"
                     >
                         <v-tabs-slider color="yellow"> </v-tabs-slider>
                     
-                        <v-tab @click="activateTab(1)">Objeto y necesidades</v-tab>
-                        <v-tab @click="activateTab(2)">Presupuesto, lotes e incompatibilidades</v-tab>
-                        <v-tab @click="activateTab(3)">Capacidad y solvencia</v-tab>
-                        <v-tab @click="activateTab(4)">Garantías y criterios adjudicación</v-tab>
-                        <v-tab @click="activateTab(5)">Plazos y Responsable</v-tab>
-                        <v-tab @click="activateTab(6)">Pagos, Rev. precios y Abonos a cuenta</v-tab>
-                        <v-tab @click="activateTab(7)">Ejecución y otros</v-tab>
-                        <v-tab @click="activateTab(8)">Modificaciones y penalidades</v-tab>
-                        <v-tab @click="activateTab(9)">Cesión, subcontratación, otros</v-tab>
-                        <v-tab @click="activateTab(10)">Finalizar</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(1)">Objeto y necesidades </v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(2)">Presupuesto, lotes e incompatibilidades</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(3)">Capacidad y solvencia</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(4)">Garantías y criterios adjudicación</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(5)">Plazos y Responsable</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(6)">Pagos, Rev. precios y Abonos a cuenta</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(7)">Ejecución y otros</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(8)">Modificaciones y penalidades</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(9)">Cesión, subcontratación, otros</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(10)">Finalizar</v-tab>
 
 
                         <!--OBJETO Y NECESIDADES-->
@@ -208,7 +206,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
         watch:{
                 
                 //debug
-                /*
+                
                 datosObjetoNecesidades(){
                     console.log("datosObjetoNecesidades", this.datosObjetoNecesidades)
                 },
@@ -236,10 +234,18 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 datosEjecucionYotros(){
                     console.log("datosEjecucionYotros", this.datosEjecucionYotros)
                 },
-                */
+                
         },
 
         methods:{
+            
+            compValidation(comp){
+                if(comp === true){
+                    return "validado"
+                } else {
+                    return "noValidado"
+                }
+            },
 
             goToEnd(data){
                 this.tab = data;
@@ -291,6 +297,14 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
     #mainWrapper {
         margin: 0 auto;
         max-width: 80rem;
+    }
+
+    .noValidado{
+        background-color: #00BCD4
+    }
+
+    .validado{
+        background-color: #5eb538
     }
 
     h2, h3{

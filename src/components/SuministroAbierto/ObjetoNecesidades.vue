@@ -1,7 +1,7 @@
 <template>
   <div>
         <!-- 1 OBJETO DEL CONTRATO -->
-        <h3>1.- Objeto del contrato</h3>
+        <h3>Objeto del contrato</h3>
         <v-text-field
         v-model="datos.tituloExpediente"
         :rules="[rules.required, rules.counter]"
@@ -62,7 +62,7 @@
 
 
         <!-- 2 NECESIDADES DEL CONTRATO -->
-        <h3>2.- Necesidades a satisfacer y circunstancias del contrato</h3>
+        <h3>Necesidades a satisfacer y circunstancias del contrato</h3>
         <v-row class="row">
           <v-col cols="12">
               <v-textarea 
