@@ -1,117 +1,5 @@
 <template>
     <div>
-        <!-- 25 MODIFICACIÓN DEL CONTRATO -->
-        <h3>25.- MODIFICACIÓN DEL CONTRATO</h3>
-        <br/>
-        <v-row class="rowGroup">
-            <v-col cols="12" md="4">
-                <h5>25.1 Modificaciones previstas [artículo 204 LCSP]</h5>
-                <h5 class="subtitle">Se prevén:</h5>
-                <v-radio-group v-model="datos.preveModif">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
-                </v-radio-group>
-            </v-col>
-
-            <v-col cols="12" md="8" v-if="datos.preveModif === 'si'">
-                <h5>En caso afirmativo indicar motivo:</h5>
-                <h5 class="subtitle">Descripción precisa de los supuestos en que podrá modificarse el contrato:</h5>
-                <v-radio-group v-model="datos.tipoModif">
-                    <v-radio label='A) Por necesidad de variar el número de unidades previstas en el contrato.' value="numeroUnidades"></v-radio>
-                    <v-radio label='B) Por necesidad de incorporar nuevos apartados en los informes ya previstos en el contrato, debido a la necesidad de incorporar adaptaciones exigidas por normas técnicas aprobadas después de la licitación del contrato.' value="nuevosApartados"></v-radio>
-                    <v-radio label='C) Por necesidad de incorporar ensayos de auscultación como consecuencia de la aparición de nuevas tipologías estructurales o materiales no previstos inicialmente' value="ensayosAuscultacion"></v-radio>
-                </v-radio-group>
-            </v-col>
-
-            <!-- CASO NUMERO UNIDADES -->
-            <v-row class="innerRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'numeroUnidades'">
-                <v-col cols="12" md="3">
-                    <h5 class="subtitle">Indicar importe:</h5>
-                     <v-text-field 
-                    filled label="Importe" v-model="datos.importeNumeroUnidades"
-                    :rules="[rules.max, rules.required, rules.zero]"
-                    >
-                    </v-text-field>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <ul>
-                        <li>Presupuesto base: <b>{{importePresBase}} €</b></li>
-                        <li><i>Máximo permitido: <b>{{importeNumUnid}} €</b>. Porcentaje máximo respecto del 
-                        presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
-                        </i></li>
-                    </ul>
-                    <br/>                                 
-                </v-col>
-                <v-col cols="12" md="5">
-                    <i>
-                        <b>ATENCIÓN:</b>
-                        En este caso será siempre necesario que las nuevas unidades sean iguales a las previamente
-                        definidas en el contrato inicial y que se abonen en el mismo precio unitario.
-                    </i>
-                </v-col>
-            </v-row>
-
-            <!-- CASO INCORPORAR APARTADOS -->
-            <v-row class="innerRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'nuevosApartados'">
-                <v-col cols="12" md="3">
-                    <h5 class="subtitle">Indicar importe:</h5>
-                     <v-text-field 
-                    filled label="Importe" v-model="datos.importeNuevosApartados"
-                    :rules="[rules.max, rules.required, rules.zero]"
-                    >
-                    </v-text-field>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <ul>
-                        <li>Presupuesto base: <b>{{importePresBase}} €</b></li>
-                        <li><i>Máximo permitido: <b>{{importeNumUnid}} €</b>. Porcentaje máximo respecto del 
-                        presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
-                        </i></li>
-                    </ul>
-                    <br/>                                 
-                </v-col>
-                <v-col cols="12" md="5">
-                    <i>
-                        <b>ATENCIÓN:</b> Será necesario que los precios del contrato inicial se hubieran definido descomponiéndose
-                        en sus costes elementales y que los importes de las nuevas prestaciones puedan formarse en su totalidad
-                        con dichos costes elementales. Cuando no se cumpla este requisito la modificación solo podrá tramitarse
-                        al amparo del artículo 205 de la LCSP
-                    </i>
-                </v-col>
-            </v-row>
-
-            <!-- CASO ENSAYO AUSCULTACION -->
-            <v-row class="innerRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'ensayosAuscultacion'">
-                <v-col cols="12" md="3">
-                    <h5 class="subtitle">Indicar importe:</h5>
-                     <v-text-field 
-                    filled label="Importe" v-model="datos.importeEnsayoAuscultacion"
-                    :rules="[rules.max, rules.required, rules.zero]"
-                    >
-                    </v-text-field>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <ul>
-                        <li>Presupuesto base: <b>{{importePresBase}} €</b></li>
-                        <li><i>Máximo permitido: <b>{{importeNumUnid}} €</b>. Porcentaje máximo respecto del 
-                        presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
-                        </i></li>
-                    </ul>
-                    <br/>                                 
-                </v-col>
-                <v-col cols="12" md="5">
-                    <i>
-                        <b>ATENCIÓN:</b> Será necesario que los precios del contrato inicial se hubieran definido descomponiéndose
-                        en sus costes elementales y que los importes de las nuevas prestaciones puedan formarse en su totalidad
-                        con dichos costes elementales. Cuando no se cumpla este requisito la modificación solo podrá tramitarse
-                        al amparo del artículo 205 de la LCSP
-                    </i>
-                </v-col>
-            </v-row>
-        </v-row>
-        <br/><br/>
-
-
         <!-- 26 PENALIDADES -->
         <h3>26.- PENALIDADES</h3>
         <br/>
@@ -225,14 +113,6 @@
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
                 }
-
-                if(this.presBase !== undefined){
-                    this.importePresBase = this.presBase.presupuestoBaseLicitacion;
-                    this.importeNumUnid = parseFloat((parseFloat(this.presBase.presupuestoBaseLicitacion)*0.20).toFixed(2))
-                } else {
-                    this.importeNumUnid = 'Presupuesto base no definido aun';
-                    this.importePresBase = 'Presupuesto base no definido aun';
-                }
             },
         },
 
@@ -241,19 +121,8 @@
                 importeNumUnid: 'Presupuesto Base sin definir aun',
                 importePresBase: undefined,
 
-                rules: {
-                    required: (value) => !!value || "Este campo es obligatorio.",
-                    max: (value) => value <= this.importeNumUnid || "Se supera el máximo permitido (20% presupuesto base)",
-                    zero: (value) => value > 0 || "El importe no puede ser igual a 0",
-                },
-
                 datos: {
                     componente: 'ModificacionesPenalidades',
-                    preveModif: '',
-                    tipoModif: '',
-                    importeNumeroUnidades: undefined,
-                    importeNuevosApartados: undefined,
-                    importeEnsayoAuscultacion: undefined,
                     penConEsp: undefined,
                     penDefectuoso: undefined,
                     penCritAdj: undefined,

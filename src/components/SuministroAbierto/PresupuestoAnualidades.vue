@@ -71,7 +71,8 @@
         <v-row class="subRow">
           <v-col cols="12" md="2">
             <v-text-field 
-            filled type="number" 
+            filled type="number"
+            dense
             v-model="datos.numLotes" 
             :disabled="datos.divisionLotes !== 'posible divisible'"
             >
@@ -80,24 +81,10 @@
 
           <v-col cols="12" md="3">
             <v-btn class="actionButton" color="info" width="100%" @click="createLotes">
-              GENERAR
-              <v-icon class="icon">mdi-animation-outline</v-icon>
+              INTRODUCIR DATOS
+              <v-icon class="icon">mdi-pencil</v-icon>
             </v-btn>
             <br/>
-            <v-btn
-            v-if="lotesGuardados === false"
-            class="actionButton" 
-            :color="colorLotes()" width="100%" dark @click="saveLotes">
-              GUARDAR
-              <v-icon class="icon">mdi-content-save</v-icon>
-            </v-btn>
-            <v-btn
-            v-else
-            class="actionButton" 
-            color="grey" width="100%" dark>
-              GUARDADO
-              <v-icon class="icon">mdi-check-all</v-icon>
-            </v-btn>
           </v-col>
 
           <!-- DATA TABLE LOTES -->
@@ -132,10 +119,12 @@
                   }}</span>
                   <template v-slot:input>
                     <v-select
+                    class="adjustHeight"
                     :items="impuestos"
+                    item-text="tipo"
+                    item-value="valor"
                     v-model="props.item.tipoImpuesto"
                     label="Impuesto a aplicar:"
-
                     ></v-select>
                   </template>
                 </v-edit-dialog>
@@ -222,88 +211,133 @@
               </template>
             </v-data-table>
           </v-col>
+
+          <v-col cols="12" md="5">
+            <v-btn
+            v-if="lotesGuardados === false"
+            class="actionButton"
+            width="100%" 
+            large dark
+            :color="colorLotes()"  
+            @click="saveLotes"
+            :disabled="datos.lotes.length === 0"
+            >
+              GUARDAR PRESUPUESTO / LOTES
+              <v-icon class="icon">mdi-content-save</v-icon>
+            </v-btn>
+            <v-btn
+            v-else
+            class="actionButton" 
+            color="grey" dark
+            width="100%"
+            large
+            >
+              GUARDADO CORRECTO
+              <v-icon class="icon">mdi-check-all</v-icon>
+            </v-btn>
+          </v-col>
         </v-row>
     </v-row>
     <br />
 
     <h3>Anualidades</h3>
-      <v-row class="rowGroup" v-for="lote in datos.lotes" :key="lote.id">
-        <v-col cols="12" v-if="datos.lotes.length > 1">
-          Anualidades lote nº {{lote.idLote}}: <b>{{lote.descripcion}}</b>
-        </v-col>
-        <br/>
-        <v-col cols="12" md="2">
-          <v-select dense filled :items="anualidades" v-model="lote.selectAnualidades">
-          </v-select>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-btn
-            class="actionButton"
-            color="info"
-            large
-            width="100%"
-            @click="makeAnualidades(lote)"
-          >
-            GENERAR
-            <v-icon class="icon">mdi-animation-outline</v-icon>
-          </v-btn>
+    <v-row class="rowGroup">
+      <v-col cols="12">
+        <div v-if="datos.lotes.length !== 0">
+          <v-row v-for="lote in datos.lotes" :key="lote.id">
+            <v-col cols="12" v-if="datos.lotes.length > 1">
+              Anualidades lote nº {{lote.idLote}}: <b>{{lote.descripcion}}</b>
+              <br/>
+              Presupuesto base lote: <b>{{lote.baseLote}}</b>
+            </v-col>
+            <br/>
+            <v-col cols="12" md="2">
+              <v-select dense filled :items="anualidades" v-model="lote.selectAnualidades">
+              </v-select>
+            </v-col>
+            <v-col cols="12" md="3">
+              <v-btn
+                class="actionButton"
+                color="info"
+                large
+                width="100%"
+                @click="makeAnualidades(lote)"
+              >
+                GENERAR
+                <v-icon class="icon">mdi-animation-outline</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col cols="12" md="7">
+              <v-data-table
+                class="dataTable"
+                :headers="anualidadesHeaders"
+                :items="lote.anualidades"
+                hide-default-footer
+              >
+                <template v-slot:[`item.importeSinIVA`]="props" v-if="anualidadesGuardadas == false">
+                  <v-edit-dialog :return-value.sync="props.item.importeSinIVA">
+                    <span class="editField">{{
+                      parseFloat(props.item.importeSinIVA)
+                    }}</span>
+                    <template v-slot:input>
+                      <v-text-field
+                        v-model="props.item.importeSinIVA"
+                        label="Editar"
+                        single-line
+                      ></v-text-field>
+                    </template>
+                  </v-edit-dialog>
+                </template>
 
+                <template v-slot:[`item.IVA`]="{ item }">
+                  {{ returnIVA(lote.tipoImpuesto, item.importeSinIVA) }}
+                </template>
+
+                <template v-slot:[`item.importeConIVA`]="{ item }">
+                  <b>{{ returnTotal(lote.tipoImpuesto, item.importeSinIVA) }}</b>
+                </template>
+              </v-data-table>
+              <br/>
+
+              <!-- ALERTAS VALIDACION -->
+              <v-alert v-if="lote.alert === undefined" type="info">No se han introducido datos</v-alert>
+              <v-alert v-if="lote.alert === false" type="success">Datos Correctos</v-alert>
+              <v-alert v-if="lote.alert === true" type="error">La suma de las anualidades no coincide con el presupuesto base</v-alert>
+
+            </v-col>
+          </v-row>
+        </div>
+        <div v-else>
+          Guarde los datos del presupuesto si desea introducir anualidades
+        </div>
+      </v-col>
+      <br/>
+
+      <v-row class="subRow">
+        <v-col cols="12" md="5">
           <v-btn
-            class="actionButton"
-            width="100%"
-            :color="colorAnualidades()"
-            large
-            @click="storeDatosAnualidades(lote)"
-          > 
-            GUARDAR
+          v-if="datos.lotes.length >= 1 && anualidadesGuardadas === false"
+          color="green" class="actionButton" dark
+          width="100%"
+          large
+          @click="saveAnualidades"
+          >
+            GUARDAR ANUALIDADES
             <v-icon class="icon">mdi-content-save</v-icon>
           </v-btn>
 
           <v-btn
-            class="actionButton"
-            color="error"
-            width="100%"
-            large
-            :disabled="datos.anualidades.length === 0"
-            @click="deleteAnualidades"
+          v-else
+          color="grey" class="actionButton" dark
+          width="100%"
+          large
           >
-            BORRAR
-            <v-icon class="icon">mdi-delete</v-icon>
+            GUARDADO CORRECTO
+            <v-icon class="icon">mdi-check-all</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="12" md="7">
-          <v-data-table
-            class="dataTable"
-            :headers="anualidadesHeaders"
-            :items="lote.anualidades"
-            hide-default-footer
-          >
-            <template v-slot:[`item.importeSinIVA`]="props" v-if="anualidadesGuardadas == false">
-              <v-edit-dialog :return-value.sync="props.item.importeSinIVA">
-                <span class="editField">{{
-                  parseFloat(props.item.importeSinIVA)
-                }}</span>
-                <template v-slot:input>
-                  <v-text-field
-                    v-model="props.item.importeSinIVA"
-                    label="Editar"
-                    single-line
-                  ></v-text-field>
-                </template>
-              </v-edit-dialog>
-            </template>
-
-            <template v-slot:[`item.IVA`]="{ item }">
-              {{ returnIVA(lote.tipoImpuesto, item.importeSinIVA) }}
-            </template>
-
-            <template v-slot:[`item.importeConIVA`]="{ item }">
-              <b>{{ returnTotal(lote.tipoImpuesto, item.importeSinIVA) }}</b>
-            </template>
-          </v-data-table>
-          <br/>
-        </v-col>
       </v-row>
+    </v-row>
     <br />
 
     <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
@@ -370,50 +404,255 @@
     </v-row>
     <br />
 
+    <!-- 25 MODIFICACIONES -->
+    <h3>Modificaciones del contrato</h3>
+      <v-row class="rowGroup">
+          <v-col cols="12" md="4">
+              <h5>Modificaciones previstas [artículo 204 LCSP]</h5>
+              <h5 class="subtitle">Se prevén:</h5>
+              <v-radio-group v-model="datos.preveModif">
+                  <v-radio label="Si" value="si"></v-radio>
+                  <v-radio label="No" value="no"></v-radio>
+              </v-radio-group>
+          </v-col>
+
+          <v-col cols="12" md="8" v-if="datos.preveModif === 'si'">
+              <h5>En caso afirmativo indicar motivo:</h5>
+              <h5 class="subtitle">Descripción precisa de los supuestos en que podrá modificarse el contrato:</h5>
+              <v-radio-group v-model="datos.tipoModif">
+                  <v-radio label='A) Por necesidad de variar el número de unidades previstas en el contrato.' value="numeroUnidades"></v-radio>
+                  <v-radio label='B) Por necesidad de incorporar nuevos apartados en los informes ya previstos en el contrato, debido a la necesidad de incorporar adaptaciones exigidas por normas técnicas aprobadas después de la licitación del contrato.' value="nuevosApartados"></v-radio>
+                  <v-radio label='C) Por necesidad de incorporar ensayos de auscultación como consecuencia de la aparición de nuevas tipologías estructurales o materiales no previstos inicialmente' value="ensayosAuscultacion"></v-radio>
+              </v-radio-group>
+          </v-col>
+
+          <!-- CASO NUMERO UNIDADES -->
+          <v-row class="subRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'numeroUnidades'">
+              <v-col cols="12" md="3">
+                  <h5 class="subtitle">Indicar importe:</h5>
+                    <v-text-field 
+                  filled label="Importe" v-model="datos.importeModificacion"
+                  :rules="[rules.max, rules.required, rules.zero]"
+                  >
+                  </v-text-field>
+              </v-col>
+              <v-col cols="12" md="4">
+                  <ul>
+                      <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
+                      <li><i>Máximo permitido: <b>{{importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
+                      presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
+                      </i></li>
+                  </ul>
+                  <br/>                                 
+              </v-col>
+              <v-col cols="12" md="5">
+                  <i>
+                      <b>ATENCIÓN:</b>
+                      En este caso será siempre necesario que las nuevas unidades sean iguales a las previamente
+                      definidas en el contrato inicial y que se abonen en el mismo precio unitario.
+                  </i>
+              </v-col>
+          </v-row>
+
+          <!-- CASO INCORPORAR APARTADOS -->
+          <v-row class="subRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'nuevosApartados'">
+              <v-col cols="12" md="3">
+                  <h5 class="subtitle">Indicar importe:</h5>
+                    <v-text-field 
+                  filled label="Importe" v-model="datos.importeModificacion"
+                  :rules="[rules.max, rules.required, rules.zero]"
+                  >
+                  </v-text-field>
+              </v-col>
+              <v-col cols="12" md="4">
+                  <ul>
+                      <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
+                      <li><i>Máximo permitido: <b>{{importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
+                      presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
+                      </i></li>
+                  </ul>
+                  <br/>                                 
+              </v-col>
+              <v-col cols="12" md="5">
+                  <i>
+                      <b>ATENCIÓN:</b> Será necesario que los precios del contrato inicial se hubieran definido descomponiéndose
+                      en sus costes elementales y que los importes de las nuevas prestaciones puedan formarse en su totalidad
+                      con dichos costes elementales. Cuando no se cumpla este requisito la modificación solo podrá tramitarse
+                      al amparo del artículo 205 de la LCSP
+                  </i>
+              </v-col>
+          </v-row>
+
+          <!-- CASO ENSAYO AUSCULTACION -->
+          <v-row class="subRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'ensayosAuscultacion'">
+              <v-col cols="12" md="3">
+                  <h5 class="subtitle">Indicar importe:</h5>
+                    <v-text-field 
+                  filled label="Importe" v-model="datos.importeModificacion"
+                  :rules="[rules.max, rules.required, rules.zero]"
+                  >
+                  </v-text-field>
+              </v-col>
+              <v-col cols="12" md="4">
+                  <ul>
+                      <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
+                      <li><i>Máximo permitido: <b>{{importeNumUnid}} €</b>. Porcentaje máximo respecto del 
+                      presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
+                      </i></li>
+                  </ul>
+                  <br/>                                 
+              </v-col>
+              <v-col cols="12" md="5">
+                  <i>
+                      <b>ATENCIÓN:</b> Será necesario que los precios del contrato inicial se hubieran definido descomponiéndose
+                      en sus costes elementales y que los importes de las nuevas prestaciones puedan formarse en su totalidad
+                      con dichos costes elementales. Cuando no se cumpla este requisito la modificación solo podrá tramitarse
+                      al amparo del artículo 205 de la LCSP
+                  </i>
+              </v-col>
+          </v-row>
+      </v-row>
+    <br/>
+
     <!-- 4 VALOR ESTIMADO -->
     <h3>Valor Estimado</h3>
     <!--4.1-->
-    <v-row class="rowGroup">
-      <v-col cols="12" md="4">
-        <h5>Importe del valor estimado del contrato</h5>
-        <v-text-field
-          label="Importe máx. por modificaciones"
-          filled
-          type="number"
-          v-model="datos.maxModificacionesPrevistas"
-        >
-        </v-text-field>
-      </v-col>
-      <v-col cols="12" md="8">
-        <h5>Totales</h5>
-        <v-simple-table class="dataTable">
-          <thead>
-            <tr>
-              <th>Importe del suministro</th>
-              <th>Importe máximo por modificaciones previstas</th>
-              <th>TOTAL VALOR ESTIMADO DEL CONTRATO, sin IVA (€)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{datos.presupuestoBaseLicitacion}}</td>
-              <td>{{datos.maxModificacionesPrevistas}}</td>
-              <td><b>{{datos.totalEstimado}}</b></td>
-            </tr>
-          </tbody>
-        </v-simple-table>
-      </v-col>
-    <br/>
-      <!--4.2-->
+      <v-row class="rowGroup">
         <v-col cols="12">
-          <h5>Método de cálculo del valor estimado</h5>
-          <v-textarea 
-            filled auto-grow
-            v-model="datos.metodoCalculo"
-            ></v-textarea>
+          <h5>Total contrato</h5>
+          <v-simple-table class="dataTable">
+            <thead>
+              <tr>
+                <th>Importe de los servicios</th>
+                <th>Importe máximo por modificaciones previstas</th>
+                <th>TOTAL VALOR ESTIMADO DEL CONTRATO, sin IVA (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{datos.presupuestoBaseLicitacion}}</td>
+                <td>{{datos.importeModificacion}}</td>
+                <td><b>{{calculoImporteModif(datos.presupuestoBaseLicitacion, datos.importeModificacion)}}</b></td>
+              </tr>
+            </tbody>
+          </v-simple-table>
         </v-col>
+        <br/>
+        <v-col v-if="datos.lotes.length > 1">
+          <h5>Valor estimado para los lotes</h5>
+          <v-simple-table class="dataTable">
+            <thead>
+              <tr>
+                <th>Lote</th>
+                <th>Descripción</th>
+                <th>Valor estimado para cada lote, sin impuestos (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="lote in datos.lotes" :key="lote.idLote">
+                <td>{{lote.idLote}}</td>
+                <td>{{lote.descripcion}}</td>
+                <td><b>{{lote.baseLote}}</b></td>
+              </tr>
+            </tbody>
+          </v-simple-table>
+        </v-col>
+
+
+        <!--4.2-->
+          <v-col cols="12">
+            <h5>Método de cálculo del valor estimado</h5>
+            <v-textarea 
+              filled auto-grow
+              v-model="datos.metodoCalculo"
+              ></v-textarea>
+          </v-col>
+      </v-row>
+      <br />
+
+      <!-- 18.- PLAZO DE EJECUCIÓN O DURACION -->
+      <h3>Plazo de ejecución o duración</h3>
+      <v-row class="rowGroup">
+      <v-row class="subRow">
+        <v-col cols="12" md="4">
+            <h5 class="subtitle">Se define como:</h5>
+            <v-radio-group v-model="datos.definicion">
+                <v-radio label="Un contrato con plazo de ejecución" value="plazoEjecucion"></v-radio>
+                <v-radio label="Un contrato con plazo de duración" value="plazoDuracion"></v-radio>
+            </v-radio-group>
+        </v-col>
+            
+            <!-- PLAZO EJECUCIÓN -->
+            <v-col cols="12" md="4" v-if="datos.definicion === 'plazoEjecucion'">
+                <h5 class="subtitle">Introducir plazo máximo ejecución:</h5>
+                <br/>
+                <v-text-field filled label="Meses" v-model="datos.plazoMaximoEjecucion"></v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="4" v-if="datos.definicion === 'plazoEjecucion' && datos.plazoEjecucion ==='plazosParciales'">
+                <h5 class="subtitle">Introducir plazos parciales:</h5>
+                <v-text-field filled label="Meses" v-model="datos.plazosParciales"></v-text-field>
+            </v-col>
+          
+          <!--PLAZOS DE DURACION-->
+          <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
+              <h5 class="subtitle">Seleccionar modalidad</h5>
+              <v-radio-group v-model="datos.modalidad">
+                  <v-radio label="Plazo en meses" value="plazo"></v-radio>
+                  <v-radio label="Periodo" value="periodo"></v-radio>
+              </v-radio-group>
+          </v-col>
+
+              <!--PLAZOS MESES-->
+              <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'plazo'">
+                  <h5 class="subtitle">Introducir plazo en meses</h5>
+                  <br/>
+                  <v-text-field filled label="Meses" v-model="datos.plazoMeses"></v-text-field>
+              </v-col>
+
+              <!--PLAZOS PERIODO-->
+              <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
+                  <h5 class="subtitle">Indique inicio y fin:</h5>
+                  <br/>
+                  <v-text-field filled label="Inicio" v-model="datos.plazoMeses"></v-text-field>
+                  <v-text-field filled label="Fin" v-model="datos.plazoMeses"></v-text-field>
+              </v-col>
+
+              <!-- PRORROGA -->
+              <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
+                  <h5 class="subtitle">Prorroga:</h5>
+                  <v-radio-group v-model="datos.prorroga">
+                      <v-radio label="No se prevee" value="no"></v-radio>
+                      <v-radio label="Si se prevee" value="si"></v-radio>
+                  </v-radio-group>
+              </v-col>
+
+              <!-- PLAZO PRORROGA -->
+              <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion' && datos.prorroga === 'si'">
+                  <h5 class="subtitle">Definir plazo prorroga</h5>
+                  <br/>
+                  <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
+              </v-col>
+
+              <br/>
+              <v-row class="subRow" >
+                <v-col cols="12" md="4">
+                    <h5 class="subtitle">El plazo del contrato se iniciará:</h5>
+                    <v-radio-group v-model="datos.plazoInicio">
+                        <v-radio label="Al dia siguiente al de formalización del contrato" value="dia siguiente"></v-radio>
+                        <v-radio label="Otro plazo" value="otro"></v-radio>
+                    </v-radio-group>
+                </v-col>
+
+                <v-col cols="12" md="3" v-if="datos.plazoInicio === 'otro'">
+                    <h5 class="subtitle">Si se fija en otro plazo indicar fecha</h5>
+                    <br/>
+                    <v-text-field filled label="Fecha" v-model="datos.fechaInicio"></v-text-field>
+                </v-col>
+              </v-row>
+        </v-row>
     </v-row>
-    <br />
+    <br/>      
 
      <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
     <h3>Documentos que revisten carácter contractual</h3>
@@ -495,13 +734,21 @@ export default {
   data() {
     return {
       anualidades: [1, 2, 3, 4, 5],
-      impuestos: [21, 7],
+      impuestos: [
+        {tipo: 'IVA', valor: 21},
+        {tipo: 'IGIC', valor: 7}
+      ],
       selectAnualidades: 1,
-      alertMessage: "",
       itemsAplicacionPrep: ['495A1718620', '495A1718630', '1718495A620'],
       presupuestoSinAsignar: undefined,
-      anualidadesGuardadas: false,
       lotesGuardados: false,
+      anualidadesGuardadas: false,
+      importeNumUnid: undefined,
+      rules: {
+          required: (value) => !!value || "Este campo es obligatorio.",
+          max: (value) => value <= this.importeNumUnid || "Se supera el máximo permitido (20% presupuesto base)",
+          zero: (value) => value > 0 || "El importe no puede ser igual a 0",
+      },
 
       lotesHeaders: [
         { text: "", align: "start", sortable: false, value: "idLote", divider: true,},
@@ -545,7 +792,6 @@ export default {
         desglose: true,
         tipoDesglose: undefined,
         tipoDesgloseGenero: undefined,
-        anualidades: [],
 
         //SECCION 4
         maxModificacionesPrevistas: undefined,
@@ -553,11 +799,11 @@ export default {
         metodoCalculo: 'Para calcular el valor estimado se han tenido en cuenta los costes derivados de la aplicación de la normativa laboral vigente. Además, se han tenido en cuenta los apartados 2 y 10 del artículo 101 de la LCSP.',
       
         //SECCIÓN 5
-        divisionLotes: undefined,
-        divisionNoPosible: undefined,
+        divisionLotes: 'no es posible',
+        divisionNoPosible: 'naturaleza objeto',
         divisionPosibleDivisible: undefined,
         justificacionNoDivisionLotes: '',
-        numLotes: undefined,
+        numLotes: 1,
         lotes: [],
 
         //SECCION 6
@@ -570,6 +816,21 @@ export default {
         //SECCION 8
         participacionEmpresas: "no tiene",
         empresasExcluidas: undefined,
+
+        //SECCION 25
+        preveModif: undefined,
+        importeModificacion: undefined,
+
+        //SECCUION 18
+        definicion: '',
+        plazoEjecucion: '',
+        plazoMaximoEjecucion: '',
+        modalidad: 'plazo',
+        plazoMeses: '',
+        prorroga: 'no',
+        prorrogaMeses: '',
+        plazoInicio: '',
+        fechaInicio: '',
       },
     };
   },
@@ -578,21 +839,6 @@ export default {
     datos: {
       deep: true,
       handler(datos){
-        //CALCULO VALORES AUTOMATICOS
-        datos.presupuestoBaseLicitacionIVA = (this.datos.presupuestoBaseLicitacion * 0.21).toFixed(2)
-        datos.presupuestoBaseLicitacionTotal = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + (parseFloat(this.datos.presupuestoBaseLicitacionIVA))).toFixed(2),
-        
-        datos.totalCostes = this.datos.presupuestoBaseLicitacion;
-        datos.costesDirectos = parseFloat((this.datos.totalCostes / 1.19).toFixed(2));
-        datos.costesGenerales = parseFloat((datos.costesDirectos * 0.12999999).toFixed(2));
-        datos.beneficioIndustrial = parseFloat((datos.costesDirectos * 0.05999999).toFixed(2));
-        
-
-        if(datos.anualidades[0] !== undefined){
-          this.calcNoAsign()
-        }
-        datos.totalEstimado = this.calculoEstimado(this.datos.maxModificacionesPrevistas, this.datos.presupuestoBaseLicitacion);
-
         //CONDICIONAL LOTES
         if(datos.divisionLotes === 'no es posible' || datos.divisionLotes === 'posible no divisible'){
           datos.numLotes = 1;
@@ -601,7 +847,29 @@ export default {
           }
         }
 
+        //VALIDACIONES SUMA BASE ANUALIDADES
+        if(datos.lotes.length !== 0){
+          for(this.index in datos.lotes){
+            let totalLote = 0;
+            if(datos.lotes[this.index].anualidades.length !== 0){
+              for(this.anualidad in datos.lotes[this.index].anualidades)
+              totalLote = totalLote + (parseFloat(datos.lotes[this.index].anualidades[this.anualidad].importeSinIVA))
+              if(totalLote !== parseFloat(datos.lotes[this.index].baseLote)){
+                datos.lotes[this.index].alert = true;
+              } else {
+                datos.lotes[this.index].alert = false;
+              }
+            }     
+          }
+        }
 
+        //MODIFICACIONES
+        if(datos.preveModif === 'si'){
+          this.base = parseFloat(this.datos.presupuestoBaseLicitacion)
+          this.importeNumUnid = this.base * 0.20
+        } else {
+          this.datos.importeModificacion = 0;
+        }   
       }
     },
   },
@@ -615,12 +883,33 @@ export default {
   },
   
   methods: {
+    calculoImporteModif(base, modif){
+      if (modif !== undefined){
+        this.totalModificaciones = parseFloat(base) + parseFloat(modif)
+        return (this.totalModificaciones).toFixed(2);
+      }
+    },
+
+    saveAnualidades(){
+      for(this.index in this.datos.lotes){
+        this.lote = this.datos.lotes[this.index];
+        for(this.anualidad in this.lote.anualidades){
+          this.elemento = this.lote.anualidades[this.anualidad]
+          this.elemento.IVA = (parseFloat(this.elemento.importeSinIVA) * 0.21).toFixed(2);
+          this.elemento.importeConIVA = parseFloat(this.elemento.IVA) + parseFloat(this.elemento.importeSinIVA);
+        }
+      }
+      this.anualidadesGuardadas = true;
+    },
+
     saveLotes(){
       if(this.datos.numLotes === 1){
         this.datos.presupuestoBaseLicitacion = this.datos.lotes[0].baseLote;
       } else {
+          this.datos.presupuestoBaseLicitacion = 0;
           for(this.index in this.datos.lotes){
             this.lote = this.datos.lotes[this.index]
+            this.datos.presupuestoBaseLicitacion = this.datos.presupuestoBaseLicitacion + parseFloat(this.lote.baseLote)
             this.lote.totalImpuestos = ((parseFloat(this.lote.baseLote)) * (parseFloat(this.lote.tipoImpuesto) / 100)).toFixed(2);
             this.lote.totalLote = (parseFloat(this.lote.totalImpuestos) + parseFloat(this.lote.baseLote)).toFixed(2)
             this.lote.costesGenerales = parseFloat((this.lote.baseLote * 0.1299999).toFixed(2));
@@ -630,7 +919,6 @@ export default {
           }
       }
       this.lotesGuardados = true;
-      console.log(this.datos.lotes)
     },
 
     deleteLote(idLote){
@@ -649,7 +937,7 @@ export default {
           idLote: i+1,
           descripcion: 'Descripción del lote',
           baseLote: 0,
-          tipoImpuesto: 0,
+          tipoImpuesto: 21,
           totalImpuestos: 0,
           totalLote: 0,
           costesDirectos: undefined,
@@ -658,6 +946,7 @@ export default {
           beneficioIndustrial: undefined,
           selectAnualidades: 1,
           anualidades:[],
+          alert: undefined,
         }
         this.datos.lotes.push(this.newLote)
       }
@@ -670,59 +959,17 @@ export default {
       }
     },
 
-    colorAnualidades(){
-      if(this.anualidadesGuardadas === false){
-        return "success"
-      } else {
-        return "gray"
-      }
-    },
-
     colorLotes(){
       if(this.lotesGuardados === false){
         return "success"
       } else {
-        return "gray"
-      }
-    },
-
-    calculoEstimado(modificaciones, base){
-      if (modificaciones === undefined){
-        return base;
-      } else {
-        return parseFloat((parseFloat(modificaciones) + parseFloat(base)).toFixed(2));
-      }
-    },
-
-    storeDatosAnualidades(lote){
-      for(this.index in lote.anualidades){
-        this.anualidad = lote.anualidades[this.index];
-
-        this.anualidad.IVA = (this.anualidad.importeSinIVA * (lote.tipoImpuesto / 100)).toFixed(2)
-        this.anualidad.importeConIVA = (parseFloat(this.anualidad.importeSinIVA) + parseFloat(this.anualidad.IVA)).toFixed(2)
-      }
-    },
-
-    calcNoAsign(){
-      this.presupuestoSinAsignar = 0;
-      for(this.index in this.datos.anualidades){
-        this.presupuestoSinAsignar = this.presupuestoSinAsignar + parseFloat(this.datos.anualidades[this.index].importeSinIVA);
-      }
-      this.presupuestoSinAsignar = (this.datos.presupuestoBaseLicitacion - this.presupuestoSinAsignar).toFixed(2);
-      return this.presupuestoSinAsignar;      
-    },
-
-    returnColorValidate(presupuesto){
-      if(presupuesto > 0 || presupuesto < 0){
-        return 'error'
-      } else {
-        return 'success'
+        return "grey"
       }
     },
 
     makeAnualidades(lote) {
+      this.anualidadesGuardadas = false;
       lote.anualidades = [];
-
       let fecha = new Date();
       let ano = fecha.getFullYear();
       
@@ -737,13 +984,6 @@ export default {
       }
     },
   
-
-    deleteAnualidades() {
-      this.datos.anualidades = [];
-      this.presupuestoSinAsignar = undefined;
-      this.anualidadesGuardadas = false;
-    },
-
     returnIVA(impuesto, base) {
       impuesto = impuesto / 100;
       this.iva = parseFloat((base * impuesto).toFixed(2));
@@ -806,5 +1046,9 @@ export default {
 
 .caption {
   margin: 0.5rem;
+}
+
+.adjustHeight{
+  margin: 0.7rem 0rem 0rem 0rem;
 }
 </style>
