@@ -1,89 +1,102 @@
 <template>
     <div>
-        <v-card max-width="40rem" class="card">
-            <v-card-title>
-                <h3 class="subtitle">VALIDAR</h3>
-                <v-spacer></v-spacer>
-                <v-btn :loading="buttonLoader" @click="fakeValidate" dark :color="buttonColor">
-                    <v-icon>{{buttonIcon}}</v-icon>{{buttonText}}
-                </v-btn>
-            </v-card-title>
+        <v-row>
+            <v-col cols="12" md="6">
+                <v-card class="card">
+                    <v-card-title>
+                        <h3 class="subtitle">VALIDAR</h3>
+                        <v-spacer></v-spacer>
+                        <v-btn :loading="buttonLoader" @click="fakeValidate" dark :color="buttonColor">
+                            <v-icon>{{buttonIcon}}</v-icon>{{buttonText}}
+                        </v-btn>
+                    </v-card-title>
+                    <v-stepper
+                        v-model="stepperCTRL"
+                        vertical
+                    >
+                        <v-stepper-step
+                        step="1"
+                        :complete="complete1"
+                        :color="color1"
+                        >
+                        1.- OBJETO Y NECESIDADES
+                        </v-stepper-step>
 
-            <v-stepper
-                v-model="stepperCTRL"
-                vertical
-            >
-                <v-stepper-step
-                step="1"
-                :complete="complete1"
-                :color="color1"
-                >
-                1.- OBJETO Y NECESIDADES
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete2"
+                        :color="color2"
+                        step="2"
+                        >
+                        2.- PRESUPUESTO, LOTES E INCOMPATIBILIDADES
+                        </v-stepper-step>
 
-                <v-stepper-step
-                :complete="complete2"
-                :color="color2"
-                step="2"
-                >
-                2.- PRESUPUESTO, LOTES E INCOMPATIBILIDADES
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete3"
+                        :color="color3"
+                        step="3"
+                        >
+                        3.- CAPACIDAD Y SOLVENCIA
+                        </v-stepper-step>
 
-                <v-stepper-step
-                :complete="complete3"
-                :color="color3"
-                step="3"
-                >
-                3.- CAPACIDAD Y SOLVENCIA
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete4"
+                        :color="color4"
+                        step="4"
+                        >
+                        4.- GARANTÍAS, CRITERIOS Y ADJUDICACIÓN
+                        </v-stepper-step>
 
-                <v-stepper-step
-                :complete="complete4"
-                :color="color4"
-                step="4"
-                >
-                4.- GARANTÍAS, CRITERIOS Y ADJUDICACIÓN
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete5"
+                        :color="color5"
+                        step="5"
+                        >
+                        5.- PAGOS, REV.PRECIOS Y ABONOS A CUENTA
+                        </v-stepper-step>
 
-                <v-stepper-step
-                :complete="complete5"
-                :color="color5"
-                step="5"
-                >
-                5.- PAGOS, REV.PRECIOS Y ABONOS A CUENTA
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete6"
+                        :color="color6"
+                        step="6"
+                        >
+                        6.- EJECUCIÓN Y CONDICIONES
+                        </v-stepper-step>
 
-                <v-stepper-step
-                :complete="complete6"
-                :color="color6"
-                step="6"
-                >
-                6.- EJECUCIÓN Y CONDICIONES
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete7"
+                        :color="color7"
+                        step="7"
+                        >
+                        7.- MODIFICACIONES Y PENALIDADES
+                        </v-stepper-step>
 
-                <v-stepper-step
-                :complete="complete7"
-                :color="color7"
-                step="7"
-                >
-                7.- MODIFICACIONES Y PENALIDADES
-                </v-stepper-step>
+                        <v-stepper-step
+                        :complete="complete8"
+                        :color="color8"
+                        step="8"
+                        >
+                        8.- CESIÓN, SUBCONTRATACIÓN Y OTROS
+                        </v-stepper-step>
+                    </v-stepper>                
+                </v-card>
+            </v-col>
 
-                <v-stepper-step
-                :complete="complete8"
-                :color="color8"
-                step="8"
-                >
-                8.- CESIÓN, SUBCONTRATACIÓN Y OTROS
-                </v-stepper-step>
-            </v-stepper>
-        </v-card>
+            <v-col cols="12" md="6">
+                <v-card class="card">
+                    <v-card-title>
+                        <v-btn color="green" dark @click="save">GUARDAR</v-btn>
+                    </v-card-title>
+                </v-card>
+            </v-col>
+        </v-row>
     </div>
 </template>
 
 <script>
     export default {
         name: 'Finalizar',
+        props: ['datosGuardados'],
+
         data(){
             return {
                 stepperCTRL: 1,
@@ -182,6 +195,10 @@
                 .then(() => this.fakeEnd())
                 this.sleep(15000)
                 .then(() => this.fakeReboot())
+            },
+
+            save(){
+                console.log(this.datosGuardados)
             }
         }
 

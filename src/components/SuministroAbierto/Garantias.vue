@@ -103,8 +103,8 @@
                         <v-text-field filled label="%" v-model="datos.pot"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="3">
-                        <h5 class="subtitle">Evaluables mediante fórmulas (POV)</h5>
-                        <v-text-field filled label="%" v-model="datos.pov"></v-text-field>
+                        <h5 class="subtitle">Evaluables mediante fórmulas (POF)</h5>
+                        <v-text-field filled label="%" v-model="datos.pof"></v-text-field>
                     </v-col>
                     <!-- ALERTA -->
                     <v-col cols="12" md="6" v-if="alertCriteriosForma == true">
@@ -121,7 +121,7 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="3">
                 <h5 class="subtitle">Puntuación máxima obtenible</h5>
-                <v-text-field filled label="puntos"></v-text-field>
+                <v-text-field filled label="puntos" disabled v-model="datos.puntosJuicioValor"></v-text-field>
                 <v-btn width="100%" color="info" class="addBtn" @click="addCriterioValor">+ AÑADIR CRITERIO</v-btn>
             </v-col>
             <v-col cols="12" md="9">
@@ -184,8 +184,14 @@
                         <v-icon color="red">mdi-delete</v-icon>
                         </v-btn>
                     </template>
-                
                 </v-data-table>
+                <br/>
+                <v-alert type="error" v-if="alertPuntuacionValor === true">
+                    La suma de las puntuaciones debe ser igual a 100
+                </v-alert>
+                <v-alert type="success" v-if="alertPuntuacionValor === false">
+                    Datos correctos
+                </v-alert>
             </v-col>
         </v-row>
         <br/><br/>
@@ -209,7 +215,7 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="3">
                 <h5 class="subtitle">Puntuación máxima obtenible</h5>
-                <v-text-field filled label="puntos"></v-text-field>
+                <v-text-field filled label="puntos" disabled v-model="datos.puntosFormulas"></v-text-field>
                 <v-btn width="100%" color="info" class="addBtn" @click="addCriterioFormula">+ AÑADIR CRITERIO</v-btn>
             </v-col>
             <v-col cols="12" md="9">
@@ -358,6 +364,7 @@
                 { text: "Puntuación máxima", align: "start", sortable: false, value: "puntuacion"},
                 { text: "Borrar", align: "start", sortable: false, value: "actions"}
                 ],
+                alertPuntuacionValor: undefined,
 
                 puntuacionFormulaHeader: [
                 { text: "", align: "start", sortable: false, value: "id" },
@@ -380,15 +387,13 @@
                     critCualitativos: undefined,
                     critRelPrecio: undefined,
                     pot: undefined,
-                    pov: undefined,
+                    pof: undefined,
                     criteriosPuntuacionValor: [
-                    { id: 1, criterios: '', extension: '', puntuacion: undefined },
-                    { id: 2, criterios: '', extension: '', puntuacion: undefined },
+                        { id: 1, criterios: '', extension: '', puntuacion: undefined },
                     ],
                     umbralJuicioValor: "si",
                     criteriosPuntuacionFormula: [
-                    { id: 1, criterios: '', extension: '', puntuacion: undefined },
-                    { id: 2, criterios: '', extension: '', puntuacion: undefined },
+                        { id: 1, criterios: '', extension: '', puntuacion: undefined },
                     ],
                     criterio: 'art85',
                     reduccion: 'no',
@@ -396,6 +401,10 @@
                     umbralTemeridad: '',
                     seguimiento: 'limite20%',
                     limiteSeguimiento: '',
+
+                    puntosJuicioValor: 100,
+                    puntosFormulas: 100,
+                    
                 }
             }
         },
@@ -403,42 +412,36 @@
         watch:{
             datos: {
                 deep: true,
-                handler: function (){
+                handler: function (datos){
                     //VALIDACIONES PUNTO 11.1
                     if(this.datos.critCualitativos !== undefined && this.datos.critRelPrecio !== undefined){
-                        if(parseFloat(this.datos.critCualitativos) < 51){
+                        this.suma = parseFloat(this.datos.critCualitativos) + parseFloat(this.datos.critRelPrecio)
+                        if (this.suma !== 100){
                             this.alertCriteriosCualPre = true;
                             this.alertCriteriosCualPreType = 'error'
-                            this.alertCriteriosCualPreMsg = 'Los criterios cualitativos deben ser igual o mas que el 51%'
-                        } else {
-                            this.suma = parseFloat(this.datos.critCualitativos) + parseFloat(this.datos.critRelPrecio)
-                            if (this.suma !== 100){
-                                this.alertCriteriosCualPre = true;
-                                this.alertCriteriosCualPreType = 'error'
-                                this.alertCriteriosCualPreMsg = 'La suma de los porcentajes debe ser igual a 100%'
-                            }                         
-                            else {
-                                this.alertCriteriosCualPretTitle = 'INFO'
-                                this.alertCriteriosCualPre = true;
-                                this.alertCriteriosCualPreType = 'success';
-                                this.alertCriteriosCualPreMsg = 'Datos correctos'
-                            }
+                            this.alertCriteriosCualPreMsg = 'La suma de los porcentajes debe ser igual a 100%'
+                        }                         
+                        else {
+                            this.alertCriteriosCualPretTitle = 'INFO'
+                            this.alertCriteriosCualPre = true;
+                            this.alertCriteriosCualPreType = 'success';
+                            this.alertCriteriosCualPreMsg = 'Datos correctos'
                         }
                     }
 
                     //VALIDACIONES PUNTO 11.2
-                    if(this.datos.pot !== undefined && this.datos.pov !== undefined){
+                    if(this.datos.pot !== undefined && this.datos.pof !== undefined){
                         if(parseFloat(this.datos.pot) > 50){
                             this.alertCriteriosForma = true;
                             this.alertCriteriosFormaType = 'error'
                             this.alertCriteriosCualPreMsg = 'Los criterios que dependen de un juicio de valor (POT) deben ser menores del 50%'
                         } 
-                        else if (parseFloat(this.datos.pov) < 50){
+                        else if (parseFloat(this.datos.pof) < 50){
                             this.alertCriteriosForma = true;
                             this.alertCriteriosFormaType = 'error'
-                            this.alertCriteriosCualPreMsg = 'Los criterios que evaluables mediante fórmulas (POV) deben ser mayores del 50%'
+                            this.alertCriteriosCualPreMsg = 'Los criterios que evaluables mediante fórmulas (POF) deben ser mayores del 50%'
                         }
-                        else if (parseFloat(this.datos.pot) + parseFloat(this.datos.pov) !== 100){
+                        else if (parseFloat(this.datos.pot) + parseFloat(this.datos.pof) !== 100){
                             this.alertCriteriosForma = true;
                             this.alertCriteriosFormaType = 'error'
                             this.alertCriteriosCualPreMsg = 'La suma de los porcentajes debe ser igual a 100%'
@@ -449,6 +452,19 @@
                             this.alertCriteriosFormaTitle = 'INFO'
                             this.alertCriteriosFormaType = 'success'
                             this.alertCriteriosCualPreMsg = 'Datos correctos'
+                        }
+                    }
+                    
+                    //VALIDACIONES TABLAS PUNTUACION
+                    if(datos.criteriosPuntuacionValor[0].puntuacion !== undefined){
+                        this.suma = 0;
+                        for(this.index in datos.criteriosPuntuacionValor){
+                            this.suma = this.suma + parseInt(datos.criteriosPuntuacionValor[this.index].puntuacion)
+                        }
+                        if(this.suma !== 100){
+                            this.alertPuntuacionValor = true
+                        } else {
+                            this.alertPuntuacionValor = false
                         }
                     }
                 }               

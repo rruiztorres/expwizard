@@ -1,7 +1,11 @@
 <template>
   <div>
     <!-- 5 DIVISIÓN EN LOTES -->
-    <h3>Presupuesto y Lotes</h3>
+    <h3>Base de Licitación y lotes
+      <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 3"></v-badge >
+    </h3>
     <v-row class="rowGroup">
       <v-col cols="12" md="3">
         <h5>¿Se dividirá en lotes?</h5>
@@ -68,9 +72,29 @@
 
 
         <!-- POSIBLE DIVISIBLE -->
+        <v-col cols="12" md="9" v-if="datos.divisionLotes === 'posible divisible'">
+          <h5>Limitaciones</h5>
+          <v-radio-group v-model="datos.limitacionLotes">
+            <v-radio
+              label="Se podrá limitar el número de lotes para los que un mismo candidato o licitador pueda presentar oferta"
+              value="limitar"
+            ></v-radio>
+            <v-radio
+              label="Cada licitador sólo podrá ser adjudicatario de tantos lotes como conjuntos completos distintos de medios presente con un máximo de 2, salvo que fuese a quedar alguno de los lotes sin adjudicatario, en cuyo caso se adjudicará el lote al licitador, el cual deberá disponer, para su ejecución, de un conjunto completo distinto al ya comprometidos en los otros lotes."
+              value="lotes"
+            ></v-radio>
+            <v-radio
+              label="Otras causas"
+              value="otras"
+            ></v-radio>
+          </v-radio-group>
+        </v-col>
+
+
         <v-row class="subRow">
-          <v-col cols="12" md="2">
-            <v-text-field 
+          <v-col cols="12" md="2" v-if="datos.divisionLotes === 'posible divisible'">
+            <v-text-field
+            label="Nº Lotes"
             filled type="number"
             dense
             v-model="datos.numLotes" 
@@ -80,13 +104,40 @@
           </v-col>
 
           <v-col cols="12" md="3">
-            <v-btn class="actionButton" color="info" width="100%" @click="createLotes">
+            <v-btn x-large class="actionButton" color="info" width="100%" @click="createLotes">
               INTRODUCIR DATOS
               <v-icon class="icon">mdi-pencil</v-icon>
             </v-btn>
             <br/>
           </v-col>
 
+          <!--DATA TABLE IDENTIFICACIÓN LOTES -->
+          <v-col cols="12" v-if="datos.numLotes > 1">
+            <h5>Identificación de los lotes</h5>
+            <v-data-table
+              class="dataTable"
+              :items="datos.lotes"
+              :headers="identificacionLotesHeaders"
+              hide-default-footer
+            >
+              <!-- DESCRIPCION LOTE -->
+              <template v-slot:[`item.descripcion`]="props">
+                <v-edit-dialog :return-value.sync="props.item.descripcion">
+                  <span class="editField">{{
+                  props.item.descripcion
+                  }}</span>
+                  <template v-slot:input>
+                    <v-text-field
+                    v-model="props.item.descripcion"
+                    label="Editar"
+                    single-line
+                    ></v-text-field>
+                  </template>
+                </v-edit-dialog>
+              </template>
+            </v-data-table>
+          </v-col>
+         
           <!-- DATA TABLE LOTES -->
           <v-col cols="12">
             <v-data-table
@@ -138,37 +189,32 @@
               </template>
 
 
-              <!-- COSTES GENERALES (AUTO)-->
+              <!-- COSTES GENERALES 13% (AUTO)-->
               <template v-slot:[`item.costesGenerales`]="props">
                   {{
-                    parseFloat((props.item.baseLote * 0.12999999).toFixed(2))
+                    (((parseFloat(props.item.baseLote)) / 1.19) * 0.13).toFixed(2)
                   }}
               </template>
 
                <!-- BENEFICIO INDUSTRIAL (AUTO)-->
               <template v-slot:[`item.beneficioIndustrial`]="props">
                   {{
-                    parseFloat((props.item.baseLote * 0.05999999).toFixed(2))
+                    (((parseFloat(props.item.baseLote)) / 1.19) * 0.06).toFixed(2)
                   }}
               </template>
 
               <!-- TOTAL COSTES DIRECTOS (gen + ind)-->
-              <template v-slot:[`item.costesDirectos`]="props">
-                  {{
-                    (parseFloat((props.item.baseLote * 0.12999999).toFixed(2)) + parseFloat((props.item.baseLote * 0.05999999).toFixed(2))).toFixed(2)
-                  }}
-              </template>
-
-              <!-- TOTAL COSTES INDIRECTOS (base - dir) -->
               <template v-slot:[`item.costesIndirectos`]="props">
                   {{
-                    ((props.item.baseLote) - ((parseFloat((props.item.baseLote * 0.12999999).toFixed(2)) + parseFloat((props.item.baseLote * 0.05999999).toFixed(2))).toFixed(2))).toFixed(2)
+                    ((parseFloat(props.item.baseLote)) - (parseFloat(props.item.baseLote) / 1.19)).toFixed(2)
                   }}
               </template>
 
-              <!-- TOTAL COSTES (AUTO)-->
-              <template v-slot:[`item.totalCostes`]="props">
-                  {{props.item.baseLote}}
+              <!-- TOTAL COSTES DIRECTOS -->
+              <template v-slot:[`item.costesDirectos`]="props">
+                  {{
+                    ((parseFloat(props.item.baseLote)) / 1.19).toFixed(2)
+                  }}
               </template>
 
               <!-- TOTAL (AUTO) -->
@@ -184,61 +230,92 @@
               </template>
             </v-data-table>
           </v-col>
-          
-          <!--DATA TABLE IDENTIFICACIÓN LOTES -->
-          <v-col cols="12" v-if="datos.numLotes > 1">
-            <h5>Identificación de los lotes</h5>
-            <v-data-table
-              class="dataTable"
-              :items="datos.lotes"
-              :headers="identificacionLotesHeaders"
-              hide-default-footer
-            >
-              <!-- DESCRIPCION LOTE -->
-              <template v-slot:[`item.descripcion`]="props">
-                <v-edit-dialog :return-value.sync="props.item.descripcion">
-                  <span class="editField">{{
-                  props.item.descripcion
-                  }}</span>
-                  <template v-slot:input>
-                    <v-text-field
-                    v-model="props.item.descripcion"
-                    label="Editar"
-                    single-line
-                    ></v-text-field>
-                  </template>
-                </v-edit-dialog>
-              </template>
-            </v-data-table>
-          </v-col>
 
-          <v-col cols="12" md="5">
-            <v-btn
-            v-if="lotesGuardados === false"
-            class="actionButton"
-            width="100%" 
-            large dark
-            :color="colorLotes()"  
-            @click="saveLotes"
-            :disabled="datos.lotes.length === 0"
-            >
-              GUARDAR PRESUPUESTO / LOTES
-              <v-icon class="icon">mdi-content-save</v-icon>
-            </v-btn>
-            <v-btn
-            v-else
-            class="actionButton" 
-            color="grey" dark
-            width="100%"
-            large
-            >
+           <v-col cols="12" md="3">
+              <v-btn
+              v-if="datos.lotesGuardados === false"
+              class="actionButton"
+              width="100%" 
+              large dark
+              :color="colorLotes()"  
+              @click="saveLotes"
+              :disabled="datos.lotes.length === 0"
+              >
+                GUARDAR DATOS
+                <v-icon class="icon">mdi-content-save</v-icon>
+              </v-btn>
+              <v-btn
+              v-else
+              class="actionButton" 
+              color="grey" dark
+              width="100%"
+              large
+              >
               GUARDADO CORRECTO
               <v-icon class="icon">mdi-check-all</v-icon>
             </v-btn>
           </v-col>
+
         </v-row>
     </v-row>
     <br />
+
+    <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
+    <h3>Tramitación</h3>
+    <v-row class="rowGroup">
+      <v-col cols="12" md="4">
+        <v-select 
+          filled
+          multiple
+          label="Aplicación presupuestaria" 
+          :items="itemsAplicacionPrep" 
+          v-model="datos.aplicacionPrep"
+        >
+        </v-select>
+      </v-col>
+
+      <v-col cols="12" sm="4">
+        <v-radio-group class="aplicacionPrep" v-model="datos.tramitacion">
+          <v-radio label="Tramitación ordinaria" :value="true"></v-radio>
+          <v-radio label="Tramitación anticipada" :value="false"></v-radio>
+        </v-radio-group>
+      </v-col>
+    </v-row>
+    <br/>
+
+    <h3>Desglose</h3>
+    <v-row class="rowGroup">
+      <v-col cols="12" sm="2">
+        <v-radio-group v-model="datos.desglose">
+          <v-radio label="Procede" :value="true"></v-radio>
+          <v-radio label="No procede" :value="false"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="12" sm="3" v-if="datos.desglose === true ">
+        <v-radio-group v-model="datos.tipoDesglose">
+          <v-radio label="Por género" :value="true"></v-radio>
+          <v-radio label="Por Categoría profesional" :value="false"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col
+        cols="12"
+        sm="6"
+        v-if="datos.desglose === true && datos.tipoDesglose === true"
+      >
+        <v-radio-group v-model="datos.tipoDesgloseGenero">
+          <v-radio label="No consta diferencia de costes por razón de género" :value="true"></v-radio>
+          <v-radio label="Existe diferencia de costes por razón de género" :value="false"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col
+        v-if="datos.desglose === 'procede' && datos.tipoDesglose === false"
+        cols="12"
+        md="7"
+      ><v-textarea label="Indicar como se desglosa:" filled></v-textarea>
+      </v-col>
+    </v-row>
+    <br />
+    
 
     <h3>Anualidades</h3>
     <v-row class="rowGroup">
@@ -274,7 +351,7 @@
                 :items="lote.anualidades"
                 hide-default-footer
               >
-                <template v-slot:[`item.importeSinIVA`]="props" v-if="anualidadesGuardadas == false">
+                <template v-slot:[`item.importeSinIVA`]="props" v-if="datos.anualidadesGuardadas == false">
                   <v-edit-dialog :return-value.sync="props.item.importeSinIVA">
                     <span class="editField">{{
                       parseFloat(props.item.importeSinIVA)
@@ -308,7 +385,7 @@
           </v-row>
         </div>
         <div v-else>
-          Guarde los datos del presupuesto si desea introducir anualidades
+          <v-alert type="info">Guarde los datos del presupuesto si desea introducir anualidades</v-alert>
         </div>
       </v-col>
       <br/>
@@ -316,18 +393,18 @@
       <v-row class="subRow">
         <v-col cols="12" md="5">
           <v-btn
-          v-if="datos.lotes.length >= 1 && anualidadesGuardadas === false"
+          v-if="datos.lotes.length >= 1 && datos.anualidadesGuardadas === false"
           color="green" class="actionButton" dark
           width="100%"
           large
           @click="saveAnualidades"
           >
-            GUARDAR ANUALIDADES
+            GUARDAR DATOS
             <v-icon class="icon">mdi-content-save</v-icon>
           </v-btn>
 
           <v-btn
-          v-else
+          v-if="datos.anualidadesGuardadas === true"
           color="grey" class="actionButton" dark
           width="100%"
           large
@@ -340,69 +417,6 @@
     </v-row>
     <br />
 
-    <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
-    <h3>Tramitación</h3>
-    <v-row class="rowGroup">
-      <v-col cols="12" md="4">
-        <v-select 
-          filled 
-          label="Aplicación presupuestaria" 
-          :items="itemsAplicacionPrep" 
-          v-model="datos.aplicacionPrep"
-        >
-        </v-select>
-      </v-col>
-
-      <v-col cols="12" sm="4">
-        <v-radio-group class="aplicacionPrep" v-model="datos.tramitacion">
-          <v-radio label="Tramitación ordinaria" value="ordinaria"></v-radio>
-          <v-radio label="Tramitación anticipada" value="anticipada"></v-radio>
-        </v-radio-group>
-      </v-col>
-    </v-row>
-    <br/>
-
-    <h3>Desglose</h3>
-    <v-row class="rowGroup">
-      <v-col cols="12" sm="2">
-        <v-radio-group v-model="datos.desglose">
-          <v-radio label="Procede" :value="true"></v-radio>
-          <v-radio label="No procede" :value="false"></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col cols="12" sm="3" v-if="datos.desglose === true">
-        <v-radio-group v-model="datos.tipoDesglose">
-          <v-radio label="Por género" value="genero"></v-radio>
-          <v-radio
-            label="Por Categoría profesional"
-            value="categoria"
-          ></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col
-        cols="12"
-        sm="6"
-        v-if="datos.desglose === true && datos.tipoDesglose === 'genero'"
-      >
-        <v-radio-group v-model="datos.tipoDesgloseGenero">
-          <v-radio
-            label="No consta diferencia de costes por razón de género"
-            value="no consta diferencia"
-          ></v-radio>
-          <v-radio
-            label="Existe diferencia de costes por razón de género"
-            value="consta diferencia"
-          ></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col
-        v-if="datos.desglose === true && datos.tipoDesglose === 'categoria'"
-        cols="12"
-        md="7"
-      ><v-textarea label="Indicar como se desglosa:" filled></v-textarea>
-      </v-col>
-    </v-row>
-    <br />
 
     <!-- 25 MODIFICACIONES -->
     <h3>Modificaciones del contrato</h3>
@@ -514,6 +528,164 @@
       </v-row>
     <br/>
 
+    <!-- 18.- PLAZO DE EJECUCIÓN O DURACION -->
+      <h3>Plazo de ejecución o duración</h3>
+      <v-row class="rowGroup">
+        <v-row class="subRow">
+          <v-col cols="12" md="4">
+              <h5 class="subtitle">Se define como:</h5>
+              <v-radio-group v-model="datos.definicion">
+                  <v-radio label="Un contrato con plazo de ejecución" value="plazoEjecucion"></v-radio>
+                  <v-radio label="Un contrato con plazo de duración" value="plazoDuracion"></v-radio>
+              </v-radio-group>
+          </v-col>
+             
+          <!-- Plazo ejecucion meses -->
+          <v-col cols="12" md="2" v-if="datos.definicion === 'plazoEjecucion'">
+            <h5 class="subtitle">Plazo ejecución:</h5>
+            <br/>
+            <v-text-field filled label="Meses" v-model="datos.plazoMaximoEjecucion"></v-text-field>
+          </v-col>
+
+          <!-- Plazo ejecución observaciones -->
+          <v-col cols="12" md="6" v-if="datos.definicion === 'plazoEjecucion'">
+            <h5 class="subtitle">Observaciones:</h5>
+            <br/>
+            <v-text-field filled label="Observaciones" v-model="datos.plazoMaximoEjecucionObservaciones"></v-text-field>
+          </v-col>
+
+          <!--Plazo de duración modalidad-->
+          <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
+            <h5 class="subtitle">Seleccionar modalidad</h5>
+            <v-radio-group v-model="datos.modalidad">
+              <v-radio label="Plazo en meses" value="plazo"></v-radio>
+              <v-radio label="Periodo" value="periodo"></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <!-- Plazo de duración modalidad > meses -->
+          <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'plazo'">
+            <h5 class="subtitle">Introducir plazo en meses</h5>
+            <br/>
+            <v-text-field filled label="Meses" v-model="datos.plazoMeses"></v-text-field>
+          </v-col>
+
+          <!-- Plazo de duración modalidad > periodo -->
+          <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
+            <h5 class="subtitle">Indique inicio:</h5>
+            <br/>
+              <v-menu
+              v-model="fechaInicio"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                    style="margin-left:-0.5rem;"
+                    filled
+                    v-model="dateInicio"
+                    label="Fecha de Inicio"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    ></v-text-field>
+                </template>
+
+                <v-date-picker
+                v-model="dateInicio"
+                @input="fechaIncio = false"
+                locale="es-es"
+                ></v-date-picker>
+              </v-menu>           
+          </v-col>
+          
+          <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
+            <h5 class="subtitle">Indique fin:</h5>
+            <br/>
+              <v-menu
+              v-model="fechaFin"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                    style="margin-left:-0.5rem;"
+                    filled
+                    v-model="dateFin"
+                    label="Fecha de fin"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    ></v-text-field>
+                </template>
+
+                <v-date-picker
+                v-model="dateFin"
+                @input="fechaFin = false"
+                locale="es-es"
+                ></v-date-picker>
+              </v-menu>           
+          </v-col>
+        </v-row>
+
+        <!-- Prorroga -->
+        <v-col cols="12">
+            <v-row>
+              <v-col cols="12" md="4">
+                <h5 class="subtitle">Ampliación en el plazo de ejecución (Prórroga)</h5>
+                <v-radio-group v-model="datos.prorroga">
+                    <v-radio label="Si" value="si"></v-radio>
+                    <v-radio label="No" value="no"></v-radio>
+                </v-radio-group>
+              </v-col>
+
+              <v-col cols="12" md="2" v-if="datos.prorroga === 'si'">
+                <h5 class="subtitle">Plazo prórroga:</h5>
+                <br/>
+                <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="6" v-if="datos.prorroga === 'si'">
+                <h5 class="subtitle">Observaciones:</h5>
+                <br/>
+                <v-text-field filled label="Observaciones" v-model="datos.prorrogaMesesObservaciones"></v-text-field>
+              </v-col>
+            </v-row>
+        </v-col>   
+
+        <!-- El contrato se iniciará -->
+        <v-col cols="12">
+            <v-row>
+              <v-col cols="12" md="4">
+                <h5 class="subtitle">El plazo del contrato se iniciará:</h5>
+                <v-radio-group v-model="datos.plazoInicio">
+                    <v-radio label="Al día siguiente al de formalización" value="dia siguiente"></v-radio>
+                    <v-radio label="Otro plazo" value="otro"></v-radio>
+                </v-radio-group>
+              </v-col>
+
+              <v-col cols="12" md="2" v-if="datos.plazoInicio === 'otro'">
+                  <h5 class="subtitle">Indicar plazo:</h5>
+                  <br/>
+                  <v-text-field filled label="Fecha" v-model="datos.fechaInicio"></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="6" v-if="datos.plazoInicio === 'otro'">
+                  <h5 class="subtitle">Observaciones:</h5>
+                  <br/>
+                  <v-text-field filled label="Observaciones" v-model="datos.fechaInicioObservaciones"></v-text-field>
+              </v-col>
+            </v-row>
+        </v-col>       
+      </v-row>
+    <br/>
+
     <!-- 4 VALOR ESTIMADO -->
     <h3>Valor Estimado</h3>
     <!--4.1-->
@@ -570,91 +742,17 @@
       </v-row>
       <br />
 
-      <!-- 18.- PLAZO DE EJECUCIÓN O DURACION -->
-      <h3>Plazo de ejecución o duración</h3>
-      <v-row class="rowGroup">
-      <v-row class="subRow">
-        <v-col cols="12" md="4">
-            <h5 class="subtitle">Se define como:</h5>
-            <v-radio-group v-model="datos.definicion">
-                <v-radio label="Un contrato con plazo de ejecución" value="plazoEjecucion"></v-radio>
-                <v-radio label="Un contrato con plazo de duración" value="plazoDuracion"></v-radio>
-            </v-radio-group>
-        </v-col>
-            
-            <!-- PLAZO EJECUCIÓN -->
-            <v-col cols="12" md="4" v-if="datos.definicion === 'plazoEjecucion'">
-                <h5 class="subtitle">Introducir plazo máximo ejecución:</h5>
-                <br/>
-                <v-text-field filled label="Meses" v-model="datos.plazoMaximoEjecucion"></v-text-field>
-            </v-col>
 
-            <v-col cols="12" md="4" v-if="datos.definicion === 'plazoEjecucion' && datos.plazoEjecucion ==='plazosParciales'">
-                <h5 class="subtitle">Introducir plazos parciales:</h5>
-                <v-text-field filled label="Meses" v-model="datos.plazosParciales"></v-text-field>
-            </v-col>
-          
-          <!--PLAZOS DE DURACION-->
-          <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
-              <h5 class="subtitle">Seleccionar modalidad</h5>
-              <v-radio-group v-model="datos.modalidad">
-                  <v-radio label="Plazo en meses" value="plazo"></v-radio>
-                  <v-radio label="Periodo" value="periodo"></v-radio>
-              </v-radio-group>
-          </v-col>
-
-              <!--PLAZOS MESES-->
-              <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'plazo'">
-                  <h5 class="subtitle">Introducir plazo en meses</h5>
-                  <br/>
-                  <v-text-field filled label="Meses" v-model="datos.plazoMeses"></v-text-field>
-              </v-col>
-
-              <!--PLAZOS PERIODO-->
-              <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
-                  <h5 class="subtitle">Indique inicio y fin:</h5>
-                  <br/>
-                  <v-text-field filled label="Inicio" v-model="datos.plazoMeses"></v-text-field>
-                  <v-text-field filled label="Fin" v-model="datos.plazoMeses"></v-text-field>
-              </v-col>
-
-              <!-- PRORROGA -->
-              <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
-                  <h5 class="subtitle">Prorroga:</h5>
-                  <v-radio-group v-model="datos.prorroga">
-                      <v-radio label="No se prevee" value="no"></v-radio>
-                      <v-radio label="Si se prevee" value="si"></v-radio>
-                  </v-radio-group>
-              </v-col>
-
-              <!-- PLAZO PRORROGA -->
-              <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion' && datos.prorroga === 'si'">
-                  <h5 class="subtitle">Definir plazo prorroga</h5>
-                  <br/>
-                  <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
-              </v-col>
-
-              <br/>
-              <v-row class="subRow" >
-                <v-col cols="12" md="4">
-                    <h5 class="subtitle">El plazo del contrato se iniciará:</h5>
-                    <v-radio-group v-model="datos.plazoInicio">
-                        <v-radio label="Al dia siguiente al de formalización del contrato" value="dia siguiente"></v-radio>
-                        <v-radio label="Otro plazo" value="otro"></v-radio>
-                    </v-radio-group>
-                </v-col>
-
-                <v-col cols="12" md="3" v-if="datos.plazoInicio === 'otro'">
-                    <h5 class="subtitle">Si se fija en otro plazo indicar fecha</h5>
-                    <br/>
-                    <v-text-field filled label="Fecha" v-model="datos.fechaInicio"></v-text-field>
-                </v-col>
-              </v-row>
-        </v-row>
+    <h3>Lugar de prestación:</h3>
+    <v-row class="rowGroup">
+      <v-col cols="12">
+        <h5 class="subtitle">La empresa adjudicataria está autorizada a ejecutar los servicios objeto del contrato, o parte de los mismos, en las siguientes dependencias:</h5>
+        <v-textarea filled auto-grow v-model="datos.lugarPrestacion"></v-textarea>
+      </v-col>
     </v-row>
-    <br/>      
+    <br/> 
 
-     <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
+    <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
     <h3>Documentos que revisten carácter contractual</h3>
     <v-row class="rowGroup">
       <v-col cols="12" md="9">
@@ -677,52 +775,17 @@
     <br />
 
     <!-- 7 TRAMITACIÓN DEL PROCEDIMIENTO -->
-    <h3>Tramitación del procedimiento</h3>
+    <h3>Procedimiento</h3>
     <v-row class="rowGroup">
-      <v-col cols="12" md="2">
-        <h5>Seleccionar tramitación</h5>
+      <v-col cols="12">
+        <h5>Seleccionar tramitación del procedimiento</h5>
           <v-radio-group v-model="datos.tramitacionProc">
               <v-radio label="Ordinaria" value="ordinaria"></v-radio>
-              <v-radio label="Urgente" value="urgente"></v-radio>
+              <v-radio label="Urgente, (Se acompañará la correspondiente declaración de urgencia). En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP." value="urgente"></v-radio>
           </v-radio-group>
-      </v-col>
-      <v-col cols="12" md="10" v-if="datos.tramitacionProc === 'urgente'">
-        <h5>Se acompañará de la correspondiente declaración de urgencia</h5>
-        <p>
-          En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato
-          se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP
-        </p>
-        <v-btn color="info"><v-icon style="margin-right: 0.5rem;">mdi-content-save</v-icon>CARGAR DECLARACIÓN</v-btn>
       </v-col>
     </v-row>
     <br />
-    
-    <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
-    <h3>Incompatibilidades para la licitación</h3>
-    <v-row class="rowGroup"> 
-      <v-col cols="12">
-        <h5 class="subtitle">
-          <!--8.1 -->
-          Participación en la licitación de las empresas que hubieran participado previamente en la 
-          elaboración de las especificaciones técnicas o de los documentos preparatorios del contrato
-          o hubieran asesorado al órgano de contratación durante la preparación del procedimiento de 
-          contratación [artículo 70.1 LCSP]
-        </h5>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <h5>Consideración:</h5>
-          <v-radio-group v-model="datos.participacionEmpresas">
-              <v-radio label="No tiene consideración el contrato que se licita" value="no tiene"></v-radio>
-              <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" value="si tiene"></v-radio>
-          </v-radio-group>
-      </v-col>
-
-      <v-col cols="12" md="8" v-if="datos.participacionEmpresas === 'si tiene'">
-        <h5>Empresas que deben ser excluidas de dicha licitación:</h5>
-        <v-textarea filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
-      </v-col>
-    </v-row>
   </div>
 </template>
 
@@ -733,16 +796,19 @@ export default {
   
   data() {
     return {
-      anualidades: [1, 2, 3, 4, 5],
+      date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+      fechaInicio: false,
+      fechaFin: false,
+      dateInicio: '',
+      dateFin: '',
+
+
+      anualidades: [2, 3, 4, 5],
       impuestos: [
         {tipo: 'IVA', valor: 21},
         {tipo: 'IGIC', valor: 7}
       ],
-      selectAnualidades: 1,
       itemsAplicacionPrep: ['495A1718620', '495A1718630', '1718495A620'],
-      presupuestoSinAsignar: undefined,
-      lotesGuardados: false,
-      anualidadesGuardadas: false,
       importeNumUnid: undefined,
       rules: {
           required: (value) => !!value || "Este campo es obligatorio.",
@@ -757,12 +823,10 @@ export default {
         { text: "Total Impuestos €", align: "end", sortable: false, value: "totalImpuestos", divider: true,},
         { text: "Costes generales (13%) €", align: "end", sortable: false, value: "costesGenerales", divider: true}, 
         { text: "Beneficio industrial (6%) €", align: "end", sortable: false, value: "beneficioIndustrial", divider: true},
-        { text: "Costes Directos (generales + industriales) €", align: "end", sortable: false, value: "costesDirectos", divider: true},
-        { text: "Costes Indirectos €", align: "end", sortable: false, value: "costesIndirectos", divider: true},
-        { text: "Total costes (sin impuestos) €", align: "end", sortable: false, value: "totalCostes", divider: true},
+        { text: "Costes Indirectos (generales + industriales) €", align: "end", sortable: false, value: "costesIndirectos", divider: true},
+        { text: "Costes Directos €", align: "end", sortable: false, value: "costesDirectos", divider: true},
         { text: "Total (imp. incluidos) €", align: "end", sortable: false, value: "totalLote", divider: true,},
         { text: "Borrar", align: "center", sortable: false, value: "actions", divider: true,},
-
       ],
 
       identificacionLotesHeaders: [
@@ -789,9 +853,15 @@ export default {
         totalCostes: undefined,
         aplicacionPrep: '',
         tramitacion: "ordinaria",
-        desglose: true,
+        desglose: 'no procede',
         tipoDesglose: undefined,
         tipoDesgloseGenero: undefined,
+        anualidadesGuardadas: false,
+        tipoImpuesto: undefined,
+        porcentajeImpuesto: undefined,
+        totalImpuestos: undefined,
+        costesIndirectos: undefined,
+
 
         //SECCION 4
         maxModificacionesPrevistas: undefined,
@@ -804,7 +874,10 @@ export default {
         divisionPosibleDivisible: undefined,
         justificacionNoDivisionLotes: '',
         numLotes: 1,
+        hayLotes: false,
         lotes: [],
+        limitacionLotes: undefined,
+        lotesGuardados: false,
 
         //SECCION 6
         relacionDocsContractual: undefined,
@@ -813,24 +886,24 @@ export default {
         //SECCION 7
         tramitacionProc: undefined,
 
-        //SECCION 8
-        participacionEmpresas: "no tiene",
-        empresasExcluidas: undefined,
-
         //SECCION 25
         preveModif: undefined,
         importeModificacion: undefined,
 
         //SECCUION 18
-        definicion: '',
+        definicion: 'plazoEjecucion',
         plazoEjecucion: '',
         plazoMaximoEjecucion: '',
+        plazoMaximoEjecucionObservaciones: '',
         modalidad: 'plazo',
         plazoMeses: '',
         prorroga: 'no',
         prorrogaMeses: '',
+        prorrogaMesesObservaciones: '',
         plazoInicio: '',
         fechaInicio: '',
+        fechaInicioObservaciones: '',
+        lugarPrestacion: '',
       },
     };
   },
@@ -869,7 +942,16 @@ export default {
           this.importeNumUnid = this.base * 0.20
         } else {
           this.datos.importeModificacion = 0;
-        }   
+        }
+        
+        //CONSISTENCIA DE DATOS
+        if(datos.definicion === 'plazoEjecucion'){
+          datos.modalidad = undefined;
+          datos.plazoMeses = undefined;
+        } else {
+          datos.plazoMaximoEjecucion = undefined;
+          datos.plazoMaximoEjecucionObservaciones = undefined;
+        }
       }
     },
   },
@@ -899,13 +981,28 @@ export default {
           this.elemento.importeConIVA = parseFloat(this.elemento.IVA) + parseFloat(this.elemento.importeSinIVA);
         }
       }
-      this.anualidadesGuardadas = true;
+      this.datos.anualidadesGuardadas = true;
+      console.log(this.datos)
     },
 
     saveLotes(){
       if(this.datos.numLotes === 1){
         this.datos.presupuestoBaseLicitacion = this.datos.lotes[0].baseLote;
+        this.datos.porcentajeImpuesto = this.datos.lotes[0].tipoImpuesto;
+        if(this.datos.porcentajeImpuesto === 21){this.datos.tipoImpuesto = 'IVA'} else {this.datos.tipoImpuesto = 'IGIC'}
+        this.datos.totalImpuestos = (parseFloat(this.datos.presupuestoBaseLicitacion)) * 0.21
+        this.datos.costesDirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) / 1.19
+        this.datos.costesIndirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) - this.datos.costesDirectos
+        this.datos.beneficioIndustrial = (this.datos.costesDirectos * 0.06).toFixed(2)
+        this.datos.costesGenerales = (this.datos.costesDirectos * 0.13).toFixed(2)
+        this.datos.costesDirectos = (this.datos.costesDirectos).toFixed(2)
+        this.datos.costesIndirectos = (this.datos.costesIndirectos).toFixed(2)
+        this.datos.totalCostes = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + this.datos.totalImpuestos).toFixed(2)
+
+
+        console.log(this.datos)
       } else {
+          this.datos.hayLotes = true;
           this.datos.presupuestoBaseLicitacion = 0;
           for(this.index in this.datos.lotes){
             this.lote = this.datos.lotes[this.index]
@@ -918,7 +1015,7 @@ export default {
             this.lote.costesIndirectos = parseFloat(this.lote.baseLote) - this.lote.costesDirectos
           }
       }
-      this.lotesGuardados = true;
+      this.datos.lotesGuardados = true;
     },
 
     deleteLote(idLote){
@@ -931,7 +1028,7 @@ export default {
 
     createLotes(){
       this.datos.lotes = [];
-      this.lotesGuardados = false;
+      this.datos.lotesGuardados = false;
       for (let i = 0; i < this.datos.numLotes; i++){
         this.newLote = {
           idLote: i+1,
@@ -944,7 +1041,7 @@ export default {
           costesIndirectos: undefined,
           costesGenerales: undefined,
           beneficioIndustrial: undefined,
-          selectAnualidades: 1,
+          selectAnualidades: 2,
           anualidades:[],
           alert: undefined,
         }
@@ -960,7 +1057,7 @@ export default {
     },
 
     colorLotes(){
-      if(this.lotesGuardados === false){
+      if(this.datos.lotesGuardados === false){
         return "success"
       } else {
         return "grey"
@@ -968,7 +1065,7 @@ export default {
     },
 
     makeAnualidades(lote) {
-      this.anualidadesGuardadas = false;
+      this.datos.anualidadesGuardadas = false;
       lote.anualidades = [];
       let fecha = new Date();
       let ano = fecha.getFullYear();
@@ -1051,4 +1148,5 @@ export default {
 .adjustHeight{
   margin: 0.7rem 0rem 0rem 0rem;
 }
+
 </style>

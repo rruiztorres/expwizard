@@ -1,10 +1,94 @@
 <template>
     <div>
-         <!-- 9 CAPACIDAD Y SOLVENCIA -->
-        <h3>9.- Capacidad y solvencia</h3>
+        <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
+        <h3>Incompatibilidades para la licitación</h3>
+        <v-row class="rowGroup"> 
+            <v-row class="subRow">
+
+                <!--8.0 -->
+                <v-col cols="12">
+                    <h5 class="subtitle">
+                    Participación en la licitación de las empresas que hubieran participado previamente en la 
+                    elaboración de las especificaciones técnicas o de los documentos preparatorios del contrato
+                    o hubieran asesorado al órgano de contratación durante la preparación del procedimiento de 
+                    contratación [artículo 70.1 LCSP]
+                    </h5>
+                </v-col>
+
+                <v-col cols="12" md="6">
+                    <h5>Consideración:</h5>
+                    <v-radio-group v-model="datos.participacionEmpresas">
+                        <v-radio label="No tiene consideración el contrato que se licita" value="no tiene"></v-radio>
+                        <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" value="si tiene"></v-radio>
+                    </v-radio-group>
+                </v-col>
+
+                <v-col cols="12" md="6" v-if="datos.participacionEmpresas === 'si tiene'">
+                    <h5>Empresas que deben ser excluidas de dicha licitación:</h5>
+                    <v-textarea filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
+                </v-col>
+            </v-row>
+
+            <!--8.1-->
+            <v-row class="subRow">
+                <v-col cols="12">
+                    <h5 class="subtitle">
+                    Contratos de servicios que tengan por objeto la vigilancia, supervisión, control y
+                    dirección o la coordinación de la ejecución de contratos de obras e instalaciones
+                    [artículo 70.2 LCSP]
+                    </h5>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-radio-group v-model="datos.vigilanciaInstalaciones">
+                        <v-radio
+                        label="No tiene esa consideración el contrato que se licita"
+                        value="no tiene"
+                        ></v-radio>
+                        <v-radio
+                        label="Sí tiene esa consideración el contrato que se licita. En este caso, en la declaración responsable el licitador hará constar que no le afecta la causa de incompatibilidad, regulada en el artículo 70.2 de la LCSP, respecto de contrato o contratos que se detallan a continuación:"
+                        value="si tiene"
+                        ></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols="12" md="6" v-if="datos.vigilanciaInstalaciones === 'si tiene'">
+                    <h5>Especificar contratos:</h5>
+                    <v-textarea filled auto-grow v-model="datos.vigilanciaInstalacionesContratos"></v-textarea>
+                </v-col>
+            </v-row>
+
+            <!--8.2-->
+            <v-row class="subRow">
+                <v-col cols="12">
+                    <h5 class="subtitle">
+                    Contratos de servicios que tengan por objeto la vigilancia, supervisión, control y
+                    dirección de otros contratos [artículo 70.2 LCSP]
+                    </h5>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-radio-group v-model="datos.vigilanciaOtrosContratos">
+                        <v-radio
+                        label="No tiene esa consideración el contrato que se licita"
+                        value="no tiene"
+                        ></v-radio>
+                        <v-radio
+                        label="Sí tiene esa consideración el contrato que se licita. En este caso, en la declaración responsable el licitador hará constar que no le afecta la causa de incompatibilidad, regulada en el artículo 70.2 de la LCSP, respecto de contrato o contratos que se detallan a continuación:"
+                        value="si tiene"
+                        ></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <v-col cols="12" md="6" v-if="datos.vigilanciaOtrosContratos === 'si tiene'">
+                    <h5>Especificar contratos:</h5>
+                    <v-textarea filled auto-grow v-model="datos.vigilanciaContratosContratos"></v-textarea>
+                </v-col>
+            </v-row>
+        </v-row>
         <br/>
 
-        <h5>9.1.- Requisitos de solvencia</h5>
+         <!-- 9 CAPACIDAD Y SOLVENCIA -->
+        <h3>Capacidad y solvencia</h3>
+        <br/>
+
+        <h5>Requisitos de solvencia</h5>
         <v-row class="rowGroup">
             <!--9.1 Requisitos de solvencia-->
             <v-row class="subRow">
@@ -34,14 +118,34 @@
                     <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados' && datos.solvenciaEconFinanc === 'volumen'">
                         <h5>Especificar importe exigido volumen anual de negocios:</h5>
                         <br/>
-                        <v-text-field 
-                        :rules="[rules.importeMax]"
-                        filled label="€" v-model="datos.volumenAnualNegocio" type="number"></v-text-field>
-                        <i>
-                            El importe exigido será como máximo una vez y media (1.5) el <b>valor estimado del contrato</b> (sin IVA),
-                            en contratos de duración <b>no superior a un año</b> y una vez y media (1.5) el <b>valor anual medio
-                            del contrato</b> (sin IVA), en contratos de duración <b>superior a un año</b>.
-                        </i>    
+                        <!-- <v-text-field filled label="€" v-model="datos.volumenAnualNegocio" type="number"></v-text-field> -->
+                        <v-data-table
+                            class="dataTable"
+                            :items="datos.volumenAnualNegocio"
+                            :headers="solvenciaHeaders"
+                            hide-default-footer
+                        >
+                            <template v-slot:[`item.importeReq`]="props">
+                                <v-edit-dialog :return-value.sync="props.item.importeReq">
+                                <span class="editField">{{
+                                parseFloat(props.item.importeReq)
+                                }}</span>
+                                <template v-slot:input>
+                                    <v-text-field
+                                    v-model="props.item.importeReq"
+                                    label="Editar"
+                                    single-line
+                                    ></v-text-field>
+                                </template>
+                                </v-edit-dialog>
+                            </template>
+
+                            <template v-slot:[`item.actions`]="props">
+                                <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
+                                <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
+                            </template>
+                        
+                        </v-data-table>
                     </v-col>
 
                     <!-- CASO PATRIMONIO NETO AL CIERRE -->
@@ -118,7 +222,7 @@
         <br/>
 
         <!--9.2.- Integracion de la solvencia -->
-        <h5>9.2.- Integración de la solvencia</h5>
+        <h5>Integración de la solvencia</h5>
         <v-row class="rowGroup">
             <v-col cols="12">
                 <i>Si el licitador se basa en la solvencia y medios de otras entidades
@@ -134,7 +238,7 @@
         <br/>
         
         <!--9.3.- Concrecion de las condiciones de solvencia -->
-        <h5>9.3.- Concreción de las condiciones de solvencia</h5>
+        <h5>Concreción de las condiciones de solvencia</h5>
         <v-row class="rowGroup">
                 <v-col cols="12" md="8">
                     <h5 class="subtitle">1.- Obligación de adscribir medios personales o materiales</h5>
@@ -168,7 +272,7 @@
         </v-row>
         <br/>
 
-        <h5>9.4.- Habilitación empresaria exigible</h5>
+        <h5>Habilitación empresaria exigible</h5>
         <v-row class="rowGroup">
             <v-col cols="12" md="4">
                 <v-radio-group v-model="datos.habilitacionExigible">
@@ -190,15 +294,27 @@
         name: 'CapacidadSolvencia',
         data(){
             return {
-                rules: {
-                    importeMax: (value) => this.maxExigido(value) || "El importe exigido supera el máximo exigible en este tipo de contrato",
-                },
+                plazoContrato: 0,
+                solvenciaHeaders: [
+                    { text: "Lote", align: "start", sortable: false, value: "idLote", divider: true,},
+                    { text: "Descripción", align: "start", sortable: false, value: "descripcion", divider: true,},
+                    { text: "Requerido", align: "start", sortable: false, value: "importeReq", divider: true,},
+                    { text: "Máximo exigible", align: "start", sortable: false, value: "maxSolvReq", divider: true,},
+                    { text: "Válido", align: "start", sortable: false, value: "actions", divider: true,}
+                ],
 
                 datos: {
+                    //SECCION 8
+                    participacionEmpresas: "no tiene",
+                    empresasExcluidas: undefined,
+                    vigilanciaInstalaciones: undefined,
+                    vigilanciaInstalacionesContratos: '',
+                    vigilanciaOtrosContratos: undefined,
+                    vigilanciaContratosContratos: '',
                     componente:'CapacidadSolvencia',
                     requisitos: undefined,
                     solvenciaEconFinanc: undefined,
-                    volumenAnualNegocio: undefined,
+                    volumenAnualNegocio: [],
                     patrimonioNeto: undefined,
                     solvenciaTecProfe: undefined,
                     otrosReqSolvTecProfe: undefined,
@@ -222,34 +338,63 @@
             this.initialize();
         },
 
+        watch:{
+            datos: {
+                deep: true,
+                handler(datos){
+                    //VALIDACION VOLUMEN NEGOCIOS
+                    for(this.index in datos.volumenAnualNegocio){
+                        if(parseFloat(datos.volumenAnualNegocio[this.index].maxSolvReq) < parseFloat(datos.volumenAnualNegocio[this.index].importeReq) || datos.volumenAnualNegocio[this.index].importeReq === 0){                         
+                           datos.volumenAnualNegocio[this.index].actions = false
+                        } else {
+                            datos.volumenAnualNegocio[this.index].actions = true
+                        }
+                    }
+                }
+            }
+        },
+
         methods:{
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
                 }
-            },
-            
-            maxExigido(importe){
-               if(this.presBase){
-                   //contratos inferiores al año
-                   if(this.presBase.anualidades.length === 0){
-                       this.maximo = parseFloat(this.presBase.presupuestoBaseLicitacion)*1.5;
-                       if(this.maximo > importe){
-                           return true
-                       }
-                   } 
-                   //contratos superiores al año
-                   else {
-                       this.years = this.presBase.anualidades.length;
-                       this.meses = this.years * 12 // total meses ejecucion
+                
+                //PLAZO DURACION CONTRATO
+                if(this.presBase){
+                    if (this.presBase.plazoMaximoEjecucion !== undefined){
+                        this.plazoContrato = parseInt(this.presBase.plazoMaximoEjecucion)
+                    }
+                    else if (this.presBase.plazoMeses !== undefined){
+                        this.plazoContrato = parseInt(this.presBase.plazoMeses)
+                    }
+                
 
-                       this.maximo = (parseFloat(this.presBase.presupuestoBaseLicitacion) / this.meses) * 12 // valor anual medio contrato
-                       if(this.maximo > importe){
-                           return true
-                       }
-                   }
-               }
-            }
+                    //TABLAS SOLVENCIA
+                    if(this.datos.volumenAnualNegocio.length === 0){
+                        for (this.index in this.presBase.lotes){
+                            if (this.plazoContrato < 12){
+                                //Max menos de un año = 1.5 veces base licitacion
+                                this.maxImporteReq = (parseFloat(this.presBase.lotes[this.index].baseLote) * 1.5).toFixed(2)
+                            } else {
+                                //Max mas de un año = 1.5 veces anualidad media contrato
+                                this.anualidadMed = parseFloat(this.presBase.lotes[this.index].baseLote);
+                                this.anualidadMed = (this.anualidadMed / parseInt(this.plazoContrato)) * 12
+                                this.maxImporteReq = parseFloat((this.anualidadMed * 1.5).toFixed(2))         
+                            }
+
+                            this.newLote = {
+                                idLote: this.presBase.lotes[this.index].idLote,
+                                descripcion: this.presBase.lotes[this.index].descripcion,
+                                importeReq: 0,
+                                maxSolvReq: this.maxImporteReq,
+                                actions: undefined,
+                            }
+                            this.datos.volumenAnualNegocio.push(this.newLote)
+                        }
+                    } 
+                }                    
+            },
         }
 
 
@@ -279,5 +424,10 @@
     
     li{
         margin-bottom: 0.5rem;
+    }
+
+    .editField {
+        color: blue;
+        text-decoration: underline;
     }
 </style>

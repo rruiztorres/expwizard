@@ -35,6 +35,7 @@ export const renderDoc = {
                     });
 
                     // Salida de documento
+                    // POSIBILIDAD DE GUARDAR DIRECTO A PDF -> out??
                     saveAs(out, "GENERADO-210910-PCAP-suministro abierto.docx");
                 }
             );

@@ -1,7 +1,11 @@
 <template>
   <div>
         <!-- 1 OBJETO DEL CONTRATO -->
-        <h3>Objeto del contrato</h3>
+        <h3>Objeto del contrato
+          <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 1"></v-badge >
+        </h3>
         <v-text-field
         v-model="datos.tituloExpediente"
         :rules="[rules.required, rules.counter]"
@@ -62,7 +66,11 @@
 
 
         <!-- 2 NECESIDADES DEL CONTRATO -->
-        <h3>Necesidades a satisfacer y circunstancias del contrato</h3>
+        <h3>Necesidades a satisfacer y circunstancias del contrato
+          <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 2"></v-badge >
+        </h3>
         <v-row class="row">
           <v-col cols="12">
               <v-textarea 
@@ -181,16 +189,6 @@ props:['datosGuardados'],
 <style scoped>
 #cardWrapper {
   padding: 1rem;
-}
-
-h3{
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-h5 {
-  font-weight: 500;
-  opacity: 0.6;
 }
 
 .row {
