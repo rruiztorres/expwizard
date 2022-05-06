@@ -34,13 +34,14 @@
                 <v-list-item
                     v-for="(item, i) in items"
                     :key="i"
-                >
+                    @click="activeMenu(item.menu)"
+                >   
                     <v-list-item-icon>
-                    <v-icon v-text="item.icon"></v-icon>
+                        <v-icon v-text="item.icon"></v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
-                    <v-list-item-title v-text="item.text"></v-list-item-title>
+                        <v-list-item-title v-text="item.text"></v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
             </v-list-item-group>
@@ -58,6 +59,7 @@
 <script>
     export default {
         name: 'UserMenu',
+
         data(){
             return {
                 //VARIABLES DE USUARIO
@@ -70,14 +72,19 @@
                 //MENU CONTROL
                 selectedItem: 0,
                 items: [
-                    { text: 'Nuevo Expediente', icon: 'mdi-file-document' },
-                    { text: 'Mis expedientes', icon: 'mdi-folder' },
-                    { text: 'Pendientes revisión', icon: 'mdi-star' },
-                    { text: 'Usuarios', icon: 'mdi-account-multiple' },
-                    { text: 'Recientes', icon: 'mdi-history' },
+                    { text: 'Nuevo Expediente', icon: 'mdi-file-document', menu: 'selector' },
+                    { text: 'Mis expedientes', icon: 'mdi-folder', menu: 'misExpedientes' },
+                    { text: 'Usuarios', icon: 'mdi-account-multiple', menu: 'foo3' },
+                    { text: 'Cambios', icon: 'mdi-history', menu: 'foo4' },
                 ],
             }
-        }
+        },
+
+        methods: {
+            activeMenu(menu){
+                this.$emit('activeMenu', menu)
+            }
+        },
     }
 </script>
 

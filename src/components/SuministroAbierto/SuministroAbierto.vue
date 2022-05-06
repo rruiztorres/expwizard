@@ -247,7 +247,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             },
 
             back(){
-                this.$emit("back", true)
+                this.$emit("back", 'selector')
             },
 
             activateTab(tab){

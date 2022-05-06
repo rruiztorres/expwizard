@@ -16,21 +16,39 @@
       fixed
       temporary
     >
-      <UserMenu></UserMenu>
+      <UserMenu
+        @activeMenu="activeOption"
+      >
+      </UserMenu>
     </v-navigation-drawer>  
       
     <v-main class="grey lighten-2 mainApp">
-      <v-container v-if="selector === false">
-        <SuministroAbierto @back="verSeleccion">
-        </SuministroAbierto>
+      <!-- MENU MIS EXPEDIENTES -->
+      <v-container v-if="active === 'misExpedientes'">
+        <v-row class="rowWrapper">
+          <v-col cols="12">
+            <MisExpedientes></MisExpedientes>
+          </v-col>
+        </v-row>
       </v-container>
-      
-      <v-container v-else>
-        <v-row>
+
+      <!-- SELECTOR DE TIPOS EXPEDIENTE -->   
+      <v-container v-if="active === 'selector'">
+        <v-row class="rowWrapper">
           <v-col cols="12">
             <Selector 
-              @tipoExp="seleccionTipo">
+              @tipoExp="activeOption">
             </Selector>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <!-- WIZARDS -->
+      <v-container v-if="active === 'PCAP'">
+        <v-row class="rowWrapper">
+          <v-col cols="12">
+            <SuministroAbierto @back="activeOption">
+            </SuministroAbierto>
           </v-col>
         </v-row>
       </v-container>
@@ -42,30 +60,27 @@
 import UserMenu from "@/components/common/UserMenu"
 import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto"
 import Selector from "@/components/common/Selector"
+import MisExpedientes from "@/components/common/MisExpedientes"
 
   export default {
     components: {
       UserMenu, 
       SuministroAbierto, 
-      Selector
+      Selector,
+      MisExpedientes,
     },
 
     data () {
         return {
             drawer: null,
-            selector: true,
+            active: 'selector',
         }
     },
 
     methods:{
-      seleccionTipo(tipoExp){
-        this.selector = false;
-        this.tipoExp = tipoExp;
+      activeOption(option){
+        this.active = option;
       },
-
-      verSeleccion(verSeleccion){
-        this.selector = verSeleccion;
-      }
     }
   }
 </script>
@@ -73,6 +88,10 @@ import Selector from "@/components/common/Selector"
 <style scoped>
     h1,h2,h3,h4, #agexApp {
         font-weight: 400;
+    }
+
+    .rowWrapper {
+      margin-top: 1rem;
     }
 
     .appBar{

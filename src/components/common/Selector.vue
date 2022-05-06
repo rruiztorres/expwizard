@@ -20,7 +20,7 @@
             v-if="resBusqueda('PCAP')"
             cols="12" sm="6" md="4" lg="2">
                 <v-card 
-                color="green" dark class="selection" @click="selectTipo()" elevation="0">
+                color="green" dark class="selection" @click="selectTipo('PCAP')" elevation="0">
                     <v-card-title>PCAP</v-card-title>
                     <v-card-text>
                         <v-icon class="iconSel">mdi-note-text-outline</v-icon>
@@ -100,7 +100,6 @@ h1, h2, h3, h4 {
 }
 
 .searchBar {
-    margin-top: 1rem;
     height: 5rem;
 }
 
