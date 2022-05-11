@@ -31,7 +31,7 @@
             v-if="resBusqueda('SERVICIOS')"
             cols="12" sm="6" md="4" lg="2">
                 <v-card 
-                color="red" dark class="selection" elevation="0">
+                color="red" dark class="selection" @click="selectTipo('SERVICIOS')" elevation="0">
                     <v-card-title>SERVICIOS</v-card-title>
                     <v-card-text>
                         <v-icon class="iconSel">mdi-note-text-outline</v-icon>

@@ -52,6 +52,15 @@
           </v-col>
         </v-row>
       </v-container>
+
+      <v-container v-if="active === 'SERVICIOS'">
+        <v-row class="rowWrapper">
+          <v-col cols="12">
+            <Servicios>
+            </Servicios>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -59,6 +68,7 @@
 <script>
 import UserMenu from "@/components/common/UserMenu"
 import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto"
+import Servicios from "@/components/Servicios/Servicios"
 import Selector from "@/components/common/Selector"
 import MisExpedientes from "@/components/common/MisExpedientes"
 
@@ -66,6 +76,7 @@ import MisExpedientes from "@/components/common/MisExpedientes"
     components: {
       UserMenu, 
       SuministroAbierto, 
+      Servicios,
       Selector,
       MisExpedientes,
     },
@@ -80,6 +91,7 @@ import MisExpedientes from "@/components/common/MisExpedientes"
     methods:{
       activeOption(option){
         this.active = option;
+        this.drawer = false;
       },
     }
   }

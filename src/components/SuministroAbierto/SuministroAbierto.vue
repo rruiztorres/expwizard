@@ -18,7 +18,7 @@
                                     PROBAR
                                 </v-btn>
                                 <v-btn 
-                                @click="goToEnd(9)"
+                                @click="goToEnd(8)"
                                 color="info" class="headButton">
                                     <v-icon class="iconBack">mdi-check-all</v-icon>
                                     FINALIZAR
@@ -231,8 +231,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                               
         },
 
-        methods:{
-            
+        methods:{    
             compValidation(comp){
                 if(comp === true){
                     return "validado"
@@ -241,9 +240,9 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 }
             },
 
-            goToEnd(data){
+            goToEnd(data){        
                 this.tab = data;
-                this.activeTab = data + 1;
+                this.activeTab = data + 1
             },
 
             back(){
@@ -328,7 +327,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
     }
 
     .titleRow{
-        margin: 0rem;
+        margin: 0rem !important;
         background-color: rgb(149, 214, 214) ;
         border-radius: 4px;
     }

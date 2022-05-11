@@ -113,7 +113,7 @@ export default{
         exportCPV(){
             this.cpvCodes = [];
             for (this.index in this.selected) {
-                this.cpvCodes.push(this.selected[this.index].codigo + " ");
+                this.cpvCodes.push(" " + this.selected[this.index].codigo);
             }
             this.$emit("cpvCodes", this.cpvCodes)
             this.closeDialog();

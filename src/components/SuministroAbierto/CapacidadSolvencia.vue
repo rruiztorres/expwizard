@@ -1,10 +1,13 @@
 <template>
     <div>
         <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
-        <h3>Incompatibilidades para la licitación</h3>
+        <h3>Incompatibilidades para la licitación
+            <v-badge 
+            class="badge" color="#c7d6f2" content="?"
+            title="Punto 8.1 (Incompatibilidades para la licitación)"></v-badge >
+        </h3>
         <v-row class="rowGroup"> 
             <v-row class="subRow">
-
                 <!--8.0 -->
                 <v-col cols="12">
                     <h5 class="subtitle">
@@ -18,77 +21,28 @@
                 <v-col cols="12" md="6">
                     <h5>Consideración:</h5>
                     <v-radio-group v-model="datos.participacionEmpresas">
-                        <v-radio label="No tiene consideración el contrato que se licita" value="no tiene"></v-radio>
-                        <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" value="si tiene"></v-radio>
+                        <v-radio label="No tiene consideración el contrato que se licita" :value="true"></v-radio>
+                        <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
-                <v-col cols="12" md="6" v-if="datos.participacionEmpresas === 'si tiene'">
+                <v-col cols="12" md="6" v-if="datos.participacionEmpresas === false">
                     <h5>Empresas que deben ser excluidas de dicha licitación:</h5>
                     <v-textarea filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
-                </v-col>
-            </v-row>
-
-            <!--8.1-->
-            <v-row class="subRow">
-                <v-col cols="12">
-                    <h5 class="subtitle">
-                    Contratos de servicios que tengan por objeto la vigilancia, supervisión, control y
-                    dirección o la coordinación de la ejecución de contratos de obras e instalaciones
-                    [artículo 70.2 LCSP]
-                    </h5>
-                </v-col>
-                <v-col cols="12" md="6">
-                    <v-radio-group v-model="datos.vigilanciaInstalaciones">
-                        <v-radio
-                        label="No tiene esa consideración el contrato que se licita"
-                        value="no tiene"
-                        ></v-radio>
-                        <v-radio
-                        label="Sí tiene esa consideración el contrato que se licita. En este caso, en la declaración responsable el licitador hará constar que no le afecta la causa de incompatibilidad, regulada en el artículo 70.2 de la LCSP, respecto de contrato o contratos que se detallan a continuación:"
-                        value="si tiene"
-                        ></v-radio>
-                    </v-radio-group>
-                </v-col>
-                <v-col cols="12" md="6" v-if="datos.vigilanciaInstalaciones === 'si tiene'">
-                    <h5>Especificar contratos:</h5>
-                    <v-textarea filled auto-grow v-model="datos.vigilanciaInstalacionesContratos"></v-textarea>
-                </v-col>
-            </v-row>
-
-            <!--8.2-->
-            <v-row class="subRow">
-                <v-col cols="12">
-                    <h5 class="subtitle">
-                    Contratos de servicios que tengan por objeto la vigilancia, supervisión, control y
-                    dirección de otros contratos [artículo 70.2 LCSP]
-                    </h5>
-                </v-col>
-                <v-col cols="12" md="6">
-                    <v-radio-group v-model="datos.vigilanciaOtrosContratos">
-                        <v-radio
-                        label="No tiene esa consideración el contrato que se licita"
-                        value="no tiene"
-                        ></v-radio>
-                        <v-radio
-                        label="Sí tiene esa consideración el contrato que se licita. En este caso, en la declaración responsable el licitador hará constar que no le afecta la causa de incompatibilidad, regulada en el artículo 70.2 de la LCSP, respecto de contrato o contratos que se detallan a continuación:"
-                        value="si tiene"
-                        ></v-radio>
-                    </v-radio-group>
-                </v-col>
-                <v-col cols="12" md="6" v-if="datos.vigilanciaOtrosContratos === 'si tiene'">
-                    <h5>Especificar contratos:</h5>
-                    <v-textarea filled auto-grow v-model="datos.vigilanciaContratosContratos"></v-textarea>
                 </v-col>
             </v-row>
         </v-row>
         <br/>
 
-         <!-- 9 CAPACIDAD Y SOLVENCIA -->
+        <!-- 9 CAPACIDAD Y SOLVENCIA -->
         <h3>Capacidad y solvencia</h3>
         <br/>
 
-        <h5>Requisitos de solvencia</h5>
+        <h5>Requisitos de solvencia
+            <v-badge 
+            class="badge" color="#c7d6f2" content="?"
+            title="Punto 9.1 (Requisitos de solvencia)"></v-badge >
+        </h5>
         <v-row class="rowGroup">
             <!--9.1 Requisitos de solvencia-->
             <v-row class="subRow">
@@ -96,15 +50,15 @@
                     <i>Se acreditará mediante los documentos acreditativos de 
                     los requisitos especificados a continuación: </i>
                     <v-radio-group v-model="datos.requisitos">
-                        <v-radio label="Los exigidos supletoriamente, a falta de especificación, en los artículos 87.3 y 89 de la LCSP" value="exigidos"></v-radio>
-                        <v-radio label="Los que se especifican a continuación (de entre los criterios de solvencia económica y financiera -artículo 87- y técnica -artículo 89- de la LCSP)" value="especificados"></v-radio>
+                        <v-radio label="Los exigidos supletoriamente, a falta de especificación, en los artículos 87.3 y 89 de la LCSP" :value="true"></v-radio>
+                        <v-radio label="Los que se especifican a continuación (de entre los criterios de solvencia económica y financiera -artículo 87- y técnica -artículo 89- de la LCSP)" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
                 <!-- ESPECIFICADOS -->
 
                 <!-- SOLVENCIA ECONOMICA FINANCIERA-->
-                <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados'">
+                <v-col cols="12" md="6" v-if="datos.requisitos === false">
                     <h5>Solvencia económica y financiera [art. 87 LCSP]</h5>
                     <v-radio-group v-model="datos.solvenciaEconFinanc">
                         <v-radio label="El volumen anual de negocios, que referido al mejor ejercicio de los tres (3) últimos concluidos deberá ser:" value="volumen"></v-radio>
@@ -115,11 +69,40 @@
                 </v-col>
 
                     <!-- CASO VOLUMEN ANUAL NEGOCIOS -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados' && datos.solvenciaEconFinanc === 'volumen'">
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'volumen'">
                         <h5>Especificar importe exigido volumen anual de negocios:</h5>
                         <br/>
-                        <!-- <v-text-field filled label="€" v-model="datos.volumenAnualNegocio" type="number"></v-text-field> -->
                         <v-data-table
+                            v-if="presBase.hayLotes === true"
+                            class="dataTable"
+                            :items="datos.volumenAnualNegocio"
+                            :headers="solvenciaLotesHeaders"
+                            hide-default-footer
+                        >
+                            <template v-slot:[`item.importeReq`]="props">
+                                <v-edit-dialog :return-value.sync="props.item.importeReq">
+                                <span class="editField">{{
+                                parseFloat(props.item.importeReq)
+                                }}</span>
+                                <template v-slot:input>
+                                    <v-text-field
+                                    v-model="props.item.importeReq"
+                                    label="Editar"
+                                    single-line
+                                    ></v-text-field>
+                                </template>
+                                </v-edit-dialog>
+                            </template>
+
+                            <template v-slot:[`item.actions`]="props">
+                                <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
+                                <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
+                            </template>
+                        
+                        </v-data-table>
+
+                        <v-data-table
+                            v-else
                             class="dataTable"
                             :items="datos.volumenAnualNegocio"
                             :headers="solvenciaHeaders"
@@ -146,24 +129,27 @@
                             </template>
                         
                         </v-data-table>
+
+                        <br/>
+                        <v-alert type="error" v-if="alertSolvencia === true">{{alertSolvenciaText}}</v-alert>
                     </v-col>
 
                     <!-- CASO PATRIMONIO NETO AL CIERRE -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados' && datos.solvenciaEconFinanc === 'patrimonio'">
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'patrimonio'">
                     <h5>Especificar patrimonio neto</h5>
                     <br/>
                     <v-text-field filled label="€" v-model="datos.patrimonioNeto" type="number"></v-text-field>
                     </v-col>
 
                     <!-- CASO RATIO ACTIVOS / PASIVOS -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados' && datos.solvenciaEconFinanc === 'ratio'">
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'ratio'">
                     <h5>Especificar ratio activos / pasivos</h5>
                     <br/>
-                    <v-text-field filled label="€" v-model="datos.patrimonioNeto" type="number"></v-text-field>
+                    <v-text-field filled label="€" v-model="datos.ratioActivos" type="number"></v-text-field>
                     </v-col>
 
                     <!-- CASO PROFESIONAL (NO EMPRESA) -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados' && datos.solvenciaEconFinanc === 'profesional'">
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'profesional'">
                     <h5>En el caso de que el licitador sea un profesional (y no una empresa)</h5>
                     <br/>
                     <i>
@@ -180,20 +166,28 @@
 
             <v-row class="subRow">
                 <!-- SOLVENCIA TÉCNICA O PROFESIONAL-->
-                <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados'">
+                <v-col cols="12" md="6" v-if="datos.requisitos === false">
                     <h5>Solvencia técnica o profesional [art. 89 LCSP]</h5>
-                    <br/>
                     <v-radio-group v-model="datos.solvenciaTecProfe">
-                        <v-radio label="Relación de los principales suministros realizados en los últimos 3 meses" value="relSuministros"></v-radio>
-                        <v-radio label="Otros de los previstos en el artículo 89" value="otros"></v-radio>
+                        <v-radio label="Relación de los principales suministros realizados en los últimos 3 años" :value="true"></v-radio>
+                        <v-radio label="Otros de los previstos en el artículo 89" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
-                <v-col cols="12" md="6" 
-                v-if="datos.requisitos === 'especificados' && 
-                datos.solvenciaTecProfe === 'relSuministros' && 
+                <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
+                    <h5>Indicar importe anual acumulado en el año de mayor ejecución cuyo importe sea igual o superior a:</h5>
+                    <br/>
+                    <v-text-field filled label="% Anualidad media del contrato" v-model="datos.porcentajeAnualidadMedia"></v-text-field>
+                    <h5>Importe: {{datos.importeAnualidadMedia}}</h5>
+                </v-col>
+
+                <v-col cols="12" 
+                class="warn"
+                v-if="datos.requisitos === false && 
+                datos.solvenciaTecProfe === true && 
                 this.objetoNecesidades.regArmonizada === false">
-                    <h5>ATENCIÓN:</h5>
+                    <h4>ATENCIÓN:</h4>
+                    <p><i>El contrato se está realizando bajo regulación <b>NO ARMONIZADA</b></i></p>
                     <p><i>En los contratos no sujetos a regularización armonizada, si el 
                         contratista es una empresa de nueva creación no será necesario acreditar este 
                         apartado [artículo 89.14 h] de la LCSP
@@ -213,7 +207,7 @@
                 </v-col>
                 
                 <!-- OTROS -->
-                <v-col cols="12" md="6" v-if="datos.requisitos === 'especificados' && datos.solvenciaTecProfe === 'otros'">
+                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaTecProfe === 'otros'">
                     <h5 class="subtitle">En caso de que sean otros, especificar:</h5>
                     <v-textarea filled auto-grow v-model="datos.otrosReqSolvTecProfe"></v-textarea>
                 </v-col>
@@ -230,8 +224,8 @@
                     solidaria de todos ellos [artículo 75 LCSP]</i>
                 <br/>
                 <v-radio-group v-model="datos.integracionSolvencia">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
         </v-row>
@@ -240,31 +234,25 @@
         <!--9.3.- Concrecion de las condiciones de solvencia -->
         <h5>Concreción de las condiciones de solvencia</h5>
         <v-row class="rowGroup">
-                <v-col cols="12" md="8">
+                <v-col cols="12">
                     <h5 class="subtitle">1.- Obligación de adscribir medios personales o materiales</h5>
                     <v-radio-group v-model="datos.obligacionMediosMateriales">
-                        <v-radio label="No se exige" value="no"></v-radio>
-                        <v-radio label="Si se exige, mediante compromiso en la declaración responsable complementaria al DEUC" value="si"></v-radio>
+                        <v-radio label="Si se exige, mediante compromiso en la declaración responsable complementaria al DEUC" :value="true"></v-radio>
+                        <v-radio label="No se exige" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
-                <v-col cols="12" md="4" v-if="datos.obligacionMediosMateriales === 'si'">
-                    <h5>Declaración responsable complementaria</h5>
-                    <br/>
-                    <v-btn color="info">ADJUNTAR DECLARACIÓN</v-btn>
-                </v-col>
-
 
                 <v-col cols="12" md="6">
                     <h5 class="subtitle">2.- Obligación de especificar nombres o cualificación profesional
                         del personal responsable de ejecutar la prestación
                     </h5>
                     <v-radio-group v-model="datos.obligacionNombresCualificacion">
-                        <v-radio label="No se exige" value="no"></v-radio>
-                        <v-radio label="Si se exige, en la siguiente forma:" value="si"></v-radio>
+                        <v-radio label="Si se exige, en la siguiente forma:" :value="true"></v-radio>
+                        <v-radio label="No se exige" :value="false"></v-radio>  
                     </v-radio-group>
                 </v-col>
 
-                <v-col cols="12" md="6" v-if="datos.obligacionNombresCualificacion === 'si'">
+                <v-col cols="12" md="6" v-if="datos.obligacionNombresCualificacion === true">
                     <h5 class="subtitle">Si se exige, especificar</h5>
                     <br/>
                     <v-textarea auto-grow v-model="datos.especificarObligacion" filled></v-textarea>
@@ -276,12 +264,12 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="4">
                 <v-radio-group v-model="datos.habilitacionExigible">
-                    <v-radio label="Ninguna en especial" value="ninguna"></v-radio>
-                    <v-radio label="La siguiente habilitación:" value="especificada"></v-radio>
+                    <v-radio label="La siguiente habilitación:" :value="true"></v-radio>
+                    <v-radio label="Ninguna en especial" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="8" v-if="datos.habilitacionExigible === 'especificada'">
+            <v-col cols="12" md="8" v-if="datos.habilitacionExigible === true">
                 <h5 class="subtitle">Especificar</h5>
                 <v-textarea auto-grow v-model="datos.especificarHabilitacion" filled label="Habilitación exigible"></v-textarea>
             </v-col>
@@ -295,7 +283,7 @@
         data(){
             return {
                 plazoContrato: 0,
-                solvenciaHeaders: [
+                solvenciaLotesHeaders: [
                     { text: "Lote", align: "start", sortable: false, value: "idLote", divider: true,},
                     { text: "Descripción", align: "start", sortable: false, value: "descripcion", divider: true,},
                     { text: "Requerido", align: "start", sortable: false, value: "importeReq", divider: true,},
@@ -303,19 +291,27 @@
                     { text: "Válido", align: "start", sortable: false, value: "actions", divider: true,}
                 ],
 
+                solvenciaHeaders: [
+                    { text: "Requerido", align: "start", sortable: false, value: "importeReq", divider: true,},
+                    { text: "Máximo exigible", align: "start", sortable: false, value: "maxSolvReq", divider: true,},
+                    { text: "Válido", align: "start", sortable: false, value: "actions", divider: true,}
+                ],
+
+                alertSolvencia: false,
+                alertSolvenciaText: '',
+
                 datos: {
                     //SECCION 8
-                    participacionEmpresas: "no tiene",
+                    participacionEmpresas: true,
                     empresasExcluidas: undefined,
-                    vigilanciaInstalaciones: undefined,
-                    vigilanciaInstalacionesContratos: '',
-                    vigilanciaOtrosContratos: undefined,
-                    vigilanciaContratosContratos: '',
                     componente:'CapacidadSolvencia',
                     requisitos: undefined,
                     solvenciaEconFinanc: undefined,
                     volumenAnualNegocio: [],
                     patrimonioNeto: undefined,
+                    ratioActivos: undefined,
+                    porcentajeAnualidadMedia: 0,
+                    importeAnualidadMedia: 45685.50,
                     solvenciaTecProfe: undefined,
                     otrosReqSolvTecProfe: undefined,
                     integracionSolvencia: 'no',
@@ -324,6 +320,11 @@
                     especificarObligacion: '',
                     habilitacionExigible: 'ninguna',
                     especificarHabilitación: '',
+
+                    hayVolumenAnualNegocio: false,
+                    hayPatrimonioNeto: false,
+                    hayRatioActivos: false,
+                    hayLicitadorProfe: false,
                 }
             }
         },
@@ -349,6 +350,32 @@
                         } else {
                             datos.volumenAnualNegocio[this.index].actions = true
                         }
+                    }
+
+                    //CONSISTENCIA DE DATOS
+                    if(datos.solvenciaEconFinanc === 'volumen') {
+                        datos.hayVolumenAnualNegocio = true; 
+                        datos.hayPatrimonioNeto = false;
+                        datos.hayRatioActivos = false;
+                        datos.hayLicitadorProfe = false;
+                    }
+                    else if (datos.solvenciaEconFinanc === 'patrimonio') {
+                        datos.hayVolumenAnualNegocio = false; 
+                        datos.hayPatrimonioNeto = true;
+                        datos.hayRatioActivos = false;
+                        datos.hayLicitadorProfe = false;
+                    }
+                    else if (datos.solvenciaEconFinanc === 'ratio') {
+                        datos.hayVolumenAnualNegocio = false; 
+                        datos.hayPatrimonioNeto = false;
+                        datos.hayRatioActivos = true;
+                        datos.hayLicitadorProfe = false;
+                    }
+                    else if (datos.solvenciaEconFinanc === 'profesional') {
+                        datos.hayVolumenAnualNegocio = false; 
+                        datos.hayPatrimonioNeto = false;
+                        datos.hayRatioActivos = false;
+                        datos.hayLicitadorProfe = true;
                     }
                 }
             }
@@ -392,8 +419,11 @@
                             }
                             this.datos.volumenAnualNegocio.push(this.newLote)
                         }
-                    } 
-                }                    
+                    } else {
+                    this.alertSolvencia = true
+                    this.alertSolvenciaText = 'Presupuesto base no definido'
+                    }
+                }                  
             },
         }
 
@@ -429,5 +459,12 @@
     .editField {
         color: blue;
         text-decoration: underline;
+    }
+
+    .warn {
+        border: 1px solid lightgrey;
+        background-color: rgb(232, 230, 230);
+        padding: 1rem;
+        border-radius: 4px;
     }
 </style>

@@ -1,16 +1,18 @@
 <template>
   <div>
     <!-- 5 DIVISIÓN EN LOTES -->
-    <h3>Base de Licitación y lotes
+    <h3>Presupuesto base de licitación y Lotes
       <v-badge 
           class="badge" color="#c7d6f2" content="?"
-          title="Punto 3"></v-badge >
+          title="Punto 3.1 (Presupuesto Base de Licitación) - Punto 5 (Lotes)"></v-badge >
     </h3>
     <v-row class="rowGroup">
       <v-col cols="12" md="3">
         <h5>¿Se dividirá en lotes?</h5>
         <v-radio-group v-model="datos.divisionLotes">
-          <v-radio label="No es posible" value="no es posible"></v-radio>
+          <v-radio 
+            label="No es posible" 
+            value="no es posible"></v-radio>
           <v-radio
             label="Si es posible, pero no se divide en lotes"
             value="posible no divisible"
@@ -28,13 +30,13 @@
           <v-radio-group v-model="datos.divisionNoPosible">
             <v-radio
               label="La naturaleza o el objeto del contrato no lo permite"
-              value="naturaleza objeto"
+              :value="true"
             ></v-radio>
-            <v-radio label="Otra causa:" value="otra causa"></v-radio>
+            <v-radio label="Otra causa:" :value="false"></v-radio>
           </v-radio-group>
         </v-col>
 
-          <v-col cols="12" md="5" v-if="datos.divisionLotes === 'no es posible' && datos.divisionNoPosible === 'otra causa'">
+          <v-col cols="12" md="5" v-if="datos.divisionLotes === 'no es posible' && datos.divisionNoPosible === false">
             <h5>Si es otra causa, justificar:</h5>
             <v-textarea auto-grow filled v-model="datos.justificacionNoDivisionLotes"></v-textarea>           
           </v-col>
@@ -48,15 +50,15 @@
               <v-radio-group v-model="datos.divisionPosibleDivisible">
                 <v-radio
                   label="Conlleva riesgo restringir competencia"
-                  value="restringe competencias"
+                  value="Conlleva riesgo restringir competencia"
                 ></v-radio>
                 <v-radio
                   label="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
-                  value="pone riesgo ejecución"
+                  value="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
                 ></v-radio>
                 <v-radio
                   label="Otra causa"
-                  value="otra causa"
+                  :value="false"
                 ></v-radio>
               </v-radio-group>
             </v-col>
@@ -64,10 +66,10 @@
             <!-- OTRAS CAUSAS, JUSTIFICAR -->
             <v-col cols="12" md="5" 
             v-if="datos.divisionLotes === 'posible no divisible' && 
-            datos.divisionPosibleDivisible === 'otra causa'"
+            datos.divisionPosibleDivisible === false"
             >
               <h5>Si es otra causa, justificar:</h5>
-              <v-textarea filled></v-textarea>
+              <v-textarea filled v-model="datos.justificacionNoDivisionPosible"></v-textarea>
             </v-col>
 
 
@@ -260,8 +262,12 @@
     </v-row>
     <br />
 
-    <!-- 3 PRESUPUESTO DE LICITACIÓN Y ANUALIDADES -->
-    <h3>Tramitación</h3>
+    <!-- 3.1 TRAMITACIÓN -->
+    <h3>Tramitación
+      <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 3.1 (Presupuesto Base de Licitación)"></v-badge >
+    </h3>
     <v-row class="rowGroup">
       <v-col cols="12" md="4">
         <v-select 
@@ -283,7 +289,11 @@
     </v-row>
     <br/>
 
-    <h3>Desglose</h3>
+    <h3>Desglose
+      <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 3.2 (Desglose)"></v-badge >
+    </h3>
     <v-row class="rowGroup">
       <v-col cols="12" sm="2">
         <v-radio-group v-model="datos.desglose">
@@ -317,7 +327,11 @@
     <br />
     
 
-    <h3>Anualidades</h3>
+    <h3>Anualidades
+      <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 3.3 (Anualidades)"></v-badge >
+    </h3>
     <v-row class="rowGroup">
       <v-col cols="12">
         <div v-if="datos.lotes.length !== 0">
@@ -419,7 +433,11 @@
 
 
     <!-- 25 MODIFICACIONES -->
-    <h3>Modificaciones del contrato</h3>
+    <h3>Modificación del contrato
+      <v-badge 
+          class="badge" color="#c7d6f2" content="?"
+          title="Punto 24.1 (Modificaciones previstas)"></v-badge >
+    </h3>
       <v-row class="rowGroup">
           <v-col cols="12" md="4">
               <h5>Modificaciones previstas [artículo 204 LCSP]</h5>
@@ -453,7 +471,7 @@
               <v-col cols="12" md="4">
                   <ul>
                       <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
-                      <li><i>Máximo permitido: <b>{{importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
+                      <li><i>Máximo permitido: <b>{{datos.importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
                       presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
                       </i></li>
                   </ul>
@@ -481,7 +499,7 @@
               <v-col cols="12" md="4">
                   <ul>
                       <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
-                      <li><i>Máximo permitido: <b>{{importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
+                      <li><i>Máximo permitido: <b>{{datos.importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
                       presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
                       </i></li>
                   </ul>
@@ -510,7 +528,7 @@
               <v-col cols="12" md="4">
                   <ul>
                       <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
-                      <li><i>Máximo permitido: <b>{{importeNumUnid}} €</b>. Porcentaje máximo respecto del 
+                      <li><i>Máximo permitido: <b>{{datos.importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
                       presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
                       </i></li>
                   </ul>
@@ -644,18 +662,19 @@
                     <v-radio label="No" value="no"></v-radio>
                 </v-radio-group>
               </v-col>
+                <v-col cols="12" md="2" v-if="datos.prorroga === 'si'">
+                  <h5 class="subtitle">Plazo prórroga:</h5>
+                  <br/>
+                  <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
+                </v-col>
 
-              <v-col cols="12" md="2" v-if="datos.prorroga === 'si'">
-                <h5 class="subtitle">Plazo prórroga:</h5>
-                <br/>
-                <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="6" v-if="datos.prorroga === 'si'">
-                <h5 class="subtitle">Observaciones:</h5>
-                <br/>
-                <v-text-field filled label="Observaciones" v-model="datos.prorrogaMesesObservaciones"></v-text-field>
-              </v-col>
+                <v-col cols="12" md="6" v-if="datos.prorroga === 'si'">
+                  <h5 class="subtitle">Importe prórroga:</h5>
+                  <br/>
+                  <v-text-field filled label="Introducir importe" type="number" v-model="datos.importeProrrogas"></v-text-field>
+                  <h5 class="subtitle">Observaciones</h5>
+                  <v-textarea filled auto-grow label="Observaciones" v-model="datos.prorrogaMesesObservaciones"></v-textarea>
+                </v-col>
             </v-row>
         </v-col>   
 
@@ -697,14 +716,16 @@
               <tr>
                 <th>Importe de los servicios</th>
                 <th>Importe máximo por modificaciones previstas</th>
-                <th>TOTAL VALOR ESTIMADO DEL CONTRATO, sin IVA (€)</th>
+                <th>Importe eventuales prórrogas</th>
+                <th>TOTAL VALOR ESTIMADO DEL CONTRATO, sin impuestos (€)</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>{{datos.presupuestoBaseLicitacion}}</td>
                 <td>{{datos.importeModificacion}}</td>
-                <td><b>{{calculoImporteModif(datos.presupuestoBaseLicitacion, datos.importeModificacion)}}</b></td>
+                <td>{{datos.importeProrrogas}}</td>
+                <td><b>{{calculoImporteModif(datos.presupuestoBaseLicitacion, datos.importeModificacion, datos.importeProrrogas)}}</b></td>
               </tr>
             </tbody>
           </v-simple-table>
@@ -755,20 +776,11 @@
     <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
     <h3>Documentos que revisten carácter contractual</h3>
     <v-row class="rowGroup">
-      <v-col cols="12" md="9">
-        <p>A los efectos del artículo 35 de la LCSP, la relación de documentos que revisten carácter contractual 
-        enumerada en el orden en que aparecen a continuación:</p>
-        <v-textarea 
-        filled auto-grow
-        v-model="datos.relacionDocsContractual"
-        >
-        </v-textarea>
-      </v-col>
-      <v-col cols="12" md="3">
-      <h5>Dicha relación tendrá caracter:</h5>
+      <v-col cols="12">
+      <h5>A los efectos del artículo 35 de la LCSP, la relación de documentos que revisten carácter contractual está enumerada en la CLÁUSULA 6 en el orden en que aparecen</h5>
           <v-radio-group v-model="datos.docsCaracterContractual">
-              <v-radio label="Jerarquizada" value="jerarquizada"></v-radio>
-              <v-radio label="No jerarquizada" value="no jerarquizada"></v-radio>
+              <v-radio label="Jerarquizada" :value="true"></v-radio>
+              <v-radio label="No jerarquizada" :value="false"></v-radio>
           </v-radio-group>
       </v-col>
     </v-row>
@@ -780,8 +792,8 @@
       <v-col cols="12">
         <h5>Seleccionar tramitación del procedimiento</h5>
           <v-radio-group v-model="datos.tramitacionProc">
-              <v-radio label="Ordinaria" value="ordinaria"></v-radio>
-              <v-radio label="Urgente, (Se acompañará la correspondiente declaración de urgencia). En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP." value="urgente"></v-radio>
+              <v-radio label="Ordinaria" :value="true"></v-radio>
+              <v-radio label="Urgente, (Se acompañará la correspondiente declaración de urgencia). En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP." :value="false"></v-radio>
           </v-radio-group>
       </v-col>
     </v-row>
@@ -808,11 +820,10 @@ export default {
         {tipo: 'IVA', valor: 21},
         {tipo: 'IGIC', valor: 7}
       ],
-      itemsAplicacionPrep: ['495A1718620', '495A1718630', '1718495A620'],
-      importeNumUnid: undefined,
+      itemsAplicacionPrep: ['1718495A620'],
       rules: {
           required: (value) => !!value || "Este campo es obligatorio.",
-          max: (value) => value <= this.importeNumUnid || "Se supera el máximo permitido (20% presupuesto base)",
+          max: (value) => value <= this.datos.importeNumUnid || "Se supera el máximo permitido (20% presupuesto base)",
           zero: (value) => value > 0 || "El importe no puede ser igual a 0",
       },
 
@@ -852,7 +863,7 @@ export default {
         beneficioIndustrial: undefined,
         totalCostes: undefined,
         aplicacionPrep: '',
-        tramitacion: "ordinaria",
+        tramitacion: true,
         desglose: 'no procede',
         tipoDesglose: undefined,
         tipoDesgloseGenero: undefined,
@@ -861,6 +872,7 @@ export default {
         porcentajeImpuesto: undefined,
         totalImpuestos: undefined,
         costesIndirectos: undefined,
+        totalImpInc: undefined,
 
 
         //SECCION 4
@@ -873,22 +885,28 @@ export default {
         divisionNoPosible: 'naturaleza objeto',
         divisionPosibleDivisible: undefined,
         justificacionNoDivisionLotes: '',
+        justificacionNoDivisionPosible: '',
         numLotes: 1,
         hayLotes: false,
         lotes: [],
         limitacionLotes: undefined,
         lotesGuardados: false,
+        hayDivisionLotes: false,
+        posibleNoDivisible: false,
+        posibleDivisible: false,
 
         //SECCION 6
-        relacionDocsContractual: undefined,
         docsCaracterContractual: "jerarquizada",
 
         //SECCION 7
-        tramitacionProc: undefined,
+        tramitacionProc: true,
 
         //SECCION 25
         preveModif: undefined,
         importeModificacion: undefined,
+        importeProrrogas: 0,
+        importeNumUnid: undefined,
+        totalModificaciones: undefined,
 
         //SECCUION 18
         definicion: 'plazoEjecucion',
@@ -939,7 +957,7 @@ export default {
         //MODIFICACIONES
         if(datos.preveModif === 'si'){
           this.base = parseFloat(this.datos.presupuestoBaseLicitacion)
-          this.importeNumUnid = this.base * 0.20
+          this.datos.importeNumUnid = this.base * 0.20
         } else {
           this.datos.importeModificacion = 0;
         }
@@ -951,6 +969,22 @@ export default {
         } else {
           datos.plazoMaximoEjecucion = undefined;
           datos.plazoMaximoEjecucionObservaciones = undefined;
+        }
+
+        if(datos.divisionLotes !== 'no es posible'){
+          if(datos.divisionLotes === "posible no divisible"){
+            this.datos.posibleNoDivisible = true
+            datos.hayDivisionLotes = false
+            datos.posibleDivisible = false
+          } else {
+            datos.hayDivisionLotes = true
+            datos.posibleNoDivisible = false
+            datos.posibleDivisible = true
+          }
+        } 
+
+        if(datos.divisionPosibleDivisible !== false){
+          this.datos.justificacionNoDivisionPosible = datos.divisionPosibleDivisible
         }
       }
     },
@@ -965,10 +999,10 @@ export default {
   },
   
   methods: {
-    calculoImporteModif(base, modif){
-      if (modif !== undefined){
-        this.totalModificaciones = parseFloat(base) + parseFloat(modif)
-        return (this.totalModificaciones).toFixed(2);
+    calculoImporteModif(base, modif1, modif2){
+      if (modif1 !== undefined || modif2 !== undefined){
+        this.datos.totalModificaciones = (parseFloat(base) + parseFloat(modif1) + parseFloat(modif2)).toFixed(2);
+        return (this.datos.totalModificaciones)
       }
     },
 
@@ -990,17 +1024,16 @@ export default {
         this.datos.presupuestoBaseLicitacion = this.datos.lotes[0].baseLote;
         this.datos.porcentajeImpuesto = this.datos.lotes[0].tipoImpuesto;
         if(this.datos.porcentajeImpuesto === 21){this.datos.tipoImpuesto = 'IVA'} else {this.datos.tipoImpuesto = 'IGIC'}
-        this.datos.totalImpuestos = (parseFloat(this.datos.presupuestoBaseLicitacion)) * 0.21
-        this.datos.costesDirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) / 1.19
-        this.datos.costesIndirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) - this.datos.costesDirectos
-        this.datos.beneficioIndustrial = (this.datos.costesDirectos * 0.06).toFixed(2)
-        this.datos.costesGenerales = (this.datos.costesDirectos * 0.13).toFixed(2)
-        this.datos.costesDirectos = (this.datos.costesDirectos).toFixed(2)
-        this.datos.costesIndirectos = (this.datos.costesIndirectos).toFixed(2)
-        this.datos.totalCostes = ((parseFloat(this.datos.presupuestoBaseLicitacion)) + this.datos.totalImpuestos).toFixed(2)
-
-
-        console.log(this.datos)
+          this.datos.totalImpuestos = (parseFloat(this.datos.presupuestoBaseLicitacion)) * 0.21
+          this.datos.costesDirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) / 1.19
+          this.datos.costesIndirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) - this.datos.costesDirectos
+          this.datos.beneficioIndustrial = (this.datos.costesDirectos * 0.06).toFixed(2)
+          this.datos.costesGenerales = (this.datos.costesDirectos * 0.13).toFixed(2)
+          this.datos.costesDirectos = (this.datos.costesDirectos).toFixed(2)
+          this.datos.costesIndirectos = (this.datos.costesIndirectos).toFixed(2)
+          this.datos.totalCostes = (parseFloat(this.datos.presupuestoBaseLicitacion)).toFixed(2)
+          this.datos.totalImpuestos = (this.datos.totalImpuestos).toFixed(2)
+          this.datos.totalImpInc = (parseFloat(this.datos.presupuestoBaseLicitacion) + parseFloat(this.datos.totalImpuestos)).toFixed(2)
       } else {
           this.datos.hayLotes = true;
           this.datos.presupuestoBaseLicitacion = 0;

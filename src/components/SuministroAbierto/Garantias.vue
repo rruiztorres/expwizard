@@ -7,19 +7,19 @@
             <v-col cols="12" md="3">
                 <h5 class="subtitle">10.1.- Provisional [art. 106.2 LCSP]</h5>
                 <v-radio-group v-model="datos.provisional">
-                    <v-radio label="No se exige" value="no"></v-radio>
-                    <v-radio label="Si se exige" value="si"></v-radio>
+                    <v-radio label="Si se exige" :value="true"></v-radio>
+                    <v-radio label="No se exige" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
-            <v-col cols="12" md="3" v-if="datos.provisional === 'si'">
+            <v-col cols="12" md="3" v-if="datos.provisional === true">
                 <h5 class="subtitle">Indicar importe:</h5>
                 <v-text-field filled type="number" 
                 :rules="[rules.importeMax]"
                 v-model="datos.importeExigidoProvisional"></v-text-field>
             </v-col>
-            <v-col cols="12" md="6" v-if="datos.provisional === 'si'">
+            <v-col cols="12" md="6" v-if="datos.provisional === true">
                 <h5 class="subtitle">Justificación:</h5>
-                <v-text-field filled></v-text-field>
+                <v-text-field filled v-model="datos.provisionalJustificar"></v-text-field>
             </v-col>
         </v-row>
         <br/>
@@ -29,14 +29,14 @@
             <v-col cols="12" md="4">
                 <h5 class="subtitle">10.2.- Definitiva [art. 107.1 y 107.3 LCSP]</h5>
                 <v-radio-group v-model="datos.definitiva">
-                    <v-radio label="No se exige" value="no"></v-radio>
-                    <v-radio label="Si se exige" value="si"></v-radio>
+                    <v-radio label="Si se exige" :value="true"></v-radio>
+                    <v-radio label="No se exige" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="8" v-if="datos.definitiva === 'no'">
+            <v-col cols="12" md="8" v-if="datos.definitiva === false">
                 <h5 class="subtitle">Si no se exige, justificación:</h5>
-                <v-textarea filled auto-grow></v-textarea>
+                <v-textarea filled auto-grow v-model="datos.definitivaJustificacion"></v-textarea>
             </v-col>
 
         </v-row>
@@ -44,24 +44,24 @@
 
         <!-- 10.3 COMPLEMENTARIA -->
         <v-row class="rowGroup">
-            <v-col cols="12" md="4">
+            <v-col cols="12" md="3">
                 <h5 class="subtitle">10.3.- Complementaria [art. 107.2 LCSP]</h5>
                 <v-radio-group v-model="datos.complementaria">
-                    <v-radio label="No se exige" value="no"></v-radio>
-                    <v-radio label="Si se exige" value="si"></v-radio>
+                    <v-radio label="Si se exige" :value="true"></v-radio>
+                    <v-radio label="No se exige" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
 
-            <v-col cols="12" md="3" v-if="datos.complementaria === 'si'">
+            <v-col cols="12" md="4" v-if="datos.complementaria === true">
                 <h5 class="subtitle">Indicar motivo:</h5>
                 <v-radio-group v-model="datos.complementariaJustificar">
-                    <v-radio label="Por circunstancias especiales" value="especiales"></v-radio>
-                    <v-radio label="Si la oferta del adjudicatario hubiera resultado inicialmente incursa en presunción de anormalidad." value="anormalidad"></v-radio>
+                    <v-radio label="Por circunstancias especiales" :value="true"></v-radio>
+                    <v-radio label="Si la oferta del adjudicatario hubiera resultado inicialmente incursa en presunción de anormalidad." :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="5" v-if="datos.complementaria === 'si' && datos.complementariaJustificar === 'especiales'">
+            <v-col cols="12" md="5" v-if="datos.complementaria === true && datos.complementariaJustificar === true">
                 <h5 class="subtitle">Especificar circunstancias especiales:</h5>
                 <v-textarea filled auto-grow v-model="datos.especificarCircEspec"></v-textarea>
             </v-col>
@@ -121,7 +121,7 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="3">
                 <h5 class="subtitle">Puntuación máxima obtenible</h5>
-                <v-text-field filled label="puntos" disabled v-model="datos.puntosJuicioValor"></v-text-field>
+                <v-text-field filled label="puntos" disabled v-model="datos.pot"></v-text-field>
                 <v-btn width="100%" color="info" class="addBtn" @click="addCriterioValor">+ AÑADIR CRITERIO</v-btn>
             </v-col>
             <v-col cols="12" md="9">
@@ -187,7 +187,7 @@
                 </v-data-table>
                 <br/>
                 <v-alert type="error" v-if="alertPuntuacionValor === true">
-                    La suma de las puntuaciones debe ser igual a 100
+                    La suma de los criterios debe ser igual a la puntuación máxima obtenible.
                 </v-alert>
                 <v-alert type="success" v-if="alertPuntuacionValor === false">
                     Datos correctos
@@ -209,13 +209,12 @@
         <br/><br/>
 
 
-
         <!-- 14 PUNTUACION DE LOS CRITERIOS EVALUABLES MEDIANTE FÓRMULAS-->
         <h3>14.- Puntuación de los criterios evaluables mediante fórmulas</h3>
         <v-row class="rowGroup">
             <v-col cols="12" md="3">
                 <h5 class="subtitle">Puntuación máxima obtenible</h5>
-                <v-text-field filled label="puntos" disabled v-model="datos.puntosFormulas"></v-text-field>
+                <v-text-field filled label="puntos" disabled v-model="datos.pof"></v-text-field>
                 <v-btn width="100%" color="info" class="addBtn" @click="addCriterioFormula">+ AÑADIR CRITERIO</v-btn>
             </v-col>
             <v-col cols="12" md="9">
@@ -280,6 +279,13 @@
                     </template>
                 
                 </v-data-table>
+                <br/>
+                <v-alert type="error" v-if="alertPuntuacionFormulas === true">
+                    La suma de los criterios debe ser igual a la puntuación máxima obtenible. {{datos.pof}}
+                </v-alert>
+                <v-alert type="success" v-if="alertPuntuacionFormulas === false">
+                    Datos correctos
+                </v-alert>
             </v-col>
         </v-row>
         <br/><br/>
@@ -339,7 +345,7 @@
 <script> 
     export default {
         nombre: 'Garantias',
-        props:['presBase'],
+        props:['presBase', 'datosGuardados'],
         data(){
             return {
                 rules: {
@@ -365,6 +371,7 @@
                 { text: "Borrar", align: "start", sortable: false, value: "actions"}
                 ],
                 alertPuntuacionValor: undefined,
+                alertPuntuacionFormulas: undefined,
 
                 puntuacionFormulaHeader: [
                 { text: "", align: "start", sortable: false, value: "id" },
@@ -378,8 +385,10 @@
                 datos:{
                     componente:'Garantias',
                     provisional: '',
+                    provisionalJustificar: undefined,
                     importeExigidoProvisional: undefined,
                     defintiva: '',
+                    definitivaJustificacion: undefined,
                     importeExigidoDefinitiva: undefined,
                     importeExigidoComplementaria: undefined,
                     complementaria: '',
@@ -400,11 +409,7 @@
                     justificacionReduccion: '',
                     umbralTemeridad: '',
                     seguimiento: 'limite20%',
-                    limiteSeguimiento: '',
-
-                    puntosJuicioValor: 100,
-                    puntosFormulas: 100,
-                    
+                    limiteSeguimiento: '',                    
                 }
             }
         },
@@ -455,16 +460,29 @@
                         }
                     }
                     
-                    //VALIDACIONES TABLAS PUNTUACION
+                    //VALIDACIONES TABLAS PUNTUACION VALOR
                     if(datos.criteriosPuntuacionValor[0].puntuacion !== undefined){
                         this.suma = 0;
                         for(this.index in datos.criteriosPuntuacionValor){
                             this.suma = this.suma + parseInt(datos.criteriosPuntuacionValor[this.index].puntuacion)
                         }
-                        if(this.suma !== 100){
+                        if(this.suma !== parseInt(datos.pot)){
                             this.alertPuntuacionValor = true
                         } else {
                             this.alertPuntuacionValor = false
+                        }
+                    }
+
+                    //VALIDACIONES TABLAS PUNTUACION FORMULAS
+                    if(datos.criteriosPuntuacionFormula[0].puntuacion !== undefined){
+                        this.suma = 0;
+                        for(this.index in datos.criteriosPuntuacionFormula){
+                            this.suma = this.suma + parseInt(datos.criteriosPuntuacionFormula[this.index].puntuacion)
+                        }
+                        if(this.suma !== parseInt(datos.pof)){
+                            this.alertPuntuacionFormulas = true
+                        } else {
+                            this.alertPuntuacionFormulas = false
                         }
                     }
                 }               
