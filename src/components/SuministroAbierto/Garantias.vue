@@ -201,8 +201,8 @@
         <v-row class="rowGroup">
             <v-col cols="12">
                 <v-radio-group v-model="datos.umbralJuicioValor">
-                    <v-radio label="No se establece umbral mínimo" value="no"></v-radio>
-                    <v-radio label="Se establece umbral mínimo del 50% de la puntuación en el conjunto de los criterios cualitativos [artículo 146.3 LCSP]. Los criterios cualitativos que se tendrán en cuenta son los que depende de un juicio de valor (archivo electrónico o sobre nº2)" value="si"></v-radio>
+                    <v-radio label="Se establece umbral mínimo del 50% de la puntuación en el conjunto de los criterios cualitativos [artículo 146.3 LCSP]. Los criterios cualitativos que se tendrán en cuenta son los que depende de un juicio de valor (archivo electrónico o sobre nº2)" :value="true"></v-radio>
+                    <v-radio label="No se establece umbral mínimo" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
         </v-row>
@@ -298,28 +298,29 @@
             <v-col cols="12" md="7">
                 <h5 class="subtitle">Criterio:</h5>
                 <v-radio-group v-model="datos.criterio">
-                    <v-radio label="El establecido en el articulo 85 del RCAP" value="art85"></v-radio>
-                    <v-radio label="El de la clausula 27 de este pliego con el siguiente umbral de temeridad:" value="temeridad"></v-radio>
+                    <v-radio label="El establecido en el articulo 85 del RCAP" :value="true"></v-radio>
+                    <v-radio label="El de la clausula 27 de este pliego con el siguiente umbral de temeridad:" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
             
             <!--ARTICULO 85-->
-            <v-col cols="12" md="4" v-if="datos.criterio === 'art85'">
+            <v-col cols="12" md="4" v-if="datos.criterio === true">
                 <h5 class="subtitle">¿Se reduciran 1/3 los porcentajes establecidos?</h5>
                 <v-radio-group v-model="datos.reduccion">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" v-if="datos.criterio === 'art85' && datos.reduccion === 'si'">
+            <v-col cols="12" v-if="datos.criterio === true && datos.reduccion === true">
                 <h5 class="subtitle">En caso afirmativo, justificar:</h5>
                 <v-textarea auto-grow filled label="Justificación" v-model="datos.justificacionReduccion"></v-textarea>
             </v-col>
 
             <!--UMBRAL TEMERIDAD-->
-            <v-col cols="12" md="4" v-if="datos.criterio === 'temeridad'">
+            <v-col cols="12" md="4" v-if="datos.criterio === false">
                 <h5 class="subtitle">Definir umbral temeridad</h5>
+                <br/>
                 <v-text-field filled label="%" v-model="datos.umbralTemeridad"></v-text-field>
             </v-col>
         </v-row>
@@ -327,15 +328,31 @@
 
         <h5 class="subtitle">Seguimiento pormenorizado de ofertas incursas en presunción de anormalidad (artículo 149.7 LCSP)</h5>
         <v-row class="rowGroup">
-            <v-col cols="12">
-                <v-radio-group v-model="datos.seguimiento">
-                    <v-radio label="Estableciendo un 20% como limite por incumplimiento del programa de trabajo para que sean considerados a los efectos del punto 26.4 las penalizaciones correspondientes por demora en el plazo de ejecución." value="limite20%"></v-radio>
-                    <v-radio label="Otra:" value="definir"></v-radio>
+            <v-col cols="12" md="3">
+                <v-radio-group v-model="datos.segPorm">
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
-            <v-col cols="12" v-if="datos.seguimiento === 'definir'">
-                <h5 class="subtitle">En caso de ser otra, definir:</h5>
-                <v-textarea auto-grow filled label="Limite" v-model="datos.limiteSeguimiento"></v-textarea>
+            <v-col cols="12" v-if="datos.segPorm === false">
+                <v-textarea filled auto-grow label="En caso negativo, justificación:" v-model="datos.segPormJustif"></v-textarea>
+            </v-col>
+        </v-row>
+        <br/>
+
+        <h3>16.- Plazo para la adjudicación</h3>
+        <v-row class="rowGroup">
+            <v-col cols="12" md="4">
+                <h5 class="subtitle">Se adjudicará el contrato dentro del plazo</h5>
+                <v-radio-group v-model="datos.plazoAdjudicacion">
+                    <v-radio label="General de dos (2) meses." :value="true"></v-radio>
+                    <v-radio label="Otro" :value="false"></v-radio>
+                </v-radio-group>
+            </v-col>
+            <v-col cols="12" md="4" v-if="datos.plazoAdjudicacion === false">
+                <h5 class="subtitle">Especificar plazo</h5>
+                <br/>
+                <v-text-field filled label="Plazo" v-model="datos.otroPlazoAdjudicacion"></v-text-field>
             </v-col>
         </v-row>
 
@@ -400,16 +417,18 @@
                     criteriosPuntuacionValor: [
                         { id: 1, criterios: '', extension: '', puntuacion: undefined },
                     ],
-                    umbralJuicioValor: "si",
+                    umbralJuicioValor: false,
                     criteriosPuntuacionFormula: [
                         { id: 1, criterios: '', extension: '', puntuacion: undefined },
                     ],
-                    criterio: 'art85',
+                    criterio: true,
                     reduccion: 'no',
                     justificacionReduccion: '',
                     umbralTemeridad: '',
-                    seguimiento: 'limite20%',
-                    limiteSeguimiento: '',                    
+                    segPorm: false,
+                    segPormJustif: '',
+                    plazoAdjudicacion: true,
+                    otroPlazoAdjudicacion: undefined,
                 }
             }
         },

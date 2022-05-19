@@ -151,6 +151,25 @@
                 </v-sheet>
             </v-col>
         </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-row>
+                    <v-col cols="12">
+                        <v-card-actions class="bottomActions">
+                                <v-btn color="info" class="headButton" @click="prevTab" :disabled="tab < 1">
+                                    <v-icon>mdi-arrow-left</v-icon>
+                                    ANTERIOR
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" class="headButton" @click="nextTab" :disabled="tab > 7">
+                                    SIGUIENTE
+                                    <v-icon>mdi-arrow-right</v-icon>
+                                </v-btn>
+                        </v-card-actions>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
     </div>
 </template>
 
@@ -240,6 +259,16 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 }
             },
 
+            nextTab(){
+                this.tab = this.tab + 1
+                this.activateTab(this.tab + 1)
+            },
+
+            prevTab(){
+                this.tab = this.tab - 1
+                this.activateTab(this.tab + 1)
+            },
+
             goToEnd(data){        
                 this.tab = data;
                 this.activeTab = data + 1
@@ -314,8 +343,13 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
     .tabContent{
         padding: 1rem;
-        height: 69.5vh;
+        height: 65.5vh;
         overflow-y: auto;
+    }
+
+    .bottomActions{
+        margin-top: -0.5rem;
+        padding: 0rem !important
     }
 
     .buttonBack {
@@ -351,6 +385,10 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
     .badge{
         margin-left: 0.25rem;
+    }
+
+    .icon {
+        margin-left: 0.5rem;
     }
 </style>
 

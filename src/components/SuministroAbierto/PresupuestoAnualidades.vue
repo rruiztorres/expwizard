@@ -443,12 +443,12 @@
               <h5>Modificaciones previstas [artículo 204 LCSP]</h5>
               <h5 class="subtitle">Se prevén:</h5>
               <v-radio-group v-model="datos.preveModif">
-                  <v-radio label="Si" value="si"></v-radio>
-                  <v-radio label="No" value="no"></v-radio>
+                  <v-radio label="Si" :value="true"></v-radio>
+                  <v-radio label="No" :value="false"></v-radio>
               </v-radio-group>
           </v-col>
 
-          <v-col cols="12" md="8" v-if="datos.preveModif === 'si'">
+          <v-col cols="12" md="8" v-if="datos.preveModif === true">
               <h5>En caso afirmativo indicar motivo:</h5>
               <h5 class="subtitle">Descripción precisa de los supuestos en que podrá modificarse el contrato:</h5>
               <v-radio-group v-model="datos.tipoModif">
@@ -459,11 +459,11 @@
           </v-col>
 
           <!-- CASO NUMERO UNIDADES -->
-          <v-row class="subRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'numeroUnidades'">
-              <v-col cols="12" md="3">
-                  <h5 class="subtitle">Indicar importe:</h5>
+          <v-row class="subRow" cols="12" v-if="datos.preveModif === true">
+              <v-col cols="12" md="2">
+                  <h5 class="subtitle">Indicar porcentaje:</h5>
                     <v-text-field 
-                  filled label="Importe" v-model="datos.importeModificacion"
+                  filled label="%" v-model="datos.porcentajeModificacion"
                   :rules="[rules.max, rules.required, rules.zero]"
                   >
                   </v-text-field>
@@ -471,75 +471,25 @@
               <v-col cols="12" md="4">
                   <ul>
                       <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
-                      <li><i>Máximo permitido: <b>{{datos.importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
-                      presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
-                      </i></li>
+                      <li><i>Porcentaje máximo respecto del presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.</i></li>
                   </ul>
                   <br/>                                 
               </v-col>
-              <v-col cols="12" md="5">
+              <v-col cols="12" md="6" v-if="datos.tipoModif === 'numeroUnidades'">
                   <i>
                       <b>ATENCIÓN:</b>
                       En este caso será siempre necesario que las nuevas unidades sean iguales a las previamente
                       definidas en el contrato inicial y que se abonen en el mismo precio unitario.
                   </i>
               </v-col>
-          </v-row>
-
-          <!-- CASO INCORPORAR APARTADOS -->
-          <v-row class="subRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'nuevosApartados'">
-              <v-col cols="12" md="3">
-                  <h5 class="subtitle">Indicar importe:</h5>
-                    <v-text-field 
-                  filled label="Importe" v-model="datos.importeModificacion"
-                  :rules="[rules.max, rules.required, rules.zero]"
-                  >
-                  </v-text-field>
-              </v-col>
-              <v-col cols="12" md="4">
-                  <ul>
-                      <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
-                      <li><i>Máximo permitido: <b>{{datos.importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
-                      presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
-                      </i></li>
-                  </ul>
-                  <br/>                                 
-              </v-col>
-              <v-col cols="12" md="5">
+              <v-col cols="12" md="6" v-else>
                   <i>
-                      <b>ATENCIÓN:</b> Será necesario que los precios del contrato inicial se hubieran definido descomponiéndose
-                      en sus costes elementales y que los importes de las nuevas prestaciones puedan formarse en su totalidad
-                      con dichos costes elementales. Cuando no se cumpla este requisito la modificación solo podrá tramitarse
-                      al amparo del artículo 205 de la LCSP
-                  </i>
-              </v-col>
-          </v-row>
-
-          <!-- CASO ENSAYO AUSCULTACION -->
-          <v-row class="subRow" cols="12" v-if="datos.preveModif === 'si' && datos.tipoModif === 'ensayosAuscultacion'">
-              <v-col cols="12" md="3">
-                  <h5 class="subtitle">Indicar importe:</h5>
-                    <v-text-field 
-                  filled label="Importe" v-model="datos.importeModificacion"
-                  :rules="[rules.max, rules.required, rules.zero]"
-                  >
-                  </v-text-field>
-              </v-col>
-              <v-col cols="12" md="4">
-                  <ul>
-                      <li>Presupuesto base: <b>{{datos.presupuestoBaseLicitacion}} €</b></li>
-                      <li><i>Máximo permitido: <b>{{datos.importeNumUnid.toFixed(2)}} €</b>. Porcentaje máximo respecto del 
-                      presupuesto base de licitación: <b>20%</b> se sumará al valor estimado.
-                      </i></li>
-                  </ul>
-                  <br/>                                 
-              </v-col>
-              <v-col cols="12" md="5">
-                  <i>
-                      <b>ATENCIÓN:</b> Será necesario que los precios del contrato inicial se hubieran definido descomponiéndose
-                      en sus costes elementales y que los importes de las nuevas prestaciones puedan formarse en su totalidad
-                      con dichos costes elementales. Cuando no se cumpla este requisito la modificación solo podrá tramitarse
-                      al amparo del artículo 205 de la LCSP
+                      <b>ATENCIÓN:</b>
+                      Será necesario que los precios del contrato inicial se hubieran 
+                      definido descomponiéndose en sus costes elementales y que los precios 
+                      de las nuevas prestaciones puedan formarse en su totalidad con dichos 
+                      costes elementales. Cuando no se cumpla este requisito la 
+                      modificación solo podrá tramitarse al amparo del artículo 205 de la LCSP
                   </i>
               </v-col>
           </v-row>
@@ -550,133 +500,111 @@
       <h3>Plazo de ejecución o duración</h3>
       <v-row class="rowGroup">
         <v-row class="subRow">
-          <v-col cols="12" md="4">
+          <v-col cols="12">
               <h5 class="subtitle">Se define como:</h5>
               <v-radio-group v-model="datos.definicion">
-                  <v-radio label="Un contrato con plazo de ejecución" value="plazoEjecucion"></v-radio>
-                  <v-radio label="Un contrato con plazo de duración" value="plazoDuracion"></v-radio>
+                  <v-radio label="Un contrato con plazo de ejecución" :value="true"></v-radio>
+                  <v-radio label="Un contrato con plazo de duración" :value="false"></v-radio>
               </v-radio-group>
           </v-col>
-             
-          <!-- Plazo ejecucion meses -->
-          <v-col cols="12" md="2" v-if="datos.definicion === 'plazoEjecucion'">
-            <h5 class="subtitle">Plazo ejecución:</h5>
-            <br/>
-            <v-text-field filled label="Meses" v-model="datos.plazoMaximoEjecucion"></v-text-field>
-          </v-col>
-
-          <!-- Plazo ejecución observaciones -->
-          <v-col cols="12" md="6" v-if="datos.definicion === 'plazoEjecucion'">
-            <h5 class="subtitle">Observaciones:</h5>
-            <br/>
-            <v-text-field filled label="Observaciones" v-model="datos.plazoMaximoEjecucionObservaciones"></v-text-field>
-          </v-col>
-
-          <!--Plazo de duración modalidad-->
-          <v-col cols="12" md="2" v-if="datos.definicion === 'plazoDuracion'">
+          
+          <!-- Seleccion modo plazo ejecucion -->
+          <v-col cols="12" md="3" v-if="datos.definicion === true">
             <h5 class="subtitle">Seleccionar modalidad</h5>
             <v-radio-group v-model="datos.modalidad">
-              <v-radio label="Plazo en meses" value="plazo"></v-radio>
-              <v-radio label="Periodo" value="periodo"></v-radio>
+                <v-radio label="Plazo máximo de ejecución" :value="true"></v-radio>
+                <v-radio label="Plazos parciales" :value="false"></v-radio>
             </v-radio-group>
           </v-col>
 
+          <!-- Plazo ejecucion meses -->
+          <v-col cols="12" md="2" v-if="datos.definicion === true && datos.modalidad === true">
+            <h5 class="subtitle">Plazo ejecución:</h5>
+            <br/>
+            <v-text-field filled label="Meses" type="number" v-model="datos.plazoMaximoEjecucion"></v-text-field>
+          </v-col>
+
+          <!-- Plazo ejecución observaciones -->
+          <v-col cols="12" md="7" v-if="datos.definicion === true && datos.modalidad === true">
+            <h5 class="subtitle">Observaciones:</h5>
+            <br/>
+            <v-textarea auto-grow filled v-model="datos.plazoMaximoEjecucionObservaciones"></v-textarea>
+          </v-col>
+          <!-- fin modo plazo ejecucion -->
+
+
+
+          <!-- Plazos parciales-->
+          <v-col cols="12" md="9" v-if="datos.definicion === true && datos.modalidad === false">
+            <h5 class="subtitle">Indicar plazos parciales:</h5>
+            <br/>
+            <v-textarea auto-grow filled v-model="datos.plazosParciales"></v-textarea>
+          </v-col>
+
+          <!--Plazo de duración modalidad-->
+          <v-col cols="12" md="4" v-if="datos.definicion === false">
+            <h5 class="subtitle">Seleccionar modalidad</h5>
+            <v-radio-group v-model="datos.modoPlazo">
+              <v-radio label="Plazo en meses" :value="true"></v-radio>
+              <v-radio label="Periodo" :value="false"></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <!-- Plazo de duración modalidad > periodo -->
+          <v-col cols="12" md="8" v-if="datos.definicion === false && datos.modoPlazo === false">
+            <h5 class="subtitle">Periodo</h5>
+            <br/>
+            <v-textarea auto-grow filled label="Meses" v-model="datos.periodo"></v-textarea>
+          </v-col>
+
           <!-- Plazo de duración modalidad > meses -->
-          <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'plazo'">
+          <v-col cols="12" md="3" v-if="datos.definicion === false && datos.modoPlazo === true">
             <h5 class="subtitle">Introducir plazo en meses</h5>
             <br/>
             <v-text-field filled label="Meses" v-model="datos.plazoMeses"></v-text-field>
           </v-col>
-
-          <!-- Plazo de duración modalidad > periodo -->
-          <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
-            <h5 class="subtitle">Indique inicio:</h5>
-            <br/>
-              <v-menu
-              v-model="fechaInicio"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                    style="margin-left:-0.5rem;"
-                    filled
-                    v-model="dateInicio"
-                    label="Fecha de Inicio"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                    ></v-text-field>
-                </template>
-
-                <v-date-picker
-                v-model="dateInicio"
-                @input="fechaIncio = false"
-                locale="es-es"
-                ></v-date-picker>
-              </v-menu>           
-          </v-col>
-          
-          <v-col cols="12" md="3" v-if="datos.definicion === 'plazoDuracion' && datos.modalidad === 'periodo'">
-            <h5 class="subtitle">Indique fin:</h5>
-            <br/>
-              <v-menu
-              v-model="fechaFin"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                    style="margin-left:-0.5rem;"
-                    filled
-                    v-model="dateFin"
-                    label="Fecha de fin"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                    ></v-text-field>
-                </template>
-
-                <v-date-picker
-                v-model="dateFin"
-                @input="fechaFin = false"
-                locale="es-es"
-                ></v-date-picker>
-              </v-menu>           
-          </v-col>
         </v-row>
 
         <!-- Prorroga -->
-        <v-col cols="12">
+        <v-col cols="12" v-if="datos.definicion === false">
             <v-row>
               <v-col cols="12" md="4">
                 <h5 class="subtitle">Ampliación en el plazo de ejecución (Prórroga)</h5>
                 <v-radio-group v-model="datos.prorroga">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
               </v-col>
-                <v-col cols="12" md="2" v-if="datos.prorroga === 'si'">
-                  <h5 class="subtitle">Plazo prórroga:</h5>
-                  <br/>
-                  <v-text-field filled label="Meses" v-model="datos.prorrogaMeses"></v-text-field>
-                </v-col>
+              <v-col cols="12" md="8">
+                <v-row>
+                  <v-col cols="12" md="3" v-if="datos.prorroga === true">
+                    <h5 class="subtitle">Plazo prórroga:</h5>
+                    <br/>
+                    <v-text-field filled label="plazo"  type="number" v-model="datos.plazoProrroga"></v-text-field>
+                  </v-col>
 
-                <v-col cols="12" md="6" v-if="datos.prorroga === 'si'">
-                  <h5 class="subtitle">Importe prórroga:</h5>
-                  <br/>
-                  <v-text-field filled label="Introducir importe" type="number" v-model="datos.importeProrrogas"></v-text-field>
-                  <h5 class="subtitle">Observaciones</h5>
-                  <v-textarea filled auto-grow label="Observaciones" v-model="datos.prorrogaMesesObservaciones"></v-textarea>
-                </v-col>
+                  <v-col cols="12" md="4" v-if="datos.prorroga === true">
+                    <h5 class="subtitle">Seleccionar</h5>
+                    <br/>
+                    <v-select filled :items="tipoPlazo" v-model="datos.tipoPlazoProrroga"></v-select>
+                  </v-col>
+
+                  <v-col cols="12" md="5" v-if="datos.prorroga === true">
+                    <h5 class="subtitle">Importe prórroga:</h5>
+                    <br/>
+                    <v-text-field filled label="Introducir importe" type="number" v-model="datos.importeProrrogas"></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" v-if="datos.prorroga === true">
+                    <h5 class="subtitle">Observaciones</h5>
+                    <v-textarea filled auto-grow v-model="datos.plazoProrrogaObservaciones"></v-textarea>
+                  </v-col>
+                </v-row>
+              </v-col>
             </v-row>
-        </v-col>   
+        </v-col>  
+        <!-- fin modo plazos parciales --> 
 
         <!-- El contrato se iniciará -->
         <v-col cols="12">
@@ -684,18 +612,12 @@
               <v-col cols="12" md="4">
                 <h5 class="subtitle">El plazo del contrato se iniciará:</h5>
                 <v-radio-group v-model="datos.plazoInicio">
-                    <v-radio label="Al día siguiente al de formalización" value="dia siguiente"></v-radio>
-                    <v-radio label="Otro plazo" value="otro"></v-radio>
+                    <v-radio label="Al día siguiente al de formalización" :value="true"></v-radio>
+                    <v-radio label="Otro plazo" :value="false"></v-radio>
                 </v-radio-group>
               </v-col>
 
-              <v-col cols="12" md="2" v-if="datos.plazoInicio === 'otro'">
-                  <h5 class="subtitle">Indicar plazo:</h5>
-                  <br/>
-                  <v-text-field filled label="Fecha" v-model="datos.fechaInicio"></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="6" v-if="datos.plazoInicio === 'otro'">
+              <v-col cols="12" md="8" v-if="datos.plazoInicio === false">
                   <h5 class="subtitle">Observaciones:</h5>
                   <br/>
                   <v-text-field filled label="Observaciones" v-model="datos.fechaInicioObservaciones"></v-text-field>
@@ -809,8 +731,6 @@ export default {
   data() {
     return {
       date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-      fechaInicio: false,
-      fechaFin: false,
       dateInicio: '',
       dateFin: '',
 
@@ -823,7 +743,7 @@ export default {
       itemsAplicacionPrep: ['1718495A620'],
       rules: {
           required: (value) => !!value || "Este campo es obligatorio.",
-          max: (value) => value <= this.datos.importeNumUnid || "Se supera el máximo permitido (20% presupuesto base)",
+          max: (value) => value <= 20 || "Se supera el máximo permitido (20% presupuesto base)",
           zero: (value) => value > 0 || "El importe no puede ser igual a 0",
       },
 
@@ -852,6 +772,8 @@ export default {
         { text: "Total (impuestos inc.)", align: "end", sortable: false, value: "importeConIVA", width: "25%" },
       ],
 
+      tipoPlazo: ['dias', 'meses', 'años'],
+
       datos: {
         componente: 'PresupuestoAnualidades',
 
@@ -876,10 +798,11 @@ export default {
 
 
         //SECCION 4
-        maxModificacionesPrevistas: undefined,
         totalEstimado: undefined,
         metodoCalculo: 'Para calcular el valor estimado se han tenido en cuenta los costes derivados de la aplicación de la normativa laboral vigente. Además, se han tenido en cuenta los apartados 2 y 10 del artículo 101 de la LCSP.',
-      
+  
+        
+        
         //SECCIÓN 5
         divisionLotes: 'no es posible',
         divisionNoPosible: 'naturaleza objeto',
@@ -902,24 +825,31 @@ export default {
         tramitacionProc: true,
 
         //SECCION 25
-        preveModif: undefined,
+        preveModif: false,
         importeModificacion: undefined,
+        porcentajeModificacion: 0,
+        maxModificacionesPrevistas: undefined,
+        hasNumeroUnidades: false,
+        hasNuevosApartados: false,
+        hasEnsayos: false,
         importeProrrogas: 0,
         importeNumUnid: undefined,
         totalModificaciones: undefined,
+        tipoPlazoProrroga: 'meses',
 
         //SECCUION 18
-        definicion: 'plazoEjecucion',
+        definicion: true,
         plazoEjecucion: '',
-        plazoMaximoEjecucion: '',
+        plazoMaximoEjecucion: undefined,
         plazoMaximoEjecucionObservaciones: '',
-        modalidad: 'plazo',
+        plazosParciales: '',
+        modalidad: true,
         plazoMeses: '',
+        modoPlazo: true,
         prorroga: 'no',
-        prorrogaMeses: '',
-        prorrogaMesesObservaciones: '',
-        plazoInicio: '',
-        fechaInicio: '',
+        plazoProrroga: '',
+        plazoProrrogaObservaciones: '',
+        plazoInicio: true,
         fechaInicioObservaciones: '',
         lugarPrestacion: '',
       },
@@ -958,19 +888,9 @@ export default {
         if(datos.preveModif === 'si'){
           this.base = parseFloat(this.datos.presupuestoBaseLicitacion)
           this.datos.importeNumUnid = this.base * 0.20
-        } else {
-          this.datos.importeModificacion = 0;
-        }
+        } 
         
         //CONSISTENCIA DE DATOS
-        if(datos.definicion === 'plazoEjecucion'){
-          datos.modalidad = undefined;
-          datos.plazoMeses = undefined;
-        } else {
-          datos.plazoMaximoEjecucion = undefined;
-          datos.plazoMaximoEjecucionObservaciones = undefined;
-        }
-
         if(datos.divisionLotes !== 'no es posible'){
           if(datos.divisionLotes === "posible no divisible"){
             this.datos.posibleNoDivisible = true
@@ -985,6 +905,28 @@ export default {
 
         if(datos.divisionPosibleDivisible !== false){
           this.datos.justificacionNoDivisionPosible = datos.divisionPosibleDivisible
+        }
+
+        if(datos.tipoModif === 'numeroUnidades') { 
+          datos.hasNumeroUnidades = true;
+          datos.hasNuevosApartados = false;
+          datos.hasEnsayos = false; 
+        }
+        else if (datos.tipoModif === 'nuevosApartados') { 
+          datos.hasNumeroUnidades = false;
+          datos.hasNuevosApartados = true;
+          datos.hasEnsayos = false; 
+        }
+        else if (datos.tipoModif === 'ensayosAuscultacion') { 
+          datos.hasNumeroUnidades = false;
+          datos.hasNuevosApartados = false;
+          datos.hasEnsayos = true; 
+        }
+
+        if(datos.porcentajeModificacion > 0){
+          datos.importeModificacion = parseFloat((parseFloat(datos.presupuestoBaseLicitacion) * (parseInt(datos.porcentajeModificacion) / 100)).toFixed(2))
+        } else {
+          datos.importeModificacion = 0;
         }
       }
     },
@@ -1144,10 +1086,6 @@ export default {
 
 .totalSlot {
   width: 6.9rem;
-}
-
-.icon {
-  margin-left: 0.5rem;
 }
 
 .actionButton {

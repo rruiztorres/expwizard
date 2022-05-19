@@ -1,32 +1,13 @@
 <template>
     <div>
-        <!-- 16.- PLAZO PARA LA ADJUDICACION -->
-        <h3 class="bSpacer">16.- Plazo para la adjudicación</h3>
-        <v-row class="rowGroup">
-            <v-col cols="12" md="3">
-                <h5 class="subtitle">Se adjudicará el contrato dentro del plazo:</h5>
-                <v-radio-group v-model="datos.plazoAdjudicacion">
-                    <v-radio label="General de 2 meses" value="general"></v-radio>
-                    <v-radio label="Otro" value="otro"></v-radio>
-                </v-radio-group>
-            </v-col>
-            <v-col cols="12" md="4" v-if="datos.plazoAdjudicacion === 'otro'">
-                <h5 class="subtitle">Si es otro plazo, especificar:</h5>
-                <br/>
-                <v-text-field filled label="plazo" v-model="datos.plazoAdjudicacionJustificar"></v-text-field>
-            </v-col>
-        </v-row>
-        <br/>
-
-
         <!-- 17.- RESPONSABLE DEL CONTRATO -->
         <h3 class="bSpacer">17.- Responsable del contrato</h3>
         <v-row class="rowGroup">
             <v-col cols="12" md="4">
-                <v-text-field filled label="Nombre y apellidos"></v-text-field>
+                <v-text-field filled label="Nombre y apellidos" v-model="datos.nombreResponsable"></v-text-field>
             </v-col>
             <v-col cols="12" md="4">
-                <v-text-field filled label="Puesto"></v-text-field>
+                <v-text-field filled label="Puesto" v-model="datos.puestoResponsable"></v-text-field>
             </v-col>
             <v-col cols="12" md="4">
                 <v-select filled label="Subdirección" :items="subdirecciones" v-model="datos.selectSubdireccion">
@@ -48,14 +29,14 @@
                 </ul>
             </div>
         </v-row>
-        <br/> <br/>
+        <br/><br/>
 
         <h3 class="bSpacer">23.- Comprobación de pagos a subcontratistas o suministradores</h3>
         <v-row class="rowGroup">
             <v-col cols="12" md="6">
                 <v-radio-group v-model="datos.comprobacionPagos">
-                    <v-radio label="No procede" value="no"></v-radio>
-                    <v-radio label="Si procede, por establecerse en este pliego [art. 217.1 LCSP]" value="si"></v-radio>
+                    <v-radio label="No procede" :value="false"></v-radio>
+                    <v-radio label="Si procede, por establecerse en este pliego [art. 217.1 LCSP]" :value="true"></v-radio>
                 </v-radio-group>
             </v-col>
         </v-row>
@@ -79,104 +60,113 @@
                 <v-col cols="12" md="4">
                     <h5 class="subtitle">1.- Emplear en la ejecución un % de trabajadores fijos >= 20%</h5>
                     <v-radio-group v-model="datos.exigidosFijo">
-                        <v-radio label="Si" value="si"></v-radio>
-                        <v-radio label="No" value="no"></v-radio>
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
                 <v-col cols="12" md="4">
                     <h5 class="subtitle">2.- Emplear en la ejecución un % de trabajadores total nuevos empleos >= media nacional sector</h5>
                     <v-radio-group v-model="datos.exigidosMedia">
-                        <v-radio label="Si" value="si"></v-radio>
-                        <v-radio label="No" value="no"></v-radio>
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
                 <v-col cols="12" md="4">
                     <h5 class="subtitle">3.- Emplear en la ejecución un % de trabajadores con discapacidad o situación riesgo >= 1%</h5>
                     <v-radio-group v-model="datos.exigidosDiscapacidad">
-                        <v-radio label="Si" value="si"></v-radio>
-                        <v-radio label="No" value="no"></v-radio>
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
             </v-row>
         </v-row>
         <br/>
-
+        
         <h5 class="bSpacer subtitle">24.2- Otras condiciones especiales de ejecución:</h5>
-        <v-row class="rowGroup bSpacer">
-            <!-- 1.- ADSCRIPCION DE MEDIOS ESPECÍFICOS -->
+        <v-row class="rowGroup">
             <v-col cols="12" md="4">
-                <h5 class="subtitle bSpacer">1.- Adscripción de medios específicos [art. 76.2 LCSP]</h5>
+                <h5 class="subtitle">1.- Adscripción de medios específicos [art. 76.2 LCSP]</h5>
                 <v-radio-group v-model="datos.adscripcionMedios">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="8" v-if="datos.adscripcionMedios === 'si'">
+            <v-col cols="12" md="8" v-if="datos.adscripcionMedios === true">
                 <h5 class="subtitle">En caso afirmativo:</h5>
                 <br/>
                 <i>Deberán adscribirse los medios personales y materiales especificados en el ANEXO III de este pliego</i>                
             </v-col>
         </v-row>
         <br/><br/>
-    
+
+
+
+
+
         <v-row class="rowGroup">
             <v-col cols="12">
                 <h5 class="subtitle bSpacer">2.- Seguro de responsabilidad civil por riesgos profesionales [artículo 202 LCSP]</h5>
-           </v-col>
+            </v-col>
 
-            <v-row class="p1">
-                <!-- 2.- SEGURO DE RESPONSABILIDAD CIVIL -->
-                <v-col cols="12" md="1">
-                    <h5 class="subtitle">¿Exigido?</h5>
-                    <v-radio-group v-model="datos.seguroRespCivil">
-                        <v-radio label="Si" value="si"></v-radio>
-                        <v-radio label="No" value="no"></v-radio>
-                    </v-radio-group>
-                </v-col>
+            <v-col cols="12">
+                <v-row>
+                    <!-- 2.- SEGURO DE RESPONSABILIDAD CIVIL -->
+                    <v-col cols="12" md="1">
+                        <h5 class="subtitle">¿Exigido?</h5>
+                        <v-radio-group v-model="datos.seguroRespCivil">
+                            <v-radio label="Si" value="si"></v-radio>
+                            <v-radio label="No" value="no"></v-radio>
+                        </v-radio-group>
+                    </v-col>
 
-                <v-col cols="12" md="2" v-if="datos.seguroRespCivil === 'si'">
-                    <h5 class="subtitle">Suma asegurada:</h5>
-                    <v-radio-group v-model="datos.sumaAsegurada">
-                        <v-radio label="2.000.000 €" value="2MM"></v-radio>
-                        <v-radio label="Otra cantidad" value="otra"></v-radio>
-                    </v-radio-group>
-                </v-col>
+                    <v-col cols="12" md="2" v-if="datos.seguroRespCivil === 'si'">
+                        <h5 class="subtitle">Suma asegurada:</h5>
+                        <v-radio-group v-model="datos.sumaAsegurada">
+                            <v-radio label="2.000.000 €" :value="true"></v-radio>
+                            <v-radio label="Otra cantidad" :value="false"></v-radio>
+                        </v-radio-group>
+                    </v-col>
 
-                <v-col cols="12" md="4" v-if="datos.seguroRespCivil === 'si' && datos.sumaAsegurada === 'otra'">
-                    <h5 class="subtitle">Especificar cantidad</h5>
-                    <v-text-field filled label="(€)" v-model="datos.aseguradoEspecifico"></v-text-field>
-                </v-col>
+                    <v-col cols="12" md="4" v-if="datos.seguroRespCivil === 'si' && datos.sumaAsegurada === false">
+                        <h5 class="subtitle">Especificar cantidad</h5>
+                        <v-text-field filled label="(€)" v-model="datos.aseguradoEspecifico"></v-text-field>
+                    </v-col>
 
-                <v-col cols="12" md="5" v-if="datos.seguroRespCivil === 'si' && datos.sumaAsegurada === 'otra'">
-                    <h5 class="subtitle">Riesgo específico asegurado:</h5>
-                    <v-text-field filled label="(€)" v-model="datos.aseguradoEspecifico"></v-text-field>
-                </v-col>
-            </v-row>
+                    <v-col cols="12" md="5" v-if="datos.seguroRespCivil === 'si' && datos.sumaAsegurada === false">
+                        <h5 class="subtitle">Riesgo específico asegurado:</h5>
+                        <v-text-field filled label="(€)" v-model="datos.riesgoAseguradoEspecifico"></v-text-field>
+                    </v-col>
+                </v-row>
+            </v-col>
         </v-row>
         <br/><br/>
+
+
+
+        
 
         <v-row class="rowGroup">
             <!-- 3.- CONFIDENCIALIDAD -->
             <v-col cols="12" md="3">
                 <h5 class="subtitle">3.- Confidencialidad [art. 133.2 LCSP]</h5>
                 <v-radio-group v-model="datos.confidencialidad">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
                 <!-- PLAZO CONFIDENCIALIDAD -->
-                <v-col cols="12" md="2" v-if="datos.confidencialidad === 'si'">
+                <v-col cols="12" md="2" v-if="datos.confidencialidad === true">
                     <h5 class="subtitle">Plazo confidencialidad</h5>
                     <v-radio-group v-model="datos.plazoConfidencialidad">
-                        <v-radio label="5 Años" value="5"></v-radio>
-                        <v-radio label="Otro" value="otro"></v-radio>
+                        <v-radio label="5 Años" :value="true"></v-radio>
+                        <v-radio label="Otro" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
                 <!-- JUSTIFICACION CONFIDENCIALIDAD -->
-                <v-col cols="12" md="3" v-if="datos.confidencialidad === 'si' && datos.plazoConfidencialidad === 'otro'">
+                <v-col cols="12" md="3" v-if="datos.confidencialidad === true && datos.plazoConfidencialidad === false">
                     <h5 class="subtitle bSpacer">Especificar:</h5>
                     <v-text-field filled label="Años" v-model="datos.plazoConfidencialidadEspecifico"></v-text-field>
                 </v-col>
@@ -200,11 +190,9 @@
                 datos: {
                     componente: 'EjecucionYotros',
 
-                    //16 y 17
-                    plazoAdjudicacion: 'general',
-                    plazoAdjudicacionJustificar: '',
+                    nombreResponsable: undefined,
+                    puestoResponsable: undefined,
                     selectSubdireccion: 'Secretaria General',
-
                     comprobacionPagos: 'no',
                     condicionesEspeciales: '',
                     exigidosFijo: '',
@@ -215,8 +203,9 @@
                     confidencialidad: '',
                     plazoConfidencialidad: '',
                     plazoConfidencialidadEspecifico: '',
-                    sumaAsegurada: '',
+                    sumaAsegurada: false,
                     aseguradoEspecifico: '',
+                    riesgoAseguradoEspecifico: '',
                 }
             }
         },

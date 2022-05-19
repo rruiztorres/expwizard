@@ -8,8 +8,8 @@
             <v-col cols="12">
                 <h5 class="subtitle">26.1.- Por incumplimiento de las condiciones especiales de ejecución [artículo 192.1 LCSP]</h5>
                 <v-radio-group v-model="datos.penConEsp">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
@@ -17,8 +17,8 @@
             <v-col cols="12">
                 <h5 class="subtitle">26.2.- Por incumplimiento defectuoso [artículo 192.1 LCSP]</h5>
                 <v-radio-group v-model="datos.penDefectuoso">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
@@ -26,21 +26,21 @@
             <v-col cols="12" md="5">
                 <h5 class="subtitle">26.3.- Por incumplir criterios de adjudicación [artículo 145 LCSP]</h5>
                 <v-radio-group v-model="datos.penCritAdj">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
                 <!-- CASO AFIRMATIVO -->
-                <v-col cols="12" md="3" v-if="datos.penCritAdj === 'si'">
+                <v-col cols="12" md="3" v-if="datos.penCritAdj === true">
                 <h5 class="subtitle">En caso afirmativo:</h5>
                 <v-radio-group v-model="datos.critPenAdj">
-                    <v-radio label="Cualquiera de los criterios de adjudicación" value="cualquiera"></v-radio>
-                    <v-radio label="El criterio de adjudicación que se especifica a continuación:" value="especificar"></v-radio>
+                    <v-radio label="Cualquiera de los criterios de adjudicación" :value="true"></v-radio>
+                    <v-radio label="El criterio de adjudicación que se especifica a continuación:" :value="false"></v-radio>
                 </v-radio-group>
                 </v-col>
 
                     <!-- INDICAR CRITERIO -->
-                    <v-col cols="12" md="4" v-if="datos.penCritAdj === 'si' && datos.critPenAdj === 'especificar'">
+                    <v-col cols="12" md="4" v-if="datos.penCritAdj === true && datos.critPenAdj === false">
                     <h5 class="subtitle">Indicar criterio/s:</h5>
                     <v-textarea auto-grow filled v-model="datos.espCritPenAdj"></v-textarea>
                     </v-col>
@@ -49,8 +49,8 @@
             <v-col cols="12">
                 <h5 class="subtitle">26.4.- Por demora en el plazo de ejecución:</h5>
                 <v-radio-group v-model="datos.penDemoraPlazoEjec">
-                    <v-radio label="Por incumplimiento de plazo. Las previstas en el artículo 193 de la LCSP" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Por incumplimiento de plazo. Las previstas en el artículo 193 de la LCSP" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
@@ -60,8 +60,8 @@
                     de seguridad y salud [artículo 193.5 LCSP]
                 </h5>
                 <v-radio-group v-model="datos.penDemoraPresent">
-                    <v-radio label="Si" value="si"></v-radio>
-                    <v-radio label="No" value="no"></v-radio>
+                    <v-radio label="Si" :value="true"></v-radio>
+                    <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
@@ -72,8 +72,8 @@
                     <v-col cols="12">
                         <h5 class="subtitle">1.- Por incumplir las condiciones para la subcontratación</h5>
                         <v-radio-group v-model="datos.penSubcontrata">
-                            <v-radio label="Si" value="si"></v-radio>
-                            <v-radio label="No" value="no"></v-radio>
+                            <v-radio label="Si" :value="true"></v-radio>
+                            <v-radio label="No" :value="false"></v-radio>
                         </v-radio-group>
                     </v-col>
                 </v-row>
@@ -84,8 +84,8 @@
                             Consejo de 17 de diciembre de 2013; cuando el contrato se financie con fondos europeos.
                         </h5>
                         <v-radio-group v-model="datos.penFondEurop">
-                            <v-radio label="Si" value="si"></v-radio>
-                            <v-radio label="No" value="no"></v-radio>
+                            <v-radio label="Si" :value="true"></v-radio>
+                            <v-radio label="No" :value="false"></v-radio>
                         </v-radio-group>
                     </v-col>
                 </v-row>
@@ -123,15 +123,15 @@
 
                 datos: {
                     componente: 'ModificacionesPenalidades',
-                    penConEsp: undefined,
-                    penDefectuoso: undefined,
-                    penCritAdj: undefined,
-                    critPenAdj: undefined,
-                    espCritPenAdj: undefined,
-                    penDemoraPlazoEjec: undefined,
-                    penDemoraPresent: undefined,
-                    penSubcontrata: undefined,
-                    penFondEurop: undefined,
+                    penConEsp: false,
+                    penDefectuoso: false,
+                    penCritAdj: false,
+                    critPenAdj: true,
+                    espCritPenAdj: '',
+                    penDemoraPlazoEjec: false,
+                    penDemoraPresent: false,
+                    penSubcontrata: false,
+                    penFondEurop: false,
                 }
             }
         },

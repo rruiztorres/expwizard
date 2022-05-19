@@ -8,6 +8,7 @@
                  <v-radio-group v-model="datos.formaPago">
                     <v-radio label="Precios unitarios (licitación afectados por % baja)" value="licitacionBaja"></v-radio>
                     <v-radio label="Precios unitarios (ofertados por adjudicatario)" value="ofertadoAdjudicatario"></v-radio>
+                    <v-radio label="Precios a tanto alzado" value="tantoAlzado"></v-radio>
                     <v-radio label="Combinación de precios unitarios y a tanto alzado (licitación afectados por % baja)" value="combiLicitacionBaja"></v-radio>
                     <v-radio label="Combinación de precios unitarios y a tanto alzado (ofertados por adjudicatario)" value="combiOfertadoAdjudicatario"></v-radio>
                 </v-radio-group>
@@ -19,12 +20,12 @@
             <v-col cols="12" md="3">
                 <h5 class="subtitle">La periodicidad de los pagos sera:</h5>
                  <v-radio-group v-model="datos.periodicidad">
-                    <v-radio label="Mensual" value="mensual"></v-radio>
-                    <v-radio label="Otra" value="otra"></v-radio>
+                    <v-radio label="Mensual" :value="true"></v-radio>
+                    <v-radio label="Otra" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="2" v-if="datos.periodicidad === 'otra'">
+            <v-col cols="12" md="2" v-if="datos.periodicidad === false">
                 <h5 class="subtitle bSpacer">Seleccionar nº pagos</h5>
                 <v-select
                     filled
@@ -35,7 +36,7 @@
                 </v-select>
             </v-col>
 
-            <v-col cols="12" v-if="datos.periodicidad === 'otra'">
+            <v-col cols="12" v-if="datos.periodicidad === false">
                 <h5 class="subtitle bSpacer">Especificar pagos:</h5>
                 <v-data-table
                     class="dataTable"
@@ -123,8 +124,10 @@
                         <v-icon color="red">mdi-delete</v-icon>
                         </v-btn>
                     </template>
-
                 </v-data-table>
+                <br/>
+                <v-btn large color="success" @click="storePeriodicidad" v-if="periodicidadGuardada === false">GUARDAR DATOS <v-icon class="icon">mdi-content-save</v-icon></v-btn>
+                <v-btn large color="grey" v-else dark>GUARDADO CORRECTO <v-icon class="icon">mdi-check-all</v-icon></v-btn>
             </v-col>
         </v-row>
         <br/><br/>
@@ -134,22 +137,22 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="2">
                 <v-radio-group v-model="datos.revision">
-                    <v-radio label="No procede" value="no"></v-radio>
-                    <v-radio label="Si procede" value="si"></v-radio>
+                    <v-radio label="Si procede" :value="true"></v-radio>
+                    <v-radio label="No procede" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
 
-            <v-col cols="12" md="3" v-if="datos.revision === 'si'">
+            <v-col cols="12" md="3" v-if="datos.revision === true">
                 <h5 class="subtitle bSpacer">Justificación:</h5>
                 <v-text-field filled v-model="datos.revisionJustificacion"></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="3" v-if="datos.revision === 'si'">
+            <v-col cols="12" md="3" v-if="datos.revision === true">
                 <h5 class="subtitle bSpacer">Tipo:</h5>
                 <v-text-field filled v-model="datos.revisionTipo"></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="4" v-if="datos.revision === 'si'">
+            <v-col cols="12" md="4" v-if="datos.revision === true">
                 <h5 class="subtitle bSpacer">Fórmula: [RD 1359/2011, de 7 de octubre]</h5>
                 <v-text-field filled v-model="datos.revisionFormula"></v-text-field>
             </v-col>
@@ -160,8 +163,8 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="8">
                 <v-radio-group v-model="datos.abonosAcuenta">
-                    <v-radio label="No proceden" value="no"></v-radio>
-                    <v-radio label="Si proceden, en las condiciones previstas en el punto 19 de este pliego." value="si"></v-radio>
+                    <v-radio label="Si proceden, en las condiciones previstas en el punto 19 de este pliego." :value="true"></v-radio>
+                    <v-radio label="No proceden" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
         </v-row>
@@ -185,16 +188,59 @@
                         this.nuevoPeriodo = {
                         id: i,
                         year: this.newYear + i,
-                        concepto: '...',
-                        observaciones: '...',
+                        concepto: '',
+                        observaciones: '',
                         importeSIVA: 0,
-                        IVA: '',
-                        total: '',
+                        IVA: 0,
+                        total: 0,
                         
                     }
                     this.datos.otraPeriodicidad.push(this.nuevoPeriodo)
                 }
+                this.periodicidadGuardada = false;
             },
+
+            datos: {
+                deep: true,
+                handler(datos){
+                    //SELECT REGIMEN PAGOS
+                    if(datos.formaPago === 'licitacionBaja'){
+                        datos.hasPreciosUnitariosBaja = true
+                        datos.hasPreciosUnitariosAdju = false
+                        datos.hasCombiLicBaja = false
+                        datos.hasCombiUnitAlza = false
+                        datos.hasTantoAlzado = false
+                    }
+                    else if(datos.formaPago === 'ofertadoAdjudicatario'){
+                        datos.hasPreciosUnitariosBaja = false
+                        datos.hasPreciosUnitariosAdju = true
+                        datos.hasCombiLicBaja = false
+                        datos.hasCombiUnitAlza = false
+                        datos.hasTantoAlzado = false
+                    }
+                    else if(datos.formaPago === 'tantoAlzado'){
+                        datos.hasPreciosUnitariosBaja = false
+                        datos.hasPreciosUnitariosAdju = false
+                        datos.hasCombiLicBaja = false
+                        datos.hasCombiUnitAlza = false
+                        datos.hasTantoAlzado = true
+                    }
+                    else if(datos.formaPago === 'combiLicitacionBaja'){
+                        datos.hasPreciosUnitariosBaja = false
+                        datos.hasPreciosUnitariosAdju = false
+                        datos.hasCombiLicBaja = true
+                        datos.hasCombiUnitAlza = false
+                        datos.hasTantoAlzado = false
+                    }
+                    else if(datos.formaPago === 'combiOfertadoAdjudicatario'){
+                        datos.hasPreciosUnitariosBaja = false
+                        datos.hasPreciosUnitariosAdju = false
+                        datos.hasCombiLicBaja = false
+                        datos.hasCombiUnitAlza = true
+                        datos.hasTantoAlzado = false
+                    }
+                }
+            }
         },
 
         beforeDestroy(){
@@ -236,6 +282,14 @@
                 } else {
                     this.activeDelete = true;
                 }
+            },
+
+            storePeriodicidad(){
+                for (this.index in this.datos.otraPeriodicidad){
+                    this.datos.otraPeriodicidad[this.index].IVA = this.returnIVAcalc(parseFloat(this.datos.otraPeriodicidad[this.index].importeSIVA))
+                    this.datos.otraPeriodicidad[this.index].total = (parseFloat(this.datos.otraPeriodicidad[this.index].IVA) + parseFloat(this.datos.otraPeriodicidad[this.index].importeSIVA)).toFixed(2)
+                }
+                this.periodicidadGuardada = true;
             }
         },
 
@@ -253,19 +307,26 @@
 
                 periodicidades: [1,2,3,4,5],
                 selectPeriodicidad: 0,
+                periodicidadGuardada: false,
 
                 activeDelete: false,
 
                 datos: {
                     componente:'RegimenPagosRevision',
+
+                    hasPreciosUnitariosBaja: false,
+                    hasPreciosUnitariosAdju: false,
+                    hasCombiLicBaja: false,
+                    hasCombiUnitAlza: false,
+                    hasTantoAlzado: false,
                     formaPago: '',
-                    periodicidad: 'otra',
+                    periodicidad: false,
                     otraPeriodicidad: [],
-                    revision: 'no',
+                    revision: false,
                     revisionJustificacion: '',
                     revisionTipo: '',
                     revisionFormula: '',
-                    abonosAcuenta: '',
+                    abonosAcuenta: false,
                 }
             }
         },

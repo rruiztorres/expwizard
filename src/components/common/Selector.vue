@@ -8,48 +8,109 @@
           </v-col>
         </v-row>
 
+
+        <!-- SUMINISTROS -->
         <v-row>
             <v-col cols="12">
-                <h3>Modelos de Expedientes</h3>
+                <h3>Expedientes de suministro</h3>
+                <hr/>
+            </v-col>
+        </v-row>  
+        <v-row class="row">
+            <v-col 
+            cols="12" sm="6" md="4" lg="2">
+                <v-card 
+                color="#0091EA" dark class="selection" @click="selectTipo('PCAP')" elevation="0">
+                    <div class="titleContainer">
+                        <h3 class="cardTitle">Abierto</h3>
+                        <h4 class="cardTitle">Varios criterios</h4>
+                    </div>
+                    <v-card-text>
+                        <v-icon class="iconSel">mdi-note-text-outline</v-icon>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+            <v-col 
+            cols="12" sm="6" md="4" lg="2">
+                <v-card 
+                color="#00B8D4" dark class="selection" @click="selectTipo('')" elevation="0">
+                    <div class="titleContainer">
+                        <h3 class="cardTitle">Abierto</h3>
+                        <h4 class="cardTitle">Simplificado</h4>
+                    </div>
+                    <v-card-text>
+                        <v-icon class="iconSel">mdi-note-text-outline</v-icon>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+            <v-col 
+            cols="12" sm="6" md="4" lg="2">
+                <v-card 
+                color="#00BFA5" dark class="selection" @click="selectTipo('')" elevation="0">
+                    <div class="titleContainer">
+                        <h3 class="cardTitle">Abierto</h3>
+                        <h4 class="cardTitle">Simplif. abreviado</h4>
+                    </div>
+                    <v-card-text>
+                        <v-icon class="iconSel">mdi-note-text-outline</v-icon>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+               
+        </v-row>
+        <br/>
+
+        <!-- SERVICIOS -->
+        <v-row>
+            <v-col cols="12">
+                <h3>Expedientes de servicios</h3>
                 <hr/>
             </v-col>
         </v-row>
-        
         <v-row class="row">
             <v-col 
-            v-if="resBusqueda('PCAP')"
             cols="12" sm="6" md="4" lg="2">
                 <v-card 
-                color="green" dark class="selection" @click="selectTipo('PCAP')" elevation="0">
-                    <v-card-title>PCAP</v-card-title>
+                color="#00C853" dark class="selection" @click="selectTipo('')" elevation="0">
+                    <div class="titleContainer">
+                        <h3 class="cardTitle">Abierto</h3>
+                        <h4 class="cardTitle">Varios criterios</h4>
+                    </div>
                     <v-card-text>
                         <v-icon class="iconSel">mdi-note-text-outline</v-icon>
                     </v-card-text>
                 </v-card>
             </v-col>
             <v-col 
-            v-if="resBusqueda('SERVICIOS')"
             cols="12" sm="6" md="4" lg="2">
                 <v-card 
-                color="red" dark class="selection" @click="selectTipo('SERVICIOS')" elevation="0">
-                    <v-card-title>SERVICIOS</v-card-title>
+                color="#64DD17" dark class="selection" @click="selectTipo('')" elevation="0">
+                    <div class="titleContainer">
+                        <h3 class="cardTitle">Abierto</h3>
+                        <h4 class="cardTitle">Simplificado</h4>
+                    </div>
                     <v-card-text>
                         <v-icon class="iconSel">mdi-note-text-outline</v-icon>
                     </v-card-text>
                 </v-card>
-            </v-col> 
-            <v-col
-            v-if="resBusqueda('OTROS')" 
+            </v-col>
+            <v-col 
             cols="12" sm="6" md="4" lg="2">
                 <v-card 
-                color="blue" dark class="selection" elevation="0">
-                    <v-card-title>OTROS</v-card-title>
+                color="#AEEA00" dark class="selection" @click="selectTipo('')" elevation="0">
+                    <div class="titleContainer">
+                        <h3 class="cardTitle">Abierto</h3>
+                        <h4 class="cardTitle">Simplif. abreviado</h4>
+                    </div>
                     <v-card-text>
                         <v-icon class="iconSel">mdi-note-text-outline</v-icon>
                     </v-card-text>
                 </v-card>
-            </v-col>    
+            </v-col>
+               
         </v-row>
+        <br/>
+        
     </div>
 </template>
 
@@ -78,7 +139,7 @@
 </script>
 
 <style scoped>
-h1, h2, h3, h4 {
+h1, h2, h4 {
     font-weight: 400;
 }
 
@@ -90,12 +151,24 @@ h1, h2, h3, h4 {
     box-shadow: 0px 1px 4px 1px grey !important;
 }
 
+.titleContainer{
+    padding-top: 1rem;
+}
+
+.cardTitle {
+    text-align: center;
+    margin-bottom: 0rem;
+    word-break:normal;
+}
+
 .row{
     width: 80vw;
     margin: 0 auto;
 }
 
 .iconSel {
+    width: 100%;
+    margin: 0 auto;
     font-size: 8rem !important;
 }
 
