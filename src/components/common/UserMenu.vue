@@ -50,7 +50,9 @@
         <v-divider></v-divider>
         <v-list>
             <v-list-item>
-                <v-btn class="whiteText" dark color="red" width="100%"><v-icon class="logoutIcon">mdi-account-arrow-left</v-icon>Cerrar Sesión</v-btn>
+                <v-btn class="whiteText" dark color="red" width="100%"
+                @click="doLogout"
+                ><v-icon class="logoutIcon">mdi-account-arrow-left</v-icon>Cerrar Sesión</v-btn>
             </v-list-item>
         </v-list>
     </div>
@@ -81,9 +83,30 @@
             }
         },
 
+        created(){
+            this.initialize();
+        },
+
         methods: {
+            initialize(){
+                this.apellido = (localStorage.apellidos.split(" "))[0]
+                this.userNombre = localStorage.nombre + " " + this.apellido;
+                this.userRole = localStorage.role;
+                this.userInitials = localStorage.nombre.slice(0,1) + this.apellido.slice(0,1)
+            },
+
             activeMenu(menu){
                 this.$emit('activeMenu', menu)
+            },
+
+            doLogout() {
+                localStorage.usrName = null;
+                localStorage.role = null;
+                localStorage.nombre = null;
+                localStorage.apellidos = null;
+                this.userInitials = undefined;
+
+                this.$router.push("/");
             }
         },
     }

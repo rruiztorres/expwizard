@@ -15,28 +15,34 @@
           <v-text-field 
             filled 
             class="fadeIn second inputText" 
-            placeholder="Nombre de usuario" 
+            placeholder="Nombre de usuario"
+            v-model="usuario" 
           >
           </v-text-field>
           <v-text-field 
             filled 
             class="fadeIn third inputText" 
             placeholder="Password" 
+            v-model="password"
+            :type="passwordType"
             ></v-text-field>
           <v-switch
             class="inputText switcher"
             inset
             dense
             label="Mostrar Contraseña"
+            v-model="activatePassword"
           ></v-switch>
-          <v-btn large class="fadeIn fourth logInButton" dark color="#4281f5" @click="login">LOG IN</v-btn>
+          <v-btn large class="fadeIn fourth logInButton" dark color="#4281f5" @click="checkData">LOG IN</v-btn>
+          
+          <!--ALERTA LOGIN-->
+          <v-alert class="alert" type="error" v-model="alertLogin">{{alertLoginMensaje}}</v-alert>
 
 
           <!-- Recordar Password -->
           <div id="formFooter">
             <a class="underlineHover">Contraseña olvidada?</a>
           </div>
-
         </div>
       </div>
     </v-main>
@@ -44,6 +50,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+import md5 from 'md5'
 
 export default {
   name: "Home",
@@ -55,6 +63,10 @@ export default {
       error: false,
       error_msg: "",
       errorAPI: "",
+      passwordType: 'password',
+      activatePassword: false,
+      alertLogin: false,
+      alertLoginMensaje: '',
 
       rules: {
         usrNameRules: [],
@@ -65,7 +77,41 @@ export default {
     };
   },
 
+  watch:{
+    activatePassword(){
+      if(this.activatePassword === false){
+        this.passwordType = 'password'
+      } else {
+        this.passwordType = 'text'
+      }
+    }
+  },
+
   methods:{
+    checkData(){
+      this.usrlogin = {
+        usuario: this.usuario,
+        password: md5(this.password),
+      };
+
+      axios
+      .post(`${process.env.VUE_APP_API_ROUTE}/postAuth/${this.usrlogin.usuario}/${this.usrlogin.password}`)
+      .then((data) => {
+        if(data.status === 201){
+          console.log(data)
+          localStorage.usrName = data.data.usuario[0].usrname;
+          localStorage.role = data.data.usuario[0].role;
+          localStorage.nombre = data.data.usuario[0].usuario_nombre;
+          localStorage.apellidos = data.data.usuario[0].usuario_apellidos;
+
+          this.login()
+        } else {
+          this.alertLogin = true;
+          this.alertLoginMensaje = data.data.mensaje
+        }
+      })
+    },
+
     login(){
       this.$router.push("Dashboard");
     }
@@ -98,6 +144,10 @@ h2 {
   text-align: center;
   display:inline-block;
   margin: 40px 8px 10px 8px; 
+}
+
+.alert {
+  margin: 1rem;
 }
 
 #agexApp {

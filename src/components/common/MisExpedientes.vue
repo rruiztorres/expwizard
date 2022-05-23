@@ -21,11 +21,12 @@
                     <template v-slot:[`item.edit`] = "props">
                         <v-btn 
                         class="greenButton"
-                        title="Descargar PDF"
+                        title="Editar"
                         @click="edit(props.item)"
                         icon dark><v-icon>mdi-lead-pencil</v-icon>
                         </v-btn>
                     </template>
+
                     <template v-slot:[`item.downloads`]="props">
                         <v-btn 
                         class="redButton"
@@ -40,6 +41,10 @@
                         @click="getInfo(props.item.id)"
                         icon dark><v-icon>mdi-file-word-box</v-icon>
                         </v-btn>
+                    </template>
+
+                    <template v-slot:[`item.fecha`]="props">
+                        {{(props.item.fecha.split("T"))[0]}}
                     </template>
 
                     <template v-slot:[`item.estado`]="props">
