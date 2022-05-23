@@ -1,56 +1,62 @@
 <template>
   <div>
         <!-- 1 OBJETO DEL CONTRATO -->
-        <h3>Objeto del contrato
-          <v-badge 
-          class="badge" color="#c7d6f2" content="?"
-          title="Punto 1"></v-badge >
-        </h3>
-        <v-text-field
-        v-model="datos.tituloExpediente"
-        :rules="[rules.required, rules.counter]"
-        label="Titulo del Expediente" counter filled               
-        >
-        </v-text-field>
-
-        <v-text-field
-        v-model="datos.clave"
-        label="Clave" filled>
-        </v-text-field>
-
         <v-row class="row">
-          <v-col class="colControl" cols="12" md="6">
-              <v-select
-              :items="comunidades"
-              v-model="datos.selectComunidadesAutonomas"
-              multiple
-              filled
-              @mousedown.prevent
-              label="Comunidades Autonomas"
+          <v-col cols="12">
+            <h3>Objeto del contrato
+              <v-badge 
+              class="badge" color="#c7d6f2" content="?"
+              title="Punto 1"></v-badge >
+            </h3>
+              <v-text-field
+              v-model="datos.tituloExpediente"
+              :rules="[rules.required, rules.counter]"
+              label="Titulo del Expediente" counter filled               
               >
-              </v-select>
-          </v-col>
-
-          <v-col cols="12" md="6">
-              <v-select
-              :items="provincias"
-              v-model="datos.selectProvincias"
-              multiple
-              filled
-              @mousedown.prevent
-              label="Provincias"
-              ></v-select>
+              </v-text-field>
           </v-col>
         </v-row>
+        <br/>
 
+        <!-- COMUNIDADES AUTONOMAS, PROVINCIAS -->
         <v-row class="row">
           <v-col cols="12" sm="6">
-              <v-checkbox
-              v-model="datos.regArmonizada"
-              label="Regulación Armonizada"
-              ></v-checkbox>
+            <h3>Comunidades Autónomas</h3>
+              <v-text-field
+              v-model="datos.selectComunidadesAutonomas"
+              append-icon="mdi-magnify"
+              prepend-icon="mdi-delete-empty"
+              @click:prepend="deleteComunidades"
+              @click:append="showComunidades"
+              label="Comunidades Autónomas" filled>
+              </v-text-field>
           </v-col>
+
           <v-col cols="12" sm="6">
+            <h3>Provincias</h3>
+              <v-text-field
+              v-model="datos.selectProvincias"
+              append-icon="mdi-magnify"
+              prepend-icon="mdi-delete-empty"
+              @click:prepend="deleteProvincias"
+              @click:append="showProvincias"
+              label="Provincias" filled>
+              </v-text-field>
+          </v-col>      
+        </v-row>
+        <br/>
+
+        <!-- REG ARMONIZADA CODIGO CPV -->
+        <v-row class="row">
+          <v-col cols="12" md="6">
+            <h3>Regulación Armonizada</h3>
+              <v-radio-group v-model="datos.regArmonizada">
+                <v-radio label="Si" :value="true"></v-radio>
+                <v-radio label="No" :value="false"></v-radio>
+              </v-radio-group>
+          </v-col>
+          <v-col cols="12" md="6">
+            <h3>Codigo CPV</h3>
               <v-text-field
               v-model="datos.clasifCPV"
               append-icon="mdi-magnify"
@@ -61,33 +67,47 @@
               </v-text-field>
           </v-col>
         </v-row>
-        <br />
-
+        <br/>
 
 
         <!-- 2 NECESIDADES DEL CONTRATO -->
-        <h3>Necesidades a satisfacer y circunstancias del contrato
-          <v-badge 
-          class="badge" color="#c7d6f2" content="?"
-          title="Punto 2"></v-badge >
-        </h3>
         <v-row class="row">
           <v-col cols="12">
-              <v-textarea 
-              v-model="datos.necesidadesContrato"
-              label="Necesidades del contrato" 
-              filled
-              auto-grow
-              >
-              </v-textarea>
+            <h3>Necesidades a satisfacer y circunstancias del contrato
+              <v-badge 
+              class="badge" color="#c7d6f2" content="?"
+              title="Punto 2"></v-badge >
+            </h3>
+            <v-textarea 
+            v-model="datos.necesidadesContrato"
+            label="Necesidades del contrato" 
+            filled
+            auto-grow
+            >
+            </v-textarea>
           </v-col>
         </v-row>
         <br/>
 
+        <!-- CPV TABLE -->
         <v-dialog
          width="80rem"
         :value="showCPVSelect">
           <CPVTable @close="closeDialog" @cpvCodes="getCPV"></CPVTable>
+        </v-dialog>
+
+        <!-- COMUNIDADES TABLE -->
+        <v-dialog
+         width="80rem"
+        :value="showComunidadesSelect">
+          <Comunidades @close="closeDialog" @comunidades="getComunidades"></Comunidades>
+        </v-dialog>
+
+        <!-- PROVINCIAS TABLE -->
+        <v-dialog
+         width="80rem"
+        :value="showProvinciasSelect">
+          <Provincias @close="closeDialog" @provincias="getProvincias"></Provincias>
         </v-dialog>
 
   </div>
@@ -96,10 +116,12 @@
 
 <script>
 import CPVTable from "@/components/common/CPVTable"
+import Comunidades from "@/components/common/Comunidades"
+import Provincias from "@/components/common/Provincias"
 
 export default {
 name: "ObjetoNecesidades",
-components: {CPVTable},
+components: {CPVTable, Comunidades, Provincias},
 props:['datosGuardados'],
 
   data() {
@@ -109,34 +131,16 @@ props:['datosGuardados'],
         counter: (value) => value.length <= 200 || "Máximo 200 caracteres",
       },
 
-      showCPVSelect: false,    
+      showCPVSelect: false,
+      showComunidadesSelect: false,
+      showProvinciasSelect: false, 
       
-      comunidades: [
-          " Andalucia", " Aragón", " Principado de Asturias"," Islas Baleares",
-          " Canarias", " Cantabria", " Castilla-La Mancha", " Castilla y León",
-          " Cataluña", " Comunidad Valenciana", " Extremadura", " Galicia",
-          " La Rioja", " Comunidad de Madrid", " Región de Murcia",
-          " Comunidad Foral de Navarra", " País Vasco"," Ceuta"," Melilla",
-      ],
-      
-      provincias: [
-          " Álava", " Albacete", " Alicante", " Almería", " Asturias",
-          " Ávila", " Badajoz", " Barcelona", " Bizkaia", " Burgos",
-          " Cáceres", " Cádiz", " Cantabria", " Castellón", " Ciudad Real",
-          " Córdoba", " A Coruña", " Cuenca", " Girona", " Granada",
-          " Guadalajara", " Gipuzkoa", " Huelva", " Huesca", " Illes Balears",
-          " Jaén", " León", " Lleida", " Lugo", " Madrid", " Málaga",
-          " Murcia", " Navarra", " Ourense", " Palencia", " Las Palmas",
-          " Pontevedra", " La Rioja", " Salamanca", " Segovia", " Sevilla",
-          " Soria", " Tarragona", " Santa Cruz de Tenerife",
-          " Teruel", " Toledo", " Valencia", " Valladolid", " Zamora", " Zaragoza",
-      ],
 
       datos: {
         componente: 'ObjetoNecesidades',
+
         //SECCION 1
         tituloExpediente: '',
-        clave: '',
         selectComunidadesAutonomas: '',
         selectProvincias: '',
         regArmonizada: false,
@@ -160,24 +164,50 @@ props:['datosGuardados'],
     initialize(){
       if(this.datosGuardados !== undefined){
         this.datos = this.datosGuardados
-      }
+      }        
     },
 
     deleteCPVCodes(){
       this.datos.clasifCPV= '';
     },
 
+    deleteComunidades(){
+      this.datos.selectComunidadesAutonomas= '';
+    },
+
+    deleteProvincias(){
+      this.datos.selectProvincias= '';
+    },
+
     showCPVCodes(){
       this.showCPVSelect = true;
+    },
+
+    showComunidades(){
+      this.showComunidadesSelect = true;
+    },
+
+    showProvincias(){
+      this.showProvinciasSelect = true;
     },
 
     getCPV(data){
       this.datos.clasifCPV = data;
     },
 
+    getComunidades(data){
+      this.datos.selectComunidadesAutonomas = data;
+    },
+
+    getProvincias(data){
+      this.datos.selectProvincias = data;
+    },
+
     closeDialog(closed){
       if(closed === true){
         this.showCPVSelect = false;
+        this.showComunidadesSelect = false;
+        this.showProvinciasSelect = false;
       }
     },
 
@@ -192,7 +222,7 @@ props:['datosGuardados'],
 }
 
 .row {
-  margin-bottom: -2.5rem;
+  margin-bottom: -2.3rem;
 }
 
 .colControl {

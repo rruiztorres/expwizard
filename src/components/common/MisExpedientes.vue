@@ -22,7 +22,7 @@
                         <v-btn 
                         class="greenButton"
                         title="Descargar PDF"
-                        @click="getInfo(props.item.id)"
+                        @click="edit(props.item)"
                         icon dark><v-icon>mdi-lead-pencil</v-icon>
                         </v-btn>
                     </template>
@@ -56,6 +56,7 @@
 
 <script>
 import {getColor} from "@/assets/mixins/getColor";
+import axios from 'axios';
 
     export default {
         name: 'MisExpedientes',
@@ -66,36 +67,34 @@ import {getColor} from "@/assets/mixins/getColor";
                 foo: 'hello World',
                 expHeaders: [
                     { text: "Editar", align: "start", sortable: false, value: "edit"},
-                    { text: "Clave", align: "start", sortable: true, value: "id" },
-                    { text: "Tipo", align: "start", sortable: true, value: "tipo" },
+                    { text: "Nombre", align: "start", sortable: true, value: "nombre_exp" },
                     { text: "Fecha", align: "start", sortable: true, value: "fecha" },
-                    { text: "Descripción", align: "start", sortable: true, value: "descripcion"},
+                    { text: "Descripción", align: "start", sortable: true, value: "descripcion_expediente"},
                     { text: "Estado", align: "start", sortable: true, value: "estado" },
                     { text: "Descargar", align: "start", sortable: true, value: "downloads" },
                 ],
-                expedientes: [
-                    {id: '2021_000001', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '11/03/2022', descripcion: "Componentes Eléctricos"},
-                    {id: '2021_000002', tipo: 'SUMINISTRO', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Suministro de tóner equipos multifunción"},
-                    {id: '2021_000003', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Mobiliario de oficina"},
-                    {id: '2021_000004', tipo: 'PCAP', estado: 'Enviado', fecha: '15/03/2022', descripcion: "Fuentes de agua"},
-                    {id: '2021_000005', tipo: 'SUMINISTRO', estado: 'Revisado', fecha: '10/03/2022', descripcion: "Maquinas expendedoras"},
-                    {id: '2021_000006', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '18/03/2022', descripcion: "Mobiliario de oficina"},
-                    {id: '2021_000007', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Componentes Eléctricos"},
-                    {id: '2021_000008', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '20/03/2022', descripcion: "Fuentes de agua"},
-                    {id: '2021_000009', tipo: 'SUMINISTRO', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Fuentes de agua"},
-                    {id: '2021_000010', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Mobiliario de oficina"},
-                    {id: '2021_000011', tipo: 'PCAP', estado: 'Enviado', fecha: '10/02/2022', descripcion: "Fuentes de agua"},
-                    {id: '2021_000012', tipo: 'SUMINISTRO', estado: 'Revisado', fecha: '11/02/2022', descripcion: "Fuentes de agua"},
-                    {id: '2021_000013', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Componentes Eléctricos"},
-                    {id: '2021_000014', tipo: 'PCAP', estado: 'Pendiente Revisión', fecha: '10/03/2022', descripcion: "Mobiliario de oficina"},
-
-                ]
+                expedientes: []
             }
         },
+        mounted(){
+            this.initialize();
+        },
+
         methods:{
-            getInfo(){
-                console.log()
+            async initialize(){
+                axios
+                .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + 'jsgonzalez')
+                .then((data) => {
+                    this.expedientes = data.data.response;
+                    console.log(this.expedientes)
+                })
+            },
+
+            edit(data){
+                this.$emit("edit", data.tipo)
+                this.$emit("dataEdit", data.data)
             }
+
         }
     }
 </script>

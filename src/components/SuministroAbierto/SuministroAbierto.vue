@@ -8,22 +8,16 @@
                     </v-col>
                     <v-col cols="12" md="5" class="col2">
                         <v-spacer></v-spacer>
-                        <v-card-actions class="actions">
-                                <v-btn color="error" class="headButton" @click="back">
-                                    <v-icon class="iconBack">mdi-exit-run</v-icon>
-                                    SALIR
-                                </v-btn>
-                                <v-btn color="success" class="headButton" @click="execute">
-                                    <v-icon class="iconBack">mdi-download</v-icon>
-                                    PROBAR
-                                </v-btn>
-                                <v-btn 
-                                @click="goToEnd(8)"
-                                color="info" class="headButton">
-                                    <v-icon class="iconBack">mdi-check-all</v-icon>
-                                    FINALIZAR
-                                </v-btn>
-                        </v-card-actions>
+                            <v-btn color="error" class="headButton" @click="exit">
+                                <v-icon class="iconBack">mdi-exit-run</v-icon>
+                                SALIR
+                            </v-btn>
+                            <v-btn 
+                            @click="goToEnd(8)"
+                            color="info" class="headButton">
+                                <v-icon class="iconBack">mdi-check-all</v-icon>
+                                FINALIZAR
+                            </v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -96,6 +90,7 @@
                             <RegimenPagosRevision
                                 v-if="activeTab == 5"
                                 @datos="getData"
+                                :presBase="datosPresupuestoAnualidades"
                                 :datosGuardados="datosRegimenPagosRevision"
                             ></RegimenPagosRevision>
                         </v-tab-item>
@@ -138,7 +133,6 @@
                                 datosPresupuestoAnualidades,
                                 datosCapacidadSolvencia,
                                 datosGarantias,
-                                datosPlazoResponsable,
                                 datosRegimenPagosRevision,
                                 datosEjecucionYotros,
                                 datosModificacionesPenalidades,
@@ -156,12 +150,12 @@
                 <v-row>
                     <v-col cols="12">
                         <v-card-actions class="bottomActions">
-                                <v-btn color="info" class="headButton" @click="prevTab" :disabled="tab < 1">
+                                <v-btn color="info" class="footerButton" @click="prevTab" :disabled="tab < 1">
                                     <v-icon>mdi-arrow-left</v-icon>
                                     ANTERIOR
                                 </v-btn>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" class="headButton" @click="nextTab" :disabled="tab > 7">
+                                <v-btn color="primary" class="footerButton" @click="nextTab" :disabled="tab > 7">
                                     SIGUIENTE
                                     <v-icon>mdi-arrow-right</v-icon>
                                 </v-btn>
@@ -170,6 +164,17 @@
                 </v-row>
             </v-col>
         </v-row>
+        <v-dialog max-width="40rem" v-model="confirmExitDialog">
+            <v-card class="exitDialogContainer">
+                <h1>ATENCIÓN</h1>
+                <p>Parece que ya se han introducido algunos datos en el modelo.</p>
+                <h3>¿Desea salir sin guardar los cambios?</h3>
+                <v-card-actions>
+                    <v-btn width="50%" class="error" @click="confirmExitDialog = !confirmExitDialog">Cancelar</v-btn>
+                    <v-btn width="50%" class="success" @click="back">Salir sin guardar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -184,11 +189,12 @@ import ModificacionesPenalidades from "@/components/SuministroAbierto/Modificaci
 import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcontrataOtros";
 import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
-import {renderDoc} from "@/assets/mixins/renderDoc";
+//import {renderDoc} from "@/assets/mixins/renderDoc";
 
 
     export default{
         name: 'SuministroAbierto',
+        props: ['dataInput'],
 
         components: { 
             ObjetoNecesidades, 
@@ -202,7 +208,7 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             Finalizar,
         },
 
-        mixins: [renderDoc],
+       // mixins: [renderDoc],
 
         data(){
             return{
@@ -212,45 +218,33 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 datosPresupuestoAnualidades: undefined,
                 datosCapacidadSolvencia: undefined,
                 datosGarantias: undefined,
-                datosPlazoResponsable: undefined,
                 datosRegimenPagosRevision: undefined,
                 datosEjecucionYotros: undefined,
                 datosModificacionesPenalidades: undefined,
                 datosCesionSubcontrataOtros: undefined,
+
+                confirmExitDialog: false,
             }
         },
 
-        watch:{
-                
-                //debug
-                
-                datosObjetoNecesidades(){
-                    console.log("datosObjetoNecesidades", this.datosObjetoNecesidades)
-                },
-                
-                datosPresupuestoAnualidades(){
-                    console.log("datosPresupuestoAnualidades", this.datosPresupuestoAnualidades)
-                },
-                
-                datosCapacidadSolvencia(){
-                    console.log("datosCapacidadSolvencia", this.datosCapacidadSolvencia)
-                },
-                
-                datosGarantias(){
-                    console.log("datosGarantias", this.datosGarantias)
-                },
-                                                
-                datosRegimenPagosRevision(){
-                    console.log("datosRegimenPagosRevision", this.datosRegimenPagosRevision)
-                },
-                
-                datosEjecucionYotros(){
-                    console.log("datosEjecucionYotros", this.datosEjecucionYotros)
-                },
-                              
+        created(){
+            this.loadStoredData();
         },
 
-        methods:{    
+        methods:{
+            loadStoredData(){
+                if(this.dataInput !== undefined){
+                    this.datosObjetoNecesidades = this.dataInput.seccion1;
+                    this.datosPresupuestoAnualidades = this.dataInput.seccion2;
+                    this.datosCapacidadSolvencia = this.dataInput.seccion3;
+                    this.datosGarantias = this.dataInput.seccion4;
+                    this.datosRegimenPagosRevision = this.dataInput.seccion5;
+                    this.datosEjecucionYotros = this.dataInput.seccion6;
+                    this.datosModificacionesPenalidades = this.dataInput.seccion7;
+                    this.datosCesionSubcontrataOtros = this.dataInput.seccion8;
+                }
+            },
+
             compValidation(comp){
                 if(comp === true){
                     return "validado"
@@ -274,7 +268,12 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
                 this.activeTab = data + 1
             },
 
+            exit(){
+                this.confirmExitDialog = true;
+            },
+
             back(){
+                this.confirmExitDialog = false;
                 this.$emit("back", 'selector')
             },
 
@@ -283,29 +282,38 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
             },
 
             getData(data){
-                if (data.componente === 'ObjetoNecesidades'){this.datosObjetoNecesidades = Object.assign(data)}
-                else if (data.componente === 'PresupuestoAnualidades'){this.datosPresupuestoAnualidades = Object.assign(data)}
-                else if (data.componente === 'CapacidadSolvencia'){this.datosCapacidadSolvencia = Object.assign(data)}
-                else if (data.componente === 'Garantias'){this.datosGarantias = Object.assign(data)}
-                else if (data.componente === 'RegimenPagosRevision'){this.datosRegimenPagosRevision = Object.assign(data)}
-                else if (data.componente === 'EjecucionYotros'){this.datosEjecucionYotros = Object.assign(data)}
-                else if (data.componente === 'ModificacionesPenalidades'){this.datosModificacionesPenalidades = Object.assign(data)}
-                else if (data.componente === 'CesionSubcontrataOtros'){this.datosCesionSubcontrataOtros = Object.assign(data)}
-            },
-
-            execute(){
-                this.data = {
-                    seccion1: this.datosObjetoNecesidades,
-                    seccion2: this.datosPresupuestoAnualidades,
-                    seccion3: this.datosCapacidadSolvencia,
-                    seccion4: this.datosGarantias,
-                    seccion5: this.datosRegimenPagosRevision,
-                    seccion6: this.datosEjecucionYotros,
-                    seccion7: this.datosModificacionesPenalidades,
-                    seccion8: this.datosCesionSubcontrataOtros,
-                };
-                console.log(this.data)
-                this.renderDoc(this.data);
+                if (data.componente === 'ObjetoNecesidades'){
+                    //console.log("cambios en objeto necesidades")
+                    this.datosObjetoNecesidades = Object.assign(data)
+                }
+                else if (data.componente === 'PresupuestoAnualidades'){
+                    //console.log("cambios en presupuesto")
+                    this.datosPresupuestoAnualidades = Object.assign(data)
+                }
+                else if (data.componente === 'CapacidadSolvencia'){
+                    //console.log("cambios en capacidad")
+                    this.datosCapacidadSolvencia = Object.assign(data)
+                }
+                else if (data.componente === 'Garantias'){
+                    //console.log("cambios en garantias")
+                    this.datosGarantias = Object.assign(data)
+                }
+                else if (data.componente === 'RegimenPagosRevision'){
+                    //console.log("cambios en regimen pagos")
+                    this.datosRegimenPagosRevision = Object.assign(data)
+                }
+                else if (data.componente === 'EjecucionYotros'){
+                    //console.log("cambios en ejecucion")
+                    this.datosEjecucionYotros = Object.assign(data)
+                }
+                else if (data.componente === 'ModificacionesPenalidades'){
+                    //console.log("cambios en modificaciones")
+                    this.datosModificacionesPenalidades = Object.assign(data)
+                }
+                else if (data.componente === 'CesionSubcontrataOtros'){
+                    //console.log("cambios en cesion")
+                    this.datosCesionSubcontrataOtros = Object.assign(data)
+                }
             },
         }
     }
@@ -316,6 +324,12 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
     #mainWrapper {
         margin: 0 auto;
         max-width: 80rem;
+    }
+
+    .exitDialogContainer{
+        padding: 1rem;
+        text-align: center;
+        font-family: 'Montserrat';
     }
 
     .noValidado{
@@ -332,13 +346,13 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
     }
 
     h3{
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
     }
 
     h5 {
-    font-weight: 500;
-    opacity: 0.6;
+        font-weight: 500;
+        opacity: 0.6;
     }
 
     .tabContent{
@@ -381,6 +395,11 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
     .headButton {
         width:33%;
+        margin-left: 1rem;
+    }
+
+    .footerButton {
+        width: 40%;
     }
 
     .badge{
@@ -389,6 +408,17 @@ import {renderDoc} from "@/assets/mixins/renderDoc";
 
     .icon {
         margin-left: 0.5rem;
+    }
+
+    .editField {
+        color: blue;
+        display: block;
+        min-width: 10rem;
+        min-height: 2rem;
+        border-radius: 4px;
+        padding: 0.35rem;
+        background-color: white;
+        text-decoration: underline;
     }
 </style>
 

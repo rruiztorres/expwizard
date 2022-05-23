@@ -27,7 +27,10 @@
       <v-container v-if="active === 'misExpedientes'">
         <v-row class="rowWrapper">
           <v-col cols="12">
-            <MisExpedientes></MisExpedientes>
+            <MisExpedientes
+            @edit="activeOption"
+            @dataEdit="getData"
+            ></MisExpedientes>
           </v-col>
         </v-row>
       </v-container>
@@ -37,17 +40,18 @@
         <v-row class="rowWrapper">
           <v-col cols="12">
             <Selector 
-              @tipoExp="activeOption">
+              @tipoExp="activeOption"
+            >
             </Selector>
           </v-col>
         </v-row>
       </v-container>
 
       <!-- WIZARDS -->
-      <v-container v-if="active === 'PCAP'">
+      <v-container v-if="active === 'Suministro abierto varios criterios'">
         <v-row class="rowWrapper">
           <v-col cols="12">
-            <SuministroAbierto @back="activeOption">
+            <SuministroAbierto @back="activeOption" :dataInput="loadData">
             </SuministroAbierto>
           </v-col>
         </v-row>
@@ -85,7 +89,17 @@ import MisExpedientes from "@/components/common/MisExpedientes"
         return {
             drawer: null,
             active: 'selector',
+            loadData: undefined,
         }
+    },
+
+    watch:{
+      active(){
+        //EVITA LA PERMANENCIA DE DATOS GUARDADOS
+        if(this.active === 'selector'){
+          this.loadData = undefined;
+        }
+      }
     },
 
     methods:{
@@ -93,6 +107,12 @@ import MisExpedientes from "@/components/common/MisExpedientes"
         this.active = option;
         this.drawer = false;
       },
+
+      getData(data){
+        this.loadData = data;
+      }
+
+      
     }
   }
 </script>

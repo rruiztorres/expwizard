@@ -74,6 +74,7 @@
                 items: [
                     { text: 'Nuevo Expediente', icon: 'mdi-file-document', menu: 'selector' },
                     { text: 'Mis expedientes', icon: 'mdi-folder', menu: 'misExpedientes' },
+                    { text: 'Estado expedientes', icon: 'mdi-folder-clock', menu: '' },
                     { text: 'Usuarios', icon: 'mdi-account-multiple', menu: 'foo3' },
                     { text: 'Cambios', icon: 'mdi-history', menu: 'foo4' },
                 ],

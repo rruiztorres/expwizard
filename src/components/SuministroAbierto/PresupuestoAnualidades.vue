@@ -819,7 +819,7 @@ export default {
         posibleDivisible: false,
 
         //SECCION 6
-        docsCaracterContractual: "jerarquizada",
+        docsCaracterContractual: true,
 
         //SECCION 7
         tramitacionProc: true,

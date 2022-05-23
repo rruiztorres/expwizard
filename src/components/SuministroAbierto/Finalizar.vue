@@ -2,80 +2,83 @@
     <div>
         <v-row>
             <v-col cols="12" md="6">
-                <v-card class="card">
-                    <v-card-title>
-                        <h3 class="subtitle">VALIDAR</h3>
-                        <v-spacer></v-spacer>
-                        <v-btn :loading="buttonLoader" @click="fakeValidate" dark :color="buttonColor">
-                            <v-icon>{{buttonIcon}}</v-icon>{{buttonText}}
-                        </v-btn>
-                    </v-card-title>
+                <v-card>
+                    <h4 class="subtitle">VALIDAR</h4> 
                     <v-stepper
                         v-model="stepperCTRL"
                         vertical
+                        
                     >
                         <v-stepper-step
+                        class="step"
                         step="1"
                         :complete="complete1"
                         :color="color1"
                         >
-                        1.- OBJETO Y NECESIDADES
+                        <h5>1.- OBJETO Y NECESIDADES</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete2"
                         :color="color2"
                         step="2"
                         >
-                        2.- PRESUPUESTO, LOTES E INCOMPATIBILIDADES
+                        <h5>2.- PRESUPUESTO, LOTES Y ANUALIDADES</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete3"
                         :color="color3"
                         step="3"
                         >
-                        3.- CAPACIDAD Y SOLVENCIA
+                        <h5>3.- INCOMPATIBILIDADES, CAPACIDAD Y SOLVENCIA</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete4"
                         :color="color4"
                         step="4"
                         >
-                        4.- GARANTÍAS, CRITERIOS Y ADJUDICACIÓN
+                        <h5>4.- GARANTÍAS, CRITERIOS Y ADJUDICACIÓN</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete5"
                         :color="color5"
                         step="5"
                         >
-                        5.- PAGOS, REV.PRECIOS Y ABONOS A CUENTA
+                        <h5>5.- PAGOS, REV.PRECIOS Y ABONOS A CUENTA</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete6"
                         :color="color6"
                         step="6"
                         >
-                        6.- EJECUCIÓN Y CONDICIONES
+                        <h5>6.- PLAZOS, RESPONSABLE Y EJECUCIÓN</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete7"
                         :color="color7"
                         step="7"
                         >
-                        7.- MODIFICACIONES Y PENALIDADES
+                        <h5>7.- MODIFICACIONES Y PENALIDADES</h5>
                         </v-stepper-step>
 
                         <v-stepper-step
+                        class="step"
                         :complete="complete8"
                         :color="color8"
                         step="8"
                         >
-                        8.- CESIÓN, SUBCONTRATACIÓN Y OTROS
+                        <h5>8.- CESIÓN, SUBCONTRATACIÓN Y OTROS</h5>
                         </v-stepper-step>
                     </v-stepper>                
                 </v-card>
@@ -84,7 +87,9 @@
             <v-col cols="12" md="6">
                 <v-card class="card">
                     <v-card-title>
-                        <v-btn color="green" dark @click="save">GUARDAR</v-btn>
+                        <v-btn width="100%" color="info" class="actionButton" dark @click="execute">DESCARGAR WORD <v-icon class="actionIcon">mdi-file-word</v-icon></v-btn>
+                        <v-btn width="100%" color="green" class="actionButton" dark @click="save">GUARDAR <v-icon class="actionIcon">mdi-content-save-all</v-icon></v-btn>
+                        <v-btn width="100%" :loading="buttonLoader" color="warning" class="actionButton" dark @click="fakeValidate">VALIDAR<v-icon class="actionIcon">mdi-cog</v-icon></v-btn>
                     </v-card-title>
                 </v-card>
             </v-col>
@@ -93,9 +98,13 @@
 </template>
 
 <script>
+import {renderDoc} from "@/assets/mixins/renderDoc";
+import axios from 'axios';
+
     export default {
         name: 'Finalizar',
         props: ['datosGuardados'],
+        mixins: [renderDoc],
 
         data(){
             return {
@@ -132,6 +141,20 @@
         },
 
         methods: {
+            execute(){
+                this.data = {
+                    seccion1: this.datosGuardados[0],
+                    seccion2: this.datosGuardados[1],
+                    seccion3: this.datosGuardados[2],
+                    seccion4: this.datosGuardados[3],
+                    seccion5: this.datosGuardados[4],
+                    seccion6: this.datosGuardados[5],
+                    seccion7: this.datosGuardados[6],
+                    seccion8: this.datosGuardados[7],
+                };
+                this.renderDoc(this.data);
+            },
+
             getColor(){
                 return "primary"
             },
@@ -197,8 +220,28 @@
                 .then(() => this.fakeReboot())
             },
 
-            save(){
-                console.log(this.datosGuardados)
+            async save(){
+                this.data = {
+                    expData: {
+                        nombre: 'Expediente de pruebas',    //sustituir
+                        usuario: 1,                         //sustituir por username
+                        tipo: 1,                            //
+                    },
+                    seccion1: this.datosGuardados[0],
+                    seccion2: this.datosGuardados[1],
+                    seccion3: this.datosGuardados[2],
+                    seccion4: this.datosGuardados[3],
+                    seccion5: this.datosGuardados[4],
+                    seccion6: this.datosGuardados[5],
+                    seccion7: this.datosGuardados[6],
+                    seccion8: this.datosGuardados[7],
+                };
+                axios
+                .post(`${process.env.VUE_APP_API_ROUTE}/postExpediente`, this.data)
+                .then( (data) => {
+                    console.log(data.mensaje)
+                })
+          
             }
         }
 
@@ -208,5 +251,21 @@
 <style scoped>
     .card {
         margin: 0 auto;
+    }
+
+    .subtitle{
+        padding: 0.5rem;
+    }
+
+    .actionButton {
+        margin-bottom: 1rem;
+    }
+
+    .step {
+        height: 3rem;
+    }
+
+    .actionIcon {
+        margin-left: 1rem;
     }
 </style>

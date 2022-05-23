@@ -29,7 +29,7 @@
             <v-col cols="12" md="4">
                 <h5 class="subtitle">10.2.- Definitiva [art. 107.1 y 107.3 LCSP]</h5>
                 <v-radio-group v-model="datos.definitiva">
-                    <v-radio label="Si se exige" :value="true"></v-radio>
+                    <v-radio label="Si se exige. Importe: El 5% del precio final ofertado" :value="true"></v-radio>
                     <v-radio label="No se exige" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
@@ -328,10 +328,10 @@
 
         <h5 class="subtitle">Seguimiento pormenorizado de ofertas incursas en presunción de anormalidad (artículo 149.7 LCSP)</h5>
         <v-row class="rowGroup">
-            <v-col cols="12" md="3">
+            <v-col cols="12">
                 <v-radio-group v-model="datos.segPorm">
-                    <v-radio label="Si" :value="true"></v-radio>
-                    <v-radio label="No" :value="false"></v-radio>
+                    <v-radio label="Establecimiento de un 20 % como límite por incumplimiento del programa de trabajo para que sean considerados a los efectos del punto 26.4, las penalizaciones correspondientes por demora en el plazo de ejecución" :value="true"></v-radio>
+                    <v-radio label="Otra (definir):" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
             <v-col cols="12" v-if="datos.segPorm === false">
@@ -425,7 +425,7 @@
                     reduccion: 'no',
                     justificacionReduccion: '',
                     umbralTemeridad: '',
-                    segPorm: false,
+                    segPorm: true,
                     segPormJustif: '',
                     plazoAdjudicacion: true,
                     otroPlazoAdjudicacion: undefined,
@@ -591,16 +591,6 @@
         font-weight: 500;
     }
 
-    .editField {
-        color: blue;
-        display: block;
-        min-width: 10rem;
-        min-height: 2rem;
-        border-radius: 4px;
-        padding: 0.35rem;
-        background-color: white;
-        text-decoration: underline;
-    }
 
     .addBtn {
         margin-bottom: 1rem;

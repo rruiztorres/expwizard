@@ -175,10 +175,11 @@
                 </v-col>
 
                 <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
-                    <h5>Indicar importe anual acumulado en el año de mayor ejecución cuyo importe sea igual o superior a:</h5>
+                    <h5>Indicar % anualidad media del contrato</h5>
                     <br/>
                     <v-text-field filled label="% Anualidad media del contrato" v-model="datos.porcentajeAnualidadMedia"></v-text-field>
-                    <h5>Importe: {{datos.importeAnualidadMedia}}</h5>
+                    <h5>Importe anualidad media: {{datos.importeAnualidadMedia}}</h5>
+                    <h5>Total % anualidad media: {{datos.importeAnualidadMedia}}</h5>
                 </v-col>
 
                 <v-col cols="12" 
@@ -311,7 +312,7 @@
                     patrimonioNeto: undefined,
                     ratioActivos: undefined,
                     porcentajeAnualidadMedia: 0,
-                    importeAnualidadMedia: 45685.50,
+                    importeAnualidadMedia: 0,
                     solvenciaTecProfe: undefined,
                     otrosReqSolvTecProfe: undefined,
                     integracionSolvencia: 'no',
@@ -403,11 +404,14 @@
                             if (this.plazoContrato < 12){
                                 //Max menos de un año = 1.5 veces base licitacion
                                 this.maxImporteReq = (parseFloat(this.presBase.lotes[this.index].baseLote) * 1.5).toFixed(2)
+                                this.datos.importeAnualidadMedia = this.maxImporteReq;
                             } else {
                                 //Max mas de un año = 1.5 veces anualidad media contrato
+                                console.log("Calculo para mas de un año")
                                 this.anualidadMed = parseFloat(this.presBase.lotes[this.index].baseLote);
                                 this.anualidadMed = (this.anualidadMed / parseInt(this.plazoContrato)) * 12
                                 this.maxImporteReq = parseFloat((this.anualidadMed * 1.5).toFixed(2))         
+                                this.datos.importeAnualidadMedia = this.maxImporteReq;
                             }
 
                             this.newLote = {

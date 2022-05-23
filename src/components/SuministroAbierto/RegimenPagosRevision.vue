@@ -16,7 +16,7 @@
         </v-row>
         <br/><br/>
 
-        <v-row class="rowGroup">
+        <v-row class="rowGroup" v-if="presBase.presupuestoBaseLicitacion !== undefined">
             <v-col cols="12" md="3">
                 <h5 class="subtitle">La periodicidad de los pagos sera:</h5>
                  <v-radio-group v-model="datos.periodicidad">
@@ -103,14 +103,16 @@
                     <!--CALCULO AUTOMATICO IVA-->
                     <template v-slot:[`item.IVA`]="props">
                         <v-edit-dialog :return-value.sync="props.item.IVA" class="IVABox">
-                        <div>{{returnIVAcalc(props.item.importeSIVA)}}</div>
+                        <div v-if="!isNaN(returnIVAcalc(props.item.importeSIVA))">{{returnIVAcalc(props.item.importeSIVA)}}</div>
+                        <div v-else>Importe no definido</div>
                         </v-edit-dialog>
                     </template>
 
                     <!--CALCULO AUTOMATICO TOTAL-->
                     <template v-slot:[`item.total`]="props">
                         <v-edit-dialog :return-value.sync="props.item.total" class="totalBox">
-                        <div>{{returnTotal(props.item.importeSIVA)}}</div>
+                        <div v-if="!isNaN(returnTotal(props.item.importeSIVA))"><b>{{returnTotal(props.item.importeSIVA)}}</b></div>
+                        <div v-else>Importe no definido</div>
                         </v-edit-dialog>
                     </template>
 
@@ -125,9 +127,18 @@
                         </v-btn>
                     </template>
                 </v-data-table>
-                <br/>
+                <div>
+                    <br/>
+                    <v-alert :value="alertPeriodicidad" type="error">Las cantidades definidas no coinciden con el total del presupuesto base de licitación</v-alert>
+                </div> 
                 <v-btn large color="success" @click="storePeriodicidad" v-if="periodicidadGuardada === false">GUARDAR DATOS <v-icon class="icon">mdi-content-save</v-icon></v-btn>
                 <v-btn large color="grey" v-else dark>GUARDADO CORRECTO <v-icon class="icon">mdi-check-all</v-icon></v-btn>
+            </v-col>
+        </v-row>
+        <v-row v-else>
+            <v-col cols="12">
+                <h5 class="subtitle">La periodicidad de los pagos sera:</h5>
+                <v-alert type="error">El presupuesto base no se ha definido aun</v-alert>
             </v-col>
         </v-row>
         <br/><br/>
@@ -175,24 +186,22 @@
 <script> 
     export default {
         name: 'RegimenPagosRevision',
-        props: ['datosGuardados'],
+        props: ['datosGuardados', 'presBase'],
 
         watch:{
             selectPeriodicidad(){
                 this.datos.otraPeriodicidad = [];
                 this.activeDelete = false;
-                this.newDate = new Date();
-                this.newYear = this.newDate.getFullYear();
 
                 for(let i=0; i<this.selectPeriodicidad; i++){
                         this.nuevoPeriodo = {
                         id: i,
-                        year: this.newYear + i,
+                        year: undefined,
                         concepto: '',
                         observaciones: '',
-                        importeSIVA: 0,
-                        IVA: 0,
-                        total: 0,
+                        importeSIVA: undefined,
+                        IVA: undefined,
+                        total: undefined,
                         
                     }
                     this.datos.otraPeriodicidad.push(this.nuevoPeriodo)
@@ -296,7 +305,7 @@
         data(){
             return {
                 periodicidadHeaders: [
-                    {text: 'Año', sortable: false, value: 'year'},
+                    {text: 'Pago', sortable: false, value: 'year'},
                     {text: 'Concepto', sortable: false, value: 'concepto'},
                     {text: 'Observaciones', sortable: false, value: 'observaciones'},
                     {text: 'Importe sin IVA (€)', sortable: false, value: 'importeSIVA'},
@@ -308,8 +317,9 @@
                 periodicidades: [1,2,3,4,5],
                 selectPeriodicidad: 0,
                 periodicidadGuardada: false,
-
                 activeDelete: false,
+
+                alertPeriodicidad: false,
 
                 datos: {
                     componente:'RegimenPagosRevision',
