@@ -138,6 +138,7 @@
                                 datosModificacionesPenalidades,
                                 datosCesionSubcontrataOtros
                             ]"
+                            :datosExpGuardado="datosExpGuardadoPrev"
                             >
                             </Finalizar>
                         </v-tab-item>
@@ -224,6 +225,7 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
                 datosCesionSubcontrataOtros: undefined,
 
                 confirmExitDialog: false,
+                datosExpGuardadoPrev: undefined,
             }
         },
 
@@ -234,14 +236,21 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
         methods:{
             loadStoredData(){
                 if(this.dataInput !== undefined){
-                    this.datosObjetoNecesidades = this.dataInput.seccion1;
-                    this.datosPresupuestoAnualidades = this.dataInput.seccion2;
-                    this.datosCapacidadSolvencia = this.dataInput.seccion3;
-                    this.datosGarantias = this.dataInput.seccion4;
-                    this.datosRegimenPagosRevision = this.dataInput.seccion5;
-                    this.datosEjecucionYotros = this.dataInput.seccion6;
-                    this.datosModificacionesPenalidades = this.dataInput.seccion7;
-                    this.datosCesionSubcontrataOtros = this.dataInput.seccion8;
+                    // DATOS DE GUARDADO
+                    this.datosExpGuardadoPrev = {
+                        id_exp: this.dataInput.id_exp,
+                        nombre_exp: this.dataInput.nombre_exp,
+                        descripcion_expediente: this.dataInput.descripcion_expediente,
+                    };       
+
+                    this.datosObjetoNecesidades = this.dataInput.data.seccion1;
+                    this.datosPresupuestoAnualidades = this.dataInput.data.seccion2;
+                    this.datosCapacidadSolvencia = this.dataInput.data.seccion3;
+                    this.datosGarantias = this.dataInput.data.seccion4;
+                    this.datosRegimenPagosRevision = this.dataInput.data.seccion5;
+                    this.datosEjecucionYotros = this.dataInput.data.seccion6;
+                    this.datosModificacionesPenalidades = this.dataInput.data.seccion7;
+                    this.datosCesionSubcontrataOtros = this.dataInput.data.seccion8;
                 }
             },
 
@@ -283,35 +292,27 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
             getData(data){
                 if (data.componente === 'ObjetoNecesidades'){
-                    //console.log("cambios en objeto necesidades")
                     this.datosObjetoNecesidades = Object.assign(data)
                 }
                 else if (data.componente === 'PresupuestoAnualidades'){
-                    //console.log("cambios en presupuesto")
                     this.datosPresupuestoAnualidades = Object.assign(data)
                 }
                 else if (data.componente === 'CapacidadSolvencia'){
-                    //console.log("cambios en capacidad")
                     this.datosCapacidadSolvencia = Object.assign(data)
                 }
                 else if (data.componente === 'Garantias'){
-                    //console.log("cambios en garantias")
                     this.datosGarantias = Object.assign(data)
                 }
                 else if (data.componente === 'RegimenPagosRevision'){
-                    //console.log("cambios en regimen pagos")
                     this.datosRegimenPagosRevision = Object.assign(data)
                 }
                 else if (data.componente === 'EjecucionYotros'){
-                    //console.log("cambios en ejecucion")
                     this.datosEjecucionYotros = Object.assign(data)
                 }
                 else if (data.componente === 'ModificacionesPenalidades'){
-                    //console.log("cambios en modificaciones")
                     this.datosModificacionesPenalidades = Object.assign(data)
                 }
                 else if (data.componente === 'CesionSubcontrataOtros'){
-                    //console.log("cambios en cesion")
                     this.datosCesionSubcontrataOtros = Object.assign(data)
                 }
             },

@@ -98,7 +98,6 @@
                                 <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
                                 <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
                             </template>
-                        
                         </v-data-table>
 
                         <v-data-table
@@ -127,11 +126,8 @@
                                 <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
                                 <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
                             </template>
-                        
                         </v-data-table>
-
                         <br/>
-                        <v-alert type="error" v-if="alertSolvencia === true">{{alertSolvenciaText}}</v-alert>
                     </v-col>
 
                     <!-- CASO PATRIMONIO NETO AL CIERRE -->
@@ -298,9 +294,6 @@
                     { text: "Válido", align: "start", sortable: false, value: "actions", divider: true,}
                 ],
 
-                alertSolvencia: false,
-                alertSolvenciaText: '',
-
                 datos: {
                     //SECCION 8
                     participacionEmpresas: true,
@@ -423,9 +416,6 @@
                             }
                             this.datos.volumenAnualNegocio.push(this.newLote)
                         }
-                    } else {
-                    this.alertSolvencia = true
-                    this.alertSolvenciaText = 'Presupuesto base no definido'
                     }
                 }                  
             },

@@ -91,13 +91,12 @@ import axios from 'axios';
                 .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + 'jsgonzalez')
                 .then((data) => {
                     this.expedientes = data.data.response;
-                    console.log(this.expedientes)
                 })
             },
 
             edit(data){
                 this.$emit("edit", data.tipo)
-                this.$emit("dataEdit", data.data)
+                this.$emit("dataEdit", data)
             }
 
         }

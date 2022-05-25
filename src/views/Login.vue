@@ -84,6 +84,14 @@ export default {
       } else {
         this.passwordType = 'text'
       }
+    },
+
+    usuario(){
+      this.alertLogin = false
+    },
+
+    password(){
+      this.alertLogin = false
     }
   },
 
