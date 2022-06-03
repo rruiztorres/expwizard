@@ -90,9 +90,9 @@
             <v-col cols="12" md="6">
                 <v-card class="card">
                     <v-card-title>
-                        <v-btn v-if="!infoValidateWindow" width="100%" :loading="buttonLoader" color="warning" class="actionButton" dark @click="fakeValidate">VALIDAR<v-icon class="actionIcon">mdi-cog</v-icon></v-btn>
+                        <v-btn v-if="!infoValidateWindow" width="100%" :loading="buttonLoader" color="warning" class="actionButton" dark @click="fakeValidate">VALIDAR<v-icon class="actionIcon">mdi-alert-circle-check</v-icon></v-btn>
                         <v-btn v-if="!allowSaveDownload" width="100%" color="info" class="actionButton" dark @click="execute">DESCARGAR WORD <v-icon class="actionIcon">mdi-file-word</v-icon></v-btn>
-                        <v-btn v-if="!allowSaveDownload" width="100%" color="error" class="actionButton" dark >DESCARGAR PDF <v-icon class="actionIcon">mdi-file-pdf</v-icon></v-btn>
+                        <v-btn v-if="!allowSaveDownload" width="100%" color="error" class="actionButton" dark >DESCARGAR PDF <v-icon class="actionIcon">mdi-file-pdf-box</v-icon></v-btn>
                         <v-btn v-if="!allowSaveDownload" width="100%" color="green" class="actionButton" dark @click="storeData">GUARDAR <v-icon class="actionIcon">mdi-content-save-all</v-icon></v-btn>
                     </v-card-title>
                 </v-card>

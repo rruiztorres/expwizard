@@ -276,7 +276,7 @@
 
 <script>
     export default {
-        name: 'CapacidadSolvencia',
+        name: 'IncompatibCapacSolvencia',
         data(){
             return {
                 plazoContrato: 0,

@@ -3,20 +3,48 @@
         <h2>Mis Expedientes</h2>
         <v-row>
             <v-col cols="12">
-                <v-text-field
-                    class="searchBar"
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Buscar"
-                    single-line
-                    hide-details
-                ></v-text-field>
                 <br/>
+                <v-card>
+                    <v-row class="actions">
+                        <v-col cols="12" md="4">
+                            <h3>Acciones globales</h3>
+                            <v-btn 
+                                class="actionBtn" 
+                                width="45%" 
+                                color="error" 
+                                :disabled="selected.length === 0"
+                            >Borrar selección
+                            </v-btn>
+                            <v-btn 
+                                class="actionBtn" 
+                                width="45%" 
+                                color="info" 
+                                :disabled="selected.length === 0"
+                            >Actualizar Estado
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="12" md="8">
+                            <v-text-field
+                            class="searchBar"
+                            v-model="search"
+                            append-icon="mdi-magnify"
+                            label="Buscar"
+                            single-line
+                            hide-details
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                </v-card>
+                
+                <br/> 
                 <v-data-table
                     :headers="expHeaders"
                     :items="expedientes"
                     :items-per-page="12"
                     :search="search"
+                    show-select
+                    item-key="id_exp"
+                    v-model="selected"
                 >   
                     <template v-slot:[`item.edit`] = "props">
                         <v-btn 
@@ -52,7 +80,6 @@
                             {{props.item.estado}}
                         </v-chip>
                     </template>
-
                 </v-data-table>
             </v-col>
         </v-row>
@@ -69,7 +96,7 @@ import axios from 'axios';
         data(){
             return{
                 search: '',
-                foo: 'hello World',
+                selected: [],
                 expHeaders: [
                     { text: "Editar", align: "start", sortable: false, value: "edit"},
                     { text: "Nombre", align: "start", sortable: true, value: "nombre_exp" },
@@ -78,7 +105,7 @@ import axios from 'axios';
                     { text: "Estado", align: "start", sortable: true, value: "estado" },
                     { text: "Descargar", align: "start", sortable: true, value: "downloads" },
                 ],
-                expedientes: []
+                expedientes: [],
             }
         },
         mounted(){
@@ -88,7 +115,7 @@ import axios from 'axios';
         methods:{
             async initialize(){
                 axios
-                .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + 'jsgonzalez')
+                .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + localStorage.usrName)
                 .then((data) => {
                     this.expedientes = data.data.response;
                 })
@@ -108,14 +135,20 @@ import axios from 'axios';
         font-weight: 400 !important;
     }
 
+    .actions{
+        padding: 0.5rem;
+    }
+
+    .actionBtn {
+        margin-right: 0.5rem;
+    }
+
     .actionIcon{
         margin-left: 0.15rem;
     }
 
     .searchBar {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 4px;
+        margin-top: 1.5rem;
     }
     
     .blueButton {

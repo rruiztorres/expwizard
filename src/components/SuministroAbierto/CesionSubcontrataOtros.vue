@@ -58,8 +58,8 @@
             </h5>
                 <v-col cols="12">
                     <v-radio-group v-model="datos.facultInspecc">
-                        <v-radio label="Si se extiende esta facultad en este contrato" :value="true"></v-radio>
-                        <v-radio label="No se extiende esta facultad en este contrato" :value="false"></v-radio>   
+                        <v-radio label="En este contrato el ejercicio de esta facultad sí se extiende a la inspección de las instalaciones, oficinas y demás emplazamientos en los que el contratista desarrolle sus actividades." :value="true"></v-radio>
+                        <v-radio label="En este contrato el ejercicio de esta facultad no se extiende a la inspección de las instalaciones, oficinas y demás emplazamientos en los que el contratista desarrolle sus actividades" :value="false"></v-radio>   
                     </v-radio-group>
                 </v-col>
 

@@ -117,12 +117,12 @@
                     <v-col cols="12" md="1">
                         <h5 class="subtitle">¿Exigido?</h5>
                         <v-radio-group v-model="datos.seguroRespCivil">
-                            <v-radio label="Si" value="si"></v-radio>
-                            <v-radio label="No" value="no"></v-radio>
+                            <v-radio label="Si" :value="true"></v-radio>
+                            <v-radio label="No" :value="false"></v-radio>
                         </v-radio-group>
                     </v-col>
 
-                    <v-col cols="12" md="2" v-if="datos.seguroRespCivil === 'si'">
+                    <v-col cols="12" md="2" v-if="datos.seguroRespCivil === true">
                         <h5 class="subtitle">Suma asegurada:</h5>
                         <v-radio-group v-model="datos.sumaAsegurada">
                             <v-radio label="2.000.000 €" :value="true"></v-radio>
@@ -130,12 +130,12 @@
                         </v-radio-group>
                     </v-col>
 
-                    <v-col cols="12" md="4" v-if="datos.seguroRespCivil === 'si' && datos.sumaAsegurada === false">
+                    <v-col cols="12" md="4" v-if="datos.seguroRespCivil === true && datos.sumaAsegurada === false">
                         <h5 class="subtitle">Especificar cantidad</h5>
                         <v-text-field filled label="(€)" v-model="datos.aseguradoEspecifico"></v-text-field>
                     </v-col>
 
-                    <v-col cols="12" md="5" v-if="datos.seguroRespCivil === 'si' && datos.sumaAsegurada === false">
+                    <v-col cols="12" md="5" v-if="datos.seguroRespCivil === true && datos.sumaAsegurada === false">
                         <h5 class="subtitle">Riesgo específico asegurado:</h5>
                         <v-text-field filled label="(€)" v-model="datos.riesgoAseguradoEspecifico"></v-text-field>
                     </v-col>
@@ -176,7 +176,7 @@
 
 <script> 
     export default {
-        name: 'EjecucionYotros',
+        name: 'PlazosRespEjecucion',
         props:['datosGuardados'],
         data(){
             return {

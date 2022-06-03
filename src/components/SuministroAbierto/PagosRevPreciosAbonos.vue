@@ -185,7 +185,7 @@
 
 <script> 
     export default {
-        name: 'RegimenPagosRevision',
+        name: 'PagosRevPreciosAbonos',
         props: ['datosGuardados', 'presBase'],
 
         watch:{

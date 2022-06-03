@@ -270,14 +270,14 @@
     </h3>
     <v-row class="rowGroup">
       <v-col cols="12" md="4">
-        <v-select 
-          filled
-          multiple
-          label="Aplicación presupuestaria" 
-          :items="itemsAplicacionPrep" 
+        <v-text-field
           v-model="datos.aplicacionPrep"
-        >
-        </v-select>
+          append-icon="mdi-magnify"
+          prepend-icon="mdi-delete-empty"
+          @click:prepend="deleteAplicacionPres"
+          @click:append="showAplicacionPres"
+          label="Aplicación presupuestaria" filled>
+        </v-text-field>
       </v-col>
 
       <v-col cols="12" sm="4">
@@ -720,13 +720,26 @@
       </v-col>
     </v-row>
     <br />
+
+
+    <!-- DIALOGO APLICACION PRESUPUESTARIA -->
+    <v-dialog
+      width="80rem"
+      :value="showAplicacionPresWindow">
+      <AplicacionPres @close="closeDialog" @aplicPres="getAplicacionPres"></AplicacionPres>
+    </v-dialog>
+
   </div>
 </template>
 
 <script>
+
+import AplicacionPres from '@/components/common/AplicacionPres.vue';
+
 export default {
-  name: "PresupuestoAnualidades",
+  name: "PresupuestoLoteAnualidades",
   props:['datosGuardados'],
+  components: {AplicacionPres},
   
   data() {
     return {
@@ -735,7 +748,7 @@ export default {
       dateFin: '',
 
 
-      anualidades: [2, 3, 4, 5],
+      anualidades: [1, 2, 3, 4, 5],
       impuestos: [
         {tipo: 'IVA', valor: 21},
         {tipo: 'IGIC', valor: 7}
@@ -752,10 +765,10 @@ export default {
         { text: "Base de licitación (sin impuestos) €", align: "end", sortable: false, value: "baseLote", divider: true,},
         { text: "Impuesto aplicable (%)", align: "end", sortable: false, value: "tipoImpuesto", divider: true, width:"5%"},
         { text: "Total Impuestos €", align: "end", sortable: false, value: "totalImpuestos", divider: true,},
+        { text: "Costes Directos €", align: "end", sortable: false, value: "costesDirectos", divider: true},
         { text: "Costes generales (13%) €", align: "end", sortable: false, value: "costesGenerales", divider: true}, 
         { text: "Beneficio industrial (6%) €", align: "end", sortable: false, value: "beneficioIndustrial", divider: true},
         { text: "Costes Indirectos (generales + industriales) €", align: "end", sortable: false, value: "costesIndirectos", divider: true},
-        { text: "Costes Directos €", align: "end", sortable: false, value: "costesDirectos", divider: true},
         { text: "Total (imp. incluidos) €", align: "end", sortable: false, value: "totalLote", divider: true,},
         { text: "Borrar", align: "center", sortable: false, value: "actions", divider: true,},
       ],
@@ -773,6 +786,8 @@ export default {
       ],
 
       tipoPlazo: ['dias', 'meses', 'años'],
+
+      showAplicacionPresWindow: false,
 
       datos: {
         componente: 'PresupuestoAnualidades',
@@ -941,6 +956,25 @@ export default {
   },
   
   methods: {
+
+    closeDialog(closed){
+      if(closed === true){
+        this.showAplicacionPresWindow = false;
+      }
+    },
+
+    getAplicacionPres(data){
+      this.datos.aplicacionPrep = data
+    },
+
+    showAplicacionPres(){
+      this.showAplicacionPresWindow = true;
+    },
+
+    deleteAplicacionPres(){
+      this.datos.aplicacionPrep = ''
+    },
+
     calculoImporteModif(base, modif1, modif2){
       if (modif1 !== undefined || modif2 !== undefined){
         this.datos.totalModificaciones = (parseFloat(base) + parseFloat(modif1) + parseFloat(modif2)).toFixed(2);

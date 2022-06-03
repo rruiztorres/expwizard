@@ -57,51 +57,51 @@
 
                         <!--Presupuesto, lotes y anualidades-->
                         <v-tab-item class="tabContent">
-                            <PresupuestoAnualidades
+                            <PresupuestoLoteAnualidades
                                 v-if="activeTab == 2"
                                 @datos="getData"
                                 :datosGuardados="datosPresupuestoAnualidades"
-                            ></PresupuestoAnualidades>
+                            ></PresupuestoLoteAnualidades>
                         </v-tab-item>
 
                         <!--Incompatibilidades, capacidad y solvencia-->
                         <v-tab-item class="tabContent">
-                            <CapacidadSolvencia
+                            <IncompatibCapacSolvencia
                                 v-if="activeTab == 3"
                                 @datos="getData"
                                 :datosGuardados="datosCapacidadSolvencia"
                                 :presBase="datosPresupuestoAnualidades"
                                 :objetoNecesidades="datosObjetoNecesidades"
-                            ></CapacidadSolvencia>
+                            ></IncompatibCapacSolvencia>
                         </v-tab-item>
 
                         <!--Garantías y criterios adjudicación-->
                         <v-tab-item class="tabContent">
-                            <Garantias
+                            <GarantiasCritAdjudicacion
                                 v-if="activeTab == 4"
                                 @datos="getData"
                                 :datosGuardados="datosGarantias"
                                 :presBase="datosPresupuestoAnualidades"
-                            ></Garantias>
+                            ></GarantiasCritAdjudicacion>
                         </v-tab-item>
 
                         <!--Pagos, Rev. precios y Abonos a cuenta-->
                         <v-tab-item class="tabContent">
-                            <RegimenPagosRevision
+                            <PagosRevPreciosAbonos
                                 v-if="activeTab == 5"
                                 @datos="getData"
                                 :presBase="datosPresupuestoAnualidades"
                                 :datosGuardados="datosRegimenPagosRevision"
-                            ></RegimenPagosRevision>
+                            ></PagosRevPreciosAbonos>
                         </v-tab-item>
 
                         <!--Plazos, responsable y ejecución-->
                         <v-tab-item class="tabContent">
-                            <EjecucionYotros
+                            <PlazosRespEjecucion
                                 v-if="activeTab == 6"
                                 @datos="getData"
                                 :datosGuardados="datosEjecucionYotros"
-                            ></EjecucionYotros>
+                            ></PlazosRespEjecucion>
                         </v-tab-item>
 
                         <!--Modificaciones y penalidades-->
@@ -181,11 +181,11 @@
 
 <script> 
 import ObjetoNecesidades from "@/components/SuministroAbierto/ObjetoNecesidades";
-import PresupuestoAnualidades from "@/components/SuministroAbierto/PresupuestoAnualidades";
-import CapacidadSolvencia from "@/components/SuministroAbierto/CapacidadSolvencia";
-import Garantias from "@/components/SuministroAbierto/Garantias";
-import RegimenPagosRevision from "@/components/SuministroAbierto/RegimenPagosRevision";
-import EjecucionYotros from "@/components/SuministroAbierto/EjecucionYotros";
+import PresupuestoLoteAnualidades from "@/components/SuministroAbierto/PresupuestoLoteAnualidades";
+import IncompatibCapacSolvencia from "@/components/SuministroAbierto/IncompatibCapacSolvencia";
+import GarantiasCritAdjudicacion from "@/components/SuministroAbierto/GarantiasCritAdjudicacion";
+import PagosRevPreciosAbonos from "@/components/SuministroAbierto/PagosRevPreciosAbonos";
+import PlazosRespEjecucion from "@/components/SuministroAbierto/PlazosRespEjecucion";
 import ModificacionesPenalidades from "@/components/SuministroAbierto/ModificacionesPenalidades";
 import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcontrataOtros";
 import Finalizar from "@/components/SuministroAbierto/Finalizar";
@@ -199,11 +199,11 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
         components: { 
             ObjetoNecesidades, 
-            PresupuestoAnualidades, 
-            CapacidadSolvencia, 
-            Garantias,
-            RegimenPagosRevision,
-            EjecucionYotros,
+            PresupuestoLoteAnualidades, 
+            IncompatibCapacSolvencia, 
+            GarantiasCritAdjudicacion,
+            PagosRevPreciosAbonos,
+            PlazosRespEjecucion,
             ModificacionesPenalidades,
             CesionSubcontrataOtros,
             Finalizar,

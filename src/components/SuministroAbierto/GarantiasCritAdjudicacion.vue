@@ -361,7 +361,7 @@
 
 <script> 
     export default {
-        nombre: 'Garantias',
+        name: 'GarantiasCritAdjudicacion',
         props:['presBase', 'datosGuardados'],
         data(){
             return {
@@ -393,7 +393,6 @@
                 puntuacionFormulaHeader: [
                 { text: "", align: "start", sortable: false, value: "id" },
                 { text: "Nombre Criterio", align: "start", sortable: false, value: "criterios" },
-                { text: "Extension (nº páginas)", align: "start", sortable: false, value: "extension" },
                 { text: "Puntuación máxima", align: "start", sortable: false, value: "puntuacion"},
                 { text: "Borrar", align: "start", sortable: false, value: "actions"}
                 ],
@@ -419,7 +418,7 @@
                     ],
                     umbralJuicioValor: false,
                     criteriosPuntuacionFormula: [
-                        { id: 1, criterios: '', extension: '', puntuacion: undefined },
+                        { id: 1, criterios: '', puntuacion: undefined },
                     ],
                     criterio: true,
                     reduccion: 'no',
@@ -536,7 +535,7 @@
                 this.noDeleteFormula = false;
                 this.lastId = (this.datos.criteriosPuntuacionFormula.length) + 1; 
                 this.datos.criteriosPuntuacionFormula.push(
-                    { id: this.lastId, criterios: '', extension: '', puntuacion: undefined },
+                    { id: this.lastId, criterios: '', puntuacion: undefined },
                 )     
             },
 
