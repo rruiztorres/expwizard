@@ -109,8 +109,8 @@ export default {
           console.log(data)
           localStorage.usrName = data.data.usuario[0].usrname;
           localStorage.role = data.data.usuario[0].role;
-          localStorage.nombre = data.data.usuario[0].usuario_nombre;
-          localStorage.apellidos = data.data.usuario[0].usuario_apellidos;
+          localStorage.nombre = data.data.usuario[0].nombre;
+          localStorage.apellidos = data.data.usuario[0].apellidos;
 
           this.login()
         } else {

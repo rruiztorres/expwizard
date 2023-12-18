@@ -237,20 +237,22 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
             loadStoredData(){
                 if(this.dataInput !== undefined){
                     // DATOS DE GUARDADO
+                    const data = JSON.parse(this.dataInput.data);
+
                     this.datosExpGuardadoPrev = {
-                        id_exp: this.dataInput.id_exp,
-                        nombre_exp: this.dataInput.nombre_exp,
-                        descripcion_expediente: this.dataInput.descripcion_expediente,
+                        id_exp: data.expData.id_exp,
+                        nombre_exp: data.expData.nombre,
+                        descripcion_expediente: data.expData.descripcion,
                     };       
 
-                    this.datosObjetoNecesidades = this.dataInput.data.seccion1;
-                    this.datosPresupuestoAnualidades = this.dataInput.data.seccion2;
-                    this.datosCapacidadSolvencia = this.dataInput.data.seccion3;
-                    this.datosGarantias = this.dataInput.data.seccion4;
-                    this.datosRegimenPagosRevision = this.dataInput.data.seccion5;
-                    this.datosEjecucionYotros = this.dataInput.data.seccion6;
-                    this.datosModificacionesPenalidades = this.dataInput.data.seccion7;
-                    this.datosCesionSubcontrataOtros = this.dataInput.data.seccion8;
+                    this.datosObjetoNecesidades = data.seccion1;
+                    this.datosPresupuestoAnualidades = data.seccion2;
+                    this.datosCapacidadSolvencia = data.seccion3;
+                    this.datosGarantias = data.seccion4;
+                    this.datosRegimenPagosRevision = data.seccion5;
+                    this.datosEjecucionYotros = data.seccion6;
+                    this.datosModificacionesPenalidades = data.seccion7;
+                    this.datosCesionSubcontrataOtros = data.seccion8;
                 }
             },
 

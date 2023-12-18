@@ -114,7 +114,7 @@ import axios from 'axios';
 
         methods:{
             async initialize(){
-                axios
+                await axios
                 .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + localStorage.usrName)
                 .then((data) => {
                     this.expedientes = data.data.response;

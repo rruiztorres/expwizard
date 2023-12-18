@@ -57,7 +57,7 @@
         </v-row>
       </v-container>
 
-      <v-container v-if="active === 'SERVICIOS'">
+      <v-container v-if="active === 'Servicio abierto varios criterios'">
         <v-row class="rowWrapper">
           <v-col cols="12">
             <Servicios>
@@ -110,6 +110,7 @@ import MisExpedientes from "@/components/common/MisExpedientes"
 
       getData(data){
         this.loadData = data;
+        this.selector = this.loadData.tipo;
       }
 
       

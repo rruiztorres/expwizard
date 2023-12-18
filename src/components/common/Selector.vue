@@ -71,7 +71,7 @@
             <v-col 
             cols="12" sm="6" md="4" lg="2">
                 <v-card 
-                color="#00C853" dark class="selection" @click="selectTipo('')" elevation="0">
+                color="#00C853" dark class="selection" @click="selectTipo('Servicio abierto varios criterios')" elevation="0">
                     <div class="titleContainer">
                         <h3 class="cardTitle">Abierto</h3>
                         <h4 class="cardTitle">Varios criterios</h4>

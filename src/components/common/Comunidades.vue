@@ -30,8 +30,8 @@
             show-select
             dense
             v-model="selected"
+            item-key="nombre"
             :items-per-page="itemsPerPage"
-            :key="codigo"
         >
             <template v-slot:no-data>
                 <div class="loaderContainer">
