@@ -31,7 +31,7 @@
             dense
             v-model="selected"
             :items-per-page="itemsPerPage"
-            :key="codigo"
+            item-key="id_prov"
         >
             <template v-slot:no-data>
                 <div class="loaderContainer">

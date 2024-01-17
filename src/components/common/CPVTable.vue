@@ -31,7 +31,7 @@
             dense
             v-model="selected"
             :items-per-page="itemsPerPage"
-            :key="codigo"
+            item-key="codigo"
         >
             <template v-slot:no-data>
                 <div class="loaderContainer">
@@ -86,7 +86,7 @@ export default{
             selected: [],
             CPVheaders: [
                 {text: 'Clave', align: 'start', sortable: true, value:'codigo', width:'10%'},
-                {text: 'Descripcion', align: 'start', sortable: true, value:'descripcion'},
+                {text: 'Descripcion', align: 'start', sortable: true, value:'descripción'},
             ],
             cpvItems: [],
             codigo: '',

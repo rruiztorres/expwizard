@@ -1,20 +1,101 @@
 <template>
     <div>
-    La Subdirección General de Astronomía, Geodesia y Geofísica tiene como una de sus misiones la planificación y gestión operativa del instrumental científico necesario para la detección, registro y almacenamiento de señales astronómicas, gravimétricas, geomagnéticas, movimientos sísmicos y fenómenos volcánicos. Con este instrumental se llevan a cabo estudios de astronomía, geodesia y geofísica, y se mantienen las redes de vigilancia sísmica, volcánica y de alerta de tsunamis. Se trata de un material específico, singular, muy numeroso y de gran variedad que incluye receptores criogénicos para radioastronomía, gravímetros, sismógrafos, acelerógrafos, magnetómetros, receptores GNSS, comunicaciones vía satélite y una larga lista de componentes auxiliares.
-    La adquisición de los componentes electrónicos y mecánicos depende de las necesidades de la Subdirección y no pueden preverse en muchos casos, en especial cuando se trata de averías que deben solucionarse con rapidez para restablecer la operación de los sistemas y, por tanto, el servicio afectado. Se trata por tanto de un contrato de suministros en el que función de las necesidades, la empresa adjudicataria se obliga a ejecutar el contrato de forma sucesiva y por precio unitario, sin que el número total de prestaciones incluidas en el objeto del contrato se defina con exactitud al tiempo de celebrar éste (D.A. 33ª LCSP).
+        <h2>Currency Demo</h2>
+        <hr/>
+        <br/>
+        <v-row>
+            <v-col cols="2">
+                Campo 1
+                <MoneyField @value="(data)=> campo1 = data"></MoneyField>
+            </v-col>
+            <v-col cols="2">
+                Campo 2
+                <MoneyField @value="(data)=> campo2 = data"></MoneyField>
+            </v-col>
+            <v-col cols="2">
+                Campo 3
+                <MoneyField @value="(data)=> campo3 = data"></MoneyField>
+            </v-col>
+            <v-col cols="2">
+                Campo 4
+                <MoneyField @value="(data)=> campo4 = data"></MoneyField>
+            </v-col>
+            <v-col cols="2">
+                Campo 5
+                <MoneyField @value="(data)=> campo5 = data"></MoneyField>
+            </v-col>
+            <v-col cols="2">
+                Campo 6
+                <MoneyField @value="(data)=> campo6 = data"></MoneyField>
+            </v-col>
+        </v-row>
+        <br/>
+        <div>
+            <hr/>
+            <br/>
+            <h3>Los valores almacenados son:</h3>
+            {{campo1}}<br/>
+            {{campo2}}<br/>
+            {{campo3}}<br/>
+            {{campo4}}<br/>
+            {{campo5}}<br/>
+            {{campo6}}<br/>
+            <br/>
+            <hr/>
+            <br/>
+            <h3>La suma es: {{total}} €</h3> 
+        </div>
     </div>
 </template>
 
 <script>
+
+import MoneyField from "@/components/common/MoneyField";
+
     export default {
-        name: 'Servicios',
+        name: 'campoMonedaFormateado',
+        components: {MoneyField},
+
+        watch:{
+            campo1(){
+                this.sumaAll()
+            },
+            campo2(){
+                this.sumaAll()
+            },
+            campo3(){
+                this.sumaAll()
+            },
+            campo4(){
+                this.sumaAll()
+            },
+            campo5(){
+                this.sumaAll()
+            },
+            campo6(){
+                this.sumaAll()
+            },
+        },
+
         data(){
             return {
-                foo: undefined
+                total: 0,
+               campo1: 0,
+               campo2: 0,
+               campo3: 0,
+               campo4: 0,
+               campo5: 0,
+               campo6: 0,
+               campo7: 0,
+            }
+        },
+
+        methods:{
+            sumaAll(){
+                this.total = this.campo1+this.campo2+this.campo3+this.campo4+this.campo5+this.campo6;
             }
         }
+
+    
     }
 </script>
-
-<style scoped>
-</style>
