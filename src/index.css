@@ -3,7 +3,7 @@
 
 html {
     background-color: #EFF6FF;
-    overflow-y: hidden;
+    overflow-y: hidden !important;
   }
 
 #agexApp{
