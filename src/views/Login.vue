@@ -1,4 +1,4 @@
-<template>
+/<template>
   <v-app id="agexApp">
     <v-main>
       <div class="wrapper fadeInDown float">
@@ -8,7 +8,7 @@
           <div class="fadeIn first logo">
             <h1>AGEX</h1>
             <h4>Asistente Generación Expedientes</h4>
-            <img class="imgLogo" src="@/assets/logo_web_IGN_CNIG.png" id="icon" alt="User Icon" />
+            <img class="imgLogo" src="@/assets/img/logo_web_IGN_CNIG.svg" id="icon" alt="User Icon" />
           </div>
 
           <!-- Login -->
@@ -106,7 +106,6 @@ export default {
       .post(`${process.env.VUE_APP_API_ROUTE}/postAuth/${this.usrlogin.usuario}/${this.usrlogin.password}`)
       .then((data) => {
         if(data.status === 201){
-          console.log(data)
           localStorage.usrName = data.data.usuario[0].usrname;
           localStorage.role = data.data.usuario[0].role;
           localStorage.nombre = data.data.usuario[0].nombre;
@@ -346,7 +345,7 @@ h2.active {
     outline: none;
 } 
 #icon {
-  width:60%;
+  width:70%;
 }
 * {
   box-sizing: border-box;

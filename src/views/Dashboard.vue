@@ -8,7 +8,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>AGEX</v-toolbar-title>
       <v-spacer></v-spacer>
-      <img src="../assets/logo_web_IGN_CNIG.png">
+      <img src="@/assets/img/logo_web_IGN_CNIG.svg" id="icon">
     </v-app-bar>
 
     <v-navigation-drawer
@@ -18,11 +18,10 @@
     >
       <UserMenu
         @activeMenu="activeOption"
-      >
-      </UserMenu>
+      ></UserMenu>
     </v-navigation-drawer>  
       
-    <v-main class="grey lighten-2 mainApp">
+    <v-main class="grey lighten-2 mainApp"> 
       <!-- MENU MIS EXPEDIENTES -->
       <v-container v-if="active === 'misExpedientes'">
         <v-row class="rowWrapper">
@@ -39,10 +38,9 @@
       <v-container v-if="active === 'selector'">
         <v-row class="rowWrapper">
           <v-col cols="12">
-            <Selector 
+            <Selector ç
               @tipoExp="activeOption"
-            >
-            </Selector>
+            ></Selector>
           </v-col>
         </v-row>
       </v-container>
@@ -51,20 +49,13 @@
       <v-container v-if="active === 'Suministro abierto varios criterios'">
         <v-row class="rowWrapper">
           <v-col cols="12">
-            <SuministroAbierto @back="activeOption" :dataInput="loadData">
-            </SuministroAbierto>
+            <SuministroAbierto 
+              @back="activeOption" 
+              :dataInput="loadData"
+            ></SuministroAbierto>
           </v-col>
         </v-row>
-      </v-container>
-
-      <v-container v-if="active === 'Servicio abierto varios criterios'">
-        <v-row class="rowWrapper">
-          <v-col cols="12">
-            <Servicios>
-            </Servicios>
-          </v-col>
-        </v-row>
-      </v-container>
+      </v-container>     
     </v-main>
   </v-app>
 </template>
@@ -72,15 +63,15 @@
 <script>
 import UserMenu from "@/components/common/UserMenu"
 import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto"
-import Servicios from "@/components/Servicios/Servicios"
+
+
 import Selector from "@/components/common/Selector"
 import MisExpedientes from "@/components/common/MisExpedientes"
 
   export default {
     components: {
       UserMenu, 
-      SuministroAbierto, 
-      Servicios,
+      SuministroAbierto,
       Selector,
       MisExpedientes,
     },
@@ -123,6 +114,10 @@ import MisExpedientes from "@/components/common/MisExpedientes"
         font-weight: 400;
     }
 
+    #icon{
+      height: 85%;
+    }
+
     .rowWrapper {
       margin-top: 1rem;
     }
@@ -134,7 +129,6 @@ import MisExpedientes from "@/components/common/MisExpedientes"
     .mainApp{
       background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
       height: 50vh;
-      overflow-y: auto;
     }
 
     .title{

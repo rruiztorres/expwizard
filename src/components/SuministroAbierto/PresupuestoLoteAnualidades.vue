@@ -1,443 +1,531 @@
 <template>
   <div>
-    <!-- 5 DIVISIÓN EN LOTES -->
-    <h3>Presupuesto base de licitación y Lotes
-      <v-badge 
+    <!-- DIVISIÓN EN LOTES -->
+    <div class="group">
+      <h3>Presupuesto base de licitación y Lotes
+          <v-badge 
           class="badge" color="#c7d6f2" content="?"
-          title="Punto 3.1 (Presupuesto Base de Licitación) - Punto 5 (Lotes)"></v-badge >
-    </h3>
-    <v-row class="rowGroup">
-      <v-col cols="12" md="3">
-        <h5>¿Se dividirá en lotes?</h5>
-        <v-radio-group v-model="datos.divisionLotes">
-          <v-radio 
-            label="No es posible" 
-            value="no es posible"></v-radio>
-          <v-radio
-            label="Si es posible, pero no se divide en lotes"
-            value="posible no divisible"
-          ></v-radio>
-          <v-radio
-            label="Si es posible y se divide en lotes"
-            value="posible divisible"
-          ></v-radio>
-        </v-radio-group>
-      </v-col>
-
-        <!-- JUSTIFICACION SI NO ES POSIBLE DIVIDIR EN LOTES -->
-        <v-col cols="12" md="4" v-if="datos.divisionLotes === 'no es posible'">
-          <h5>Justificación si no es posible:</h5>
-          <v-radio-group v-model="datos.divisionNoPosible">
+          title="Punto 3.1 (Presupuesto Base de Licitación) - Punto 5 (Lotes)"
+          ></v-badge >
+      </h3>
+      <v-row class="rowGroup">
+        <v-col cols="12" md="3">
+          <h5>¿Se dividirá en lotes?</h5>
+          <v-radio-group v-model="datos.divisionLotes">
+            <v-radio 
+              label="No es posible" 
+              value="no es posible"></v-radio>
             <v-radio
-              label="La naturaleza o el objeto del contrato no lo permite"
-              :value="true"
+              label="Si es posible, pero no se divide en lotes"
+              value="posible no divisible"
             ></v-radio>
-            <v-radio label="Otra causa:" :value="false"></v-radio>
+            <v-radio
+              label="Si es posible y se divide en lotes"
+              value="posible divisible"
+            ></v-radio>
           </v-radio-group>
         </v-col>
 
+          <!-- JUSTIFICACION SI NO ES POSIBLE DIVIDIR EN LOTES -->
+          <v-col cols="12" md="4" v-if="datos.divisionLotes === 'no es posible'">
+            <h5>Justificación si no es posible:</h5>
+            <v-radio-group v-model="datos.divisionNoPosible">
+              <v-radio
+                label="La naturaleza o el objeto del contrato no lo permite"
+                :value="true"
+              ></v-radio>
+              <v-radio label="Otra causa:" :value="false"></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <!-- OTRA CAUSA JUSTIFICAR -->
           <v-col cols="12" md="5" v-if="datos.divisionLotes === 'no es posible' && datos.divisionNoPosible === false">
             <h5>Si es otra causa, justificar:</h5>
             <v-textarea auto-grow filled v-model="datos.justificacionNoDivisionLotes"></v-textarea>           
           </v-col>
 
-            <v-col
-              cols="12"
-              md="4"
-              v-if="datos.divisionLotes === 'posible no divisible'"
-            >
-              <h5>Justificación si es posible pero no se divide:</h5>
-              <v-radio-group v-model="datos.divisionPosibleDivisible">
-                <v-radio
-                  label="Conlleva riesgo restringir competencia"
-                  value="Conlleva riesgo restringir competencia"
-                ></v-radio>
-                <v-radio
-                  label="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
-                  value="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
-                ></v-radio>
-                <v-radio
-                  label="Otra causa"
-                  :value="false"
-                ></v-radio>
-              </v-radio-group>
+          <!-- JUSTIFICACION ES POSIBLE PERO NO SE DIVIDE -->
+          <v-col
+            cols="12"
+            md="4"
+            v-if="datos.divisionLotes === 'posible no divisible'"
+          >
+            <h5>Justificación si es posible pero no se divide:</h5>
+            <v-radio-group v-model="datos.divisionPosibleDivisible">
+              <v-radio
+                label="Conlleva riesgo restringir competencia"
+                value="Conlleva riesgo restringir competencia"
+              ></v-radio>
+              <v-radio
+                label="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
+                value="Realizarlo independiente dificulta o pone en riesgo correcta ejecución"
+              ></v-radio>
+              <v-radio
+                label="Otra causa"
+                :value="false"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <!-- JUSTIFICACION OTRAS CAUSAS -->
+          <v-col cols="12" md="5" 
+          v-if="datos.divisionLotes === 'posible no divisible' && 
+          datos.divisionPosibleDivisible === false"
+          >
+            <h5>Si es otra causa, justificar:</h5>
+            <v-textarea filled v-model="datos.justificacionNoDivisionPosible"></v-textarea>
+          </v-col>
+
+          <!-- POSIBLE DIVISIBLE -->
+          <v-col cols="12" md="9" v-if="datos.divisionLotes === 'posible divisible'">
+            <h5>Limitaciones</h5>
+            <v-radio-group v-model="datos.limitacionLotes">
+              <v-radio
+                label="Se podrá limitar el número de lotes para los que un mismo candidato o licitador pueda presentar oferta"
+                value="limitar"
+              ></v-radio>
+              <v-radio
+                label="Cada licitador sólo podrá ser adjudicatario de tantos lotes como conjuntos completos distintos de medios presente con un máximo de 2, salvo que fuese a quedar alguno de los lotes sin adjudicatario, en cuyo caso se adjudicará el lote al licitador, el cual deberá disponer, para su ejecución, de un conjunto completo distinto al ya comprometidos en los otros lotes."
+                value="lotes"
+              ></v-radio>
+              <v-radio
+                label="Otras causas"
+                value="otras"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <v-row class="subRow" dense style="margin: -1rem 0rem -1rem 1rem;" v-if="datos.divisionLotes === 'posible divisible'">
+            <v-col cols="12">
+            <h5>¿Cuantos lotes desea crear?</h5>
             </v-col>
-
-            <!-- OTRAS CAUSAS, JUSTIFICAR -->
-            <v-col cols="12" md="5" 
-            v-if="datos.divisionLotes === 'posible no divisible' && 
-            datos.divisionPosibleDivisible === false"
-            >
-              <h5>Si es otra causa, justificar:</h5>
-              <v-textarea filled v-model="datos.justificacionNoDivisionPosible"></v-textarea>
-            </v-col>
-
-
-        <!-- POSIBLE DIVISIBLE -->
-        <v-col cols="12" md="9" v-if="datos.divisionLotes === 'posible divisible'">
-          <h5>Limitaciones</h5>
-          <v-radio-group v-model="datos.limitacionLotes">
-            <v-radio
-              label="Se podrá limitar el número de lotes para los que un mismo candidato o licitador pueda presentar oferta"
-              value="limitar"
-            ></v-radio>
-            <v-radio
-              label="Cada licitador sólo podrá ser adjudicatario de tantos lotes como conjuntos completos distintos de medios presente con un máximo de 2, salvo que fuese a quedar alguno de los lotes sin adjudicatario, en cuyo caso se adjudicará el lote al licitador, el cual deberá disponer, para su ejecución, de un conjunto completo distinto al ya comprometidos en los otros lotes."
-              value="lotes"
-            ></v-radio>
-            <v-radio
-              label="Otras causas"
-              value="otras"
-            ></v-radio>
-          </v-radio-group>
-        </v-col>
-
-
-        <v-row class="subRow">
-          <v-col cols="12" md="2" v-if="datos.divisionLotes === 'posible divisible'">
-            <v-text-field
-            label="Nº Lotes"
-            filled type="number"
-            dense
-            v-model="datos.numLotes" 
-            :disabled="datos.divisionLotes !== 'posible divisible'"
-            >
-            </v-text-field>
-          </v-col>
-
-          <v-col cols="12" md="3">
-            <v-btn x-large class="actionButton" color="info" width="100%" @click="createLotes">
-              INTRODUCIR DATOS
-              <v-icon class="icon">mdi-pencil</v-icon>
-            </v-btn>
-            <br/>
-          </v-col>
-
-          <!--DATA TABLE IDENTIFICACIÓN LOTES -->
-          <v-col cols="12" v-if="datos.numLotes > 1">
-            <h5>Identificación de los lotes</h5>
-            <v-data-table
-              class="dataTable"
-              :items="datos.lotes"
-              :headers="identificacionLotesHeaders"
-              hide-default-footer
-            >
-              <!-- DESCRIPCION LOTE -->
-              <template v-slot:[`item.descripcion`]="props">
-                <v-edit-dialog :return-value.sync="props.item.descripcion">
-                  <span class="editField">{{
-                  props.item.descripcion
-                  }}</span>
-                  <template v-slot:input>
-                    <v-text-field
-                    v-model="props.item.descripcion"
-                    label="Editar"
-                    single-line
-                    ></v-text-field>
-                  </template>
-                </v-edit-dialog>
-              </template>
-            </v-data-table>
-          </v-col>
-         
-          <!-- DATA TABLE LOTES -->
-          <v-col cols="12">
-            <v-data-table
-              class="dataTable"
-              :items="datos.lotes"
-              :headers="lotesHeaders"
-              hide-default-footer
-            >     
-              <!-- BASE LOTE SIN IMPUESTOS -->
-              <template v-slot:[`item.baseLote`]="props">
-                <v-edit-dialog :return-value.sync="props.item.baseLote">
-                  <span class="editField">{{
-                  parseFloat(props.item.baseLote)
-                  }}</span>
-                  <template v-slot:input>
-                    <v-text-field
-                    v-model="props.item.baseLote"
-                    label="Editar"
-                    single-line
-                    ></v-text-field>
-                  </template>
-                </v-edit-dialog>
-              </template>
-
-              <!-- IMPUESTO APLICABLE -->
-              <template v-slot:[`item.tipoImpuesto`]="props">
-                <v-edit-dialog :return-value.sync="props.item.tipoImpuesto">
-                  <span class="editField">{{
-                  parseFloat(props.item.tipoImpuesto)
-                  }}</span>
-                  <template v-slot:input>
-                    <v-select
-                    class="adjustHeight"
-                    :items="impuestos"
-                    item-text="tipo"
-                    item-value="valor"
-                    v-model="props.item.tipoImpuesto"
-                    label="Impuesto a aplicar:"
-                    ></v-select>
-                  </template>
-                </v-edit-dialog>
-              </template>
-
-              <!-- TOTAL IMPUESTOS (AUTO)-->
-              <template v-slot:[`item.totalImpuestos`]="props">
-                  {{
-                    parseFloat(((props.item.tipoImpuesto / 100) * parseFloat(props.item.baseLote)).toFixed(2))
-                  }}
-              </template>
-
-
-              <!-- COSTES GENERALES 13% (AUTO)-->
-              <template v-slot:[`item.costesGenerales`]="props">
-                  {{
-                    (((parseFloat(props.item.baseLote)) / 1.19) * 0.13).toFixed(2)
-                  }}
-              </template>
-
-               <!-- BENEFICIO INDUSTRIAL (AUTO)-->
-              <template v-slot:[`item.beneficioIndustrial`]="props">
-                  {{
-                    (((parseFloat(props.item.baseLote)) / 1.19) * 0.06).toFixed(2)
-                  }}
-              </template>
-
-              <!-- TOTAL COSTES DIRECTOS (gen + ind)-->
-              <template v-slot:[`item.costesIndirectos`]="props">
-                  {{
-                    ((parseFloat(props.item.baseLote)) - (parseFloat(props.item.baseLote) / 1.19)).toFixed(2)
-                  }}
-              </template>
-
-              <!-- TOTAL COSTES DIRECTOS -->
-              <template v-slot:[`item.costesDirectos`]="props">
-                  {{
-                    ((parseFloat(props.item.baseLote)) / 1.19).toFixed(2)
-                  }}
-              </template>
-
-              <!-- TOTAL (AUTO) -->
-              <template v-slot:[`item.totalLote`]="props">
-                  <b>{{
-                    parseFloat((((props.item.tipoImpuesto / 100) * parseFloat(props.item.baseLote) + parseFloat(props.item.baseLote))).toFixed(2))
-                  }}</b>
-              </template>
-
-              <!-- BORRAR-->
-              <template v-slot:[`item.actions`]="props">
-                  <v-icon color="red" @click="deleteLote(props.item.idLote)">mdi-delete</v-icon>
-              </template>
-            </v-data-table>
-          </v-col>
-
-           <v-col cols="12" md="3">
-              <v-btn
-              v-if="datos.lotesGuardados === false"
-              class="actionButton"
-              width="100%" 
-              large dark
-              :color="colorLotes()"  
-              @click="saveLotes"
-              :disabled="datos.lotes.length === 0"
+          </v-row>
+          <v-row class="subRow">
+            <v-col cols="12" md="1" v-if="datos.divisionLotes === 'posible divisible'">
+              <v-text-field dense
+              filled type="number"
+              :min="2"
+              v-model="datos.numLotes" 
+              :disabled="datos.divisionLotes !== 'posible divisible'"
               >
-                GUARDAR DATOS
-                <v-icon class="icon">mdi-content-save</v-icon>
+              </v-text-field>
+            </v-col>
+            <v-col cols="12" md="2" v-if="datos.divisionLotes === 'posible divisible'">
+              <v-btn
+                @click="createLotes"
+                style="height:2.6rem;" color="info" light>Crear Lotes
+                <v-icon small class="icon">mdi-pencil</v-icon>
               </v-btn>
-              <v-btn
-              v-else
-              class="actionButton" 
-              color="grey" dark
-              width="100%"
-              large
-              >
-              GUARDADO CORRECTO
-              <v-icon class="icon">mdi-check-all</v-icon>
-            </v-btn>
-          </v-col>
+            </v-col>
 
-        </v-row>
-    </v-row>
-    <br />
-
-    <!-- 3.1 TRAMITACIÓN -->
-    <h3>Tramitación
-      <v-badge 
-          class="badge" color="#c7d6f2" content="?"
-          title="Punto 3.1 (Presupuesto Base de Licitación)"></v-badge >
-    </h3>
-    <v-row class="rowGroup">
-      <v-col cols="12" md="4">
-        <v-text-field
-          v-model="datos.aplicacionPrep"
-          append-icon="mdi-magnify"
-          prepend-icon="mdi-delete-empty"
-          @click:prepend="deleteAplicacionPres"
-          @click:append="showAplicacionPres"
-          label="Aplicación presupuestaria" filled>
-        </v-text-field>
-      </v-col>
-
-      <v-col cols="12" sm="4">
-        <v-radio-group class="aplicacionPrep" v-model="datos.tramitacion">
-          <v-radio label="Tramitación ordinaria" :value="true"></v-radio>
-          <v-radio label="Tramitación anticipada" :value="false"></v-radio>
-        </v-radio-group>
-      </v-col>
-    </v-row>
-    <br/>
-
-    <h3>Desglose
-      <v-badge 
-          class="badge" color="#c7d6f2" content="?"
-          title="Punto 3.2 (Desglose)"></v-badge >
-    </h3>
-    <v-row class="rowGroup">
-      <v-col cols="12" sm="2">
-        <v-radio-group v-model="datos.desglose">
-          <v-radio label="Procede" :value="true"></v-radio>
-          <v-radio label="No procede" :value="false"></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col cols="12" sm="3" v-if="datos.desglose === true ">
-        <v-radio-group v-model="datos.tipoDesglose">
-          <v-radio label="Por género" :value="true"></v-radio>
-          <v-radio label="Por Categoría profesional" :value="false"></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col
-        cols="12"
-        sm="6"
-        v-if="datos.desglose === true && datos.tipoDesglose === true"
-      >
-        <v-radio-group v-model="datos.tipoDesgloseGenero">
-          <v-radio label="No consta diferencia de costes por razón de género" :value="true"></v-radio>
-          <v-radio label="Existe diferencia de costes por razón de género" :value="false"></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col
-        v-if="datos.desglose === 'procede' && datos.tipoDesglose === false"
-        cols="12"
-        md="7"
-      ><v-textarea label="Indicar como se desglosa:" filled></v-textarea>
-      </v-col>
-    </v-row>
-    <br />
-    
-
-    <h3>Anualidades
-      <v-badge 
-          class="badge" color="#c7d6f2" content="?"
-          title="Punto 3.3 (Anualidades)"></v-badge >
-    </h3>
-    <v-row class="rowGroup">
-      <v-col cols="12">
-        <div v-if="datos.lotes.length !== 0">
-          <v-row v-for="lote in datos.lotes" :key="lote.id">
-            <v-col cols="12" v-if="datos.lotes.length > 1">
-              Anualidades lote nº {{lote.idLote}}: <b>{{lote.descripcion}}</b>
+            <v-col cols="12" md="3" v-if="datos.divisionLotes !== 'posible divisible'">
+              <v-btn class="actionButton" color="info" width="100%" @click="createLotes">
+                INTRODUCIR DATOS
+                <v-icon class="icon">mdi-pencil</v-icon>
+              </v-btn>
               <br/>
-              Presupuesto base lote: <b>{{lote.baseLote}}</b>
             </v-col>
-            <br/>
-            <v-col cols="12" md="2">
-              <v-select dense filled :items="anualidades" v-model="lote.selectAnualidades">
-              </v-select>
-            </v-col>
-            <v-col cols="12" md="3">
-              <v-btn
-                class="actionButton"
-                color="info"
-                large
-                width="100%"
-                @click="makeAnualidades(lote)"
-              >
-                GENERAR
-                <v-icon class="icon">mdi-animation-outline</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col cols="12" md="7">
+
+            <!--DATA TABLE IDENTIFICACIÓN LOTES -->
+            <v-col cols="12" v-if="datos.numLotes > 1">
+              <h5>Identificación de los lotes</h5>
               <v-data-table
                 class="dataTable"
-                :headers="anualidadesHeaders"
-                :items="lote.anualidades"
+                :items="datos.lotes"
+                :headers="identificacionLotesHeaders"
                 hide-default-footer
               >
-                <template v-slot:[`item.importeSinIVA`]="props" v-if="datos.anualidadesGuardadas == false">
-                  <v-edit-dialog :return-value.sync="props.item.importeSinIVA">
-                    <span class="editField">{{
-                      parseFloat(props.item.importeSinIVA)
-                    }}</span>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.importeSinIVA"
+                <!-- DESCRIPCION LOTE -->
+                <template v-slot:[`item.descripcion`]="props">
+                    <v-edit-dialog
+                    large persistent
+                    cancel-text="Cancelar"
+                    save-text="Guardar"
+                    :return-value.sync="props.item.descripcion" >                
+                      
+                      <span class="editField">{{props.item.descripcion}}</span>
+                      
+                      <template v-slot:input>
+                        <v-text-field
+                          v-model="props.item.descripcion"
+                          label="Edit"
+                          single-line
+                        ></v-text-field>
+                      </template>
+                    </v-edit-dialog>
+                </template>
+              </v-data-table>
+            </v-col>
+          
+            <!-- DATA TABLE PRESUPUESTOS BASE COSTES -->
+            <v-col cols="12">
+              <v-data-table
+                dense
+                class="dataTable"
+                :items="datos.lotes"
+                :headers="lotesHeaders"
+                hide-default-footer
+                no-data-text="No se han introducido datos aun"
+              >     
+                <!-- BASE DE LICITACION SIN IMPUESTOS -->
+                <template v-slot:[`item.baseLote`]="props">
+                    <v-edit-dialog large
+                    persistent
+                    cancel-text="Cancelar"
+                    save-text="Guardar"
+                    @save="updateBatches"
+                    :return-value.sync="props.item.baseLote">
+                      <span class="editField">{{currencyFormat(props.item.baseLote)}}</span>
+                      <template v-slot:input>
+                        <v-text-field
+                        v-model="props.item.baseLote"
                         label="Editar"
                         single-line
-                      ></v-text-field>
+                        type="number"
+                        ></v-text-field>
+                      </template>
+                    </v-edit-dialog>
+                </template>
+
+                <!-- IMPUESTO APLICABLE -->
+                <template v-slot:[`item.tipoImpuesto`]="props">
+                  <v-edit-dialog large persistent
+                  cancel-text="Cancelar"
+                  save-text="Guardar"
+                  @save="updateBatches"
+                  :return-value.sync="props.item.tipoImpuesto">
+                    <!-- MOSTRAR DATOS -->
+                    <span class="editField">{{parseFloat(props.item.tipoImpuesto)}} %</span>
+                    <!-- INTRODUCIR DATOS -->
+                    <template v-slot:input>
+                      <v-select
+                      class="adjustHeight"
+                      :items="impuestos"
+                      item-text="tipo"
+                      item-value="valor"
+                      v-model="props.item.tipoImpuesto"
+                      label="Impuesto a aplicar:"
+                      ></v-select>
                     </template>
                   </v-edit-dialog>
                 </template>
 
-                <template v-slot:[`item.IVA`]="{ item }">
-                  {{ returnIVA(lote.tipoImpuesto, item.importeSinIVA) }}
+                <!-- TOTAL IMPUESTOS -->
+                <template v-slot:[`item.totalImpuestos`]="props">
+                  {{currencyFormat(props.item.totalImpuestos)}}
                 </template>
 
-                <template v-slot:[`item.importeConIVA`]="{ item }">
-                  <b>{{ returnTotal(lote.tipoImpuesto, item.importeSinIVA) }}</b>
+                <!-- TOTAL (IMP.INCLUIDOS) -->
+                <template v-slot:[`item.totalLote`]="props">
+                  {{currencyFormat(props.item.totalLote)}}
+                </template>
+
+                <!-- DESGLOSE DEL PRESUPUESTO BASE DE LICITACIÓN -->
+                <template v-slot:[`item.costesIndirectos`]="props">
+                    <table dense class="tableDesglose">
+                      <thead>
+                        <tr class="bgLigthGray">
+                          <th rowspan="2" class="desgloseElmHeader">Costes Directos <sup>1</sup></th>
+                          <th colspan="2" class="desgloseElmHeader">Costes Indirectos <sup>2</sup></th>
+                          <th rowspan="2" class="desgloseElmHeader">Presupuesto Base de licitación <sup>1+2</sup></th>
+                        </tr>
+                        <tr style="background-color: #e3e3e3;">
+                          <th class="desgloseElmHeader">Costes Generales</th>
+                          <th class="desgloseElmHeader">Beneficio Industrial</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="bgWhite">
+                          <!-- COSTES DIRECTOS -->
+                          <td class="desgloseElmBody">
+                           {{currencyFormat(props.item.costesDirectos)}}
+                          </td>
+                          <!-- COSTES GENERALES -->
+                          <td class="desgloseElmBody">
+                            <v-form ref="costesGeneralesForm" v-model="costesGeneralesValid" lazy-validation>
+                              <v-edit-dialog  
+                                persistent large
+                                @save="updateBatches"
+                                save-text="GUARDAR"
+                                cancel-text="CANCELAR"
+                                >
+                                  <!-- MOSTRAR DATOS -->
+                                  <table><tbody><tr>
+                                    <td style="width:4rem; padding-top:0.3rem;"><span class="editField">{{`${props.item.porcCostesGenerales} %`}}</span></td>
+                                    <td style="padding-top:0.3rem;">{{currencyFormat(props.item.costesGenerales)}}</td>
+                                  </tr></tbody></table>
+                                  <!-- INTRODUCIR DATOS -->
+                                  <template v-slot:input>
+                                    <v-text-field
+                                    v-model="props.item.porcCostesGenerales"
+                                    label="Editar"
+                                    type="number"
+                                    single-line
+                                    persistent-hint
+                                    :rules="[rules.min13]"
+                                    hint="Valor recomendado 13%"
+                                    ></v-text-field>
+                                  </template>
+                              </v-edit-dialog>
+                            </v-form>
+                          </td>
+                          <!-- BENEFICIO INDUSTRIAL -->
+                          <td class="desgloseElmBody">
+                            <v-edit-dialog large 
+                            cancel-text="Cancelar"
+                            save-text="Guardar"
+                            @save="updateBatches"
+                            >
+                              <!-- MOSTRAR DATOS -->
+                              <table><tbody><tr>
+                                <td style="width:4rem; padding-top:0.3rem;"><span class="editField">{{`${props.item.porcBeneficioIndustrial} %`}}</span></td>
+                                <td style="padding-top:0.3rem;">{{currencyFormat(props.item.beneficioIndustrial)}}</td>
+                              </tr></tbody></table>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-text-field
+                                type="number"
+                                v-model="props.item.porcBeneficioIndustrial"
+                                label="Editar"
+                                single-line
+                                persistent-hint
+                                hint="Valor recomendado 6%"
+                                ></v-text-field>
+                              </template>
+                            </v-edit-dialog>
+                          </td>
+                          <!-- PRESUPUESTO BASE DE LICITACIÓN -->
+                          <td class="desgloseElmBody">
+                            {{currencyFormat(props.item.baseLote)}}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </template>
+
+                <!-- BORRAR-->
+                <template v-slot:[`item.actions`]="props">
+                    <v-icon color="red" @click="deleteLote(props.item.idLote)">mdi-delete</v-icon>
                 </template>
               </v-data-table>
-              <br/>
+            </v-col>
 
-              <!-- ALERTAS VALIDACION -->
-              <v-alert v-if="lote.alert === undefined" type="info">No se han introducido datos</v-alert>
-              <v-alert v-if="lote.alert === false" type="success">Datos Correctos</v-alert>
-              <v-alert v-if="lote.alert === true" type="error">La suma de las anualidades no coincide con el presupuesto base</v-alert>
-
+            <!-- GUARDAR -->
+            <v-col cols="12" md="3">
+                <v-btn
+                v-if="datos.lotesGuardados === false"
+                class="actionButton"
+                width="100%" 
+                dark
+                :color="colorLotes()"  
+                :disabled="datos.lotes.length === 0"
+                >
+                  GUARDAR DATOS
+                  <v-icon class="icon">mdi-content-save</v-icon>
+                </v-btn>
+                <v-btn
+                v-else
+                class="actionButton" 
+                color="grey" dark
+                width="100%"
+                
+                >
+                DATOS GUARDADOS
+                <v-icon class="icon">mdi-check-all</v-icon>
+                </v-btn>
             </v-col>
           </v-row>
-        </div>
-        <div v-else>
-          <v-alert type="info">Guarde los datos del presupuesto si desea introducir anualidades</v-alert>
-        </div>
-      </v-col>
-      <br/>
+      </v-row>
+    </div>
 
-      <v-row class="subRow">
-        <v-col cols="12" md="5">
-          <v-btn
-          v-if="datos.lotes.length >= 1 && datos.anualidadesGuardadas === false"
-          color="green" class="actionButton" dark
-          width="100%"
-          large
-          @click="saveAnualidades"
-          >
-            GUARDAR DATOS
-            <v-icon class="icon">mdi-content-save</v-icon>
-          </v-btn>
+    <!-- TRAMITACIÓN -->
+    <div class="group">
+      <h3>Tramitación
+        <v-badge 
+            class="badge" color="#c7d6f2" content="?"
+            title="Punto 3.1 (Presupuesto Base de Licitación)"></v-badge >
+      </h3>
+      <v-row class="rowGroup">
+        <v-col cols="12" md="4">
+          <v-text-field
+            v-model="datos.aplicacionPrep"
+            prepend-icon="mdi-delete-empty"
+            @click:prepend="(()=>datos.aplicacionPrep = '')"
+            @click="(()=>showAplicacionPresWindow = true)"
+            label="Aplicación presupuestaria" filled>
+          </v-text-field>
+        </v-col>
 
-          <v-btn
-          v-if="datos.anualidadesGuardadas === true"
-          color="grey" class="actionButton" dark
-          width="100%"
-          large
-          >
-            GUARDADO CORRECTO
-            <v-icon class="icon">mdi-check-all</v-icon>
-          </v-btn>
+        <v-col cols="12" sm="4">
+          <v-radio-group class="aplicacionPrep" v-model="datos.tramitacion">
+            <v-radio label="Tramitación ordinaria" :value="true"></v-radio>
+            <v-radio label="Tramitación anticipada" :value="false"></v-radio>
+          </v-radio-group>
         </v-col>
       </v-row>
-    </v-row>
-    <br />
+    </div>
+    
+    <!-- DESGLOSE -->
+    <div class="group">
+      <h3>Desglose
+        <v-badge 
+            class="badge" color="#c7d6f2" content="?"
+            title="Punto 3.2 (Desglose)"></v-badge >
+      </h3>
+      <v-row class="rowGroup">
+        <v-col cols="12" sm="2">
+          <v-radio-group v-model="datos.desglose">
+            <v-radio label="Procede" :value="true"></v-radio>
+            <v-radio label="No procede" :value="false"></v-radio>
+          </v-radio-group>
+        </v-col>
+        <v-col cols="12" sm="3" v-if="datos.desglose === true ">
+          <v-radio-group v-model="datos.tipoDesglose">
+            <v-radio label="Por género" :value="true"></v-radio>
+            <v-radio label="Por Categoría profesional" :value="false"></v-radio>
+          </v-radio-group>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          v-if="datos.desglose === true && datos.tipoDesglose === true"
+        >
+          <v-radio-group v-model="datos.tipoDesgloseGenero">
+            <v-radio label="No consta diferencia de costes por razón de género" :value="true"></v-radio>
+            <v-radio label="Existe diferencia de costes por razón de género" :value="false"></v-radio>
+          </v-radio-group>
+        </v-col>
+        <v-col
+          v-if="datos.desglose === 'procede' && datos.tipoDesglose === false"
+          cols="12"
+          md="7"
+        ><v-textarea label="Indicar como se desglosa:" filled></v-textarea>
+        </v-col>
+      </v-row>
+    </div>
 
+    <!-- ANUALIDADES -->
+    <div class="group">
+      <h3>Anualidades
+        <v-badge 
+            class="badge" color="#c7d6f2" content="?"
+            title="Punto 3.3 (Anualidades)"></v-badge >
+      </h3>
+      <v-row class="rowGroup">
+        <v-col cols="12">
+          <div v-if="datos.lotes.length !== 0">
+            <v-row v-for="lote in datos.lotes" :key="lote.id">
+              <v-col cols="12" v-if="datos.lotes.length > 1">
+                Anualidades lote nº {{lote.idLote}}: <b>{{lote.descripcion}}</b>
+                <br/>
+                Presupuesto base lote: <b>{{currencyFormat(lote.baseLote)}}</b>
+              </v-col>
+              <br/>
+              <v-col cols="12" md="1">
+                <v-select dense filled :items="anualidades" v-model="lote.selectAnualidades">
+                </v-select>
+              </v-col>
+              <v-col cols="12" md="2">
+                <v-btn
+                  class="actionButton"
+                  color="info"
+                  large
+                  width="100%"
+                  @click="makeAnualidades(lote)"
+                >
+                  GENERAR
+                  <v-icon class="icon">mdi-animation-outline</v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="12" md="9">
+                <!-- DATA TABLE ANUALIDADES -->
+                <v-data-table
+                  style="margin-bottom:1rem;"
+                  class="dataTable"
+                  :headers="anualidadesHeaders"
+                  :items="lote.anualidades"
+                  hide-default-footer
+                >
+                  <!-- IMPORTE SIN IMPUESTOS -->
+                  <template v-slot:[`item.importeSinIVA`]="props" v-if="datos.anualidadesGuardadas == false">
+                    <v-edit-dialog
+                    large persistent
+                    cancel-text="CANCELAR"
+                    save-text="GUARDAR"
+                    :return-value.sync="props.item.importeSinIVA">
+                      <template v-slot:input>
+                        <!-- INTRODUCIR DATOS -->
+                        <v-text-field
+                          v-model="props.item.importeSinIVA"
+                          label="Editar"
+                          single-line
+                        ></v-text-field>
+                      </template>
+                      <!-- MOSTRAR DATOS -->
+                      <span class="editField">{{currencyFormat(props.item.importeSinIVA)}}</span>
+                      
+                    </v-edit-dialog>
+                  </template>
 
-    <!-- 25 MODIFICACIONES -->
-    <h3>Modificación del contrato
-      <v-badge 
-          class="badge" color="#c7d6f2" content="?"
-          title="Punto 24.1 (Modificaciones previstas)"></v-badge >
-    </h3>
+                  <!-- IMPUESTOS -->
+                  <template v-slot:[`item.IVA`]="{ item }">
+                    {{ currencyFormat(returnIVA(lote.tipoImpuesto, item.importeSinIVA)) }}
+                  </template>
+
+                  <!-- TOTAL (IMP. INCLUIDOS) -->
+                  <template v-slot:[`item.importeConIVA`]="{ item }">
+                    {{ currencyFormat(returnTotal(lote.tipoImpuesto, item.importeSinIVA)) }}
+                  </template>
+                </v-data-table>
+
+                <!-- ALERTAS VALIDACION -->
+                <v-alert v-if="lote.alert === undefined" type="info">No se han introducido datos</v-alert>
+                <v-alert v-if="lote.alert === false" type="success">Datos Correctos</v-alert>
+                <v-alert v-if="lote.alert === true" type="error">La suma de las anualidades no coincide con el presupuesto base</v-alert>
+
+              </v-col>
+            </v-row>
+          </div>
+          <div v-else>
+            <v-alert type="info">Guarde los datos del presupuesto si desea introducir anualidades</v-alert>
+          </div>
+        </v-col>
+        <br/>
+
+        <v-row class="subRow">
+          <v-col cols="12" md="3">
+            <v-btn
+            v-if="datos.lotes.length >= 1 && datos.anualidadesGuardadas === false"
+            color="green" class="actionButton" dark
+            width="100%"
+            large
+            @click="saveAnualidades"
+            >
+              GUARDAR DATOS
+              <v-icon class="icon">mdi-content-save</v-icon>
+            </v-btn>
+
+            <v-btn
+            v-if="datos.anualidadesGuardadas === true"
+            color="grey" class="actionButton" dark
+            width="100%"
+            large
+            >
+              GUARDADO CORRECTO
+              <v-icon class="icon">mdi-check-all</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-row>
+    </div>
+
+    <!-- MODIFICACIONES -->
+    <div class="group">
+      <h3>Modificación del contrato
+        <v-badge 
+            class="badge" color="#c7d6f2" content="?"
+            title="Punto 24.1 (Modificaciones previstas)"></v-badge >
+      </h3>
       <v-row class="rowGroup">
           <v-col cols="12" md="4">
               <h5>Modificaciones previstas [artículo 204 LCSP]</h5>
@@ -494,9 +582,10 @@
               </v-col>
           </v-row>
       </v-row>
-    <br/>
+    </div>
 
-    <!-- 18.- PLAZO DE EJECUCIÓN O DURACION -->
+    <!-- PLAZO DE EJECUCIÓN O DURACION -->
+    <div class="group">
       <h3>Plazo de ejecución o duración</h3>
       <v-row class="rowGroup">
         <v-row class="subRow">
@@ -625,11 +714,11 @@
             </v-row>
         </v-col>       
       </v-row>
-    <br/>
+    </div>
 
-    <!-- 4 VALOR ESTIMADO -->
-    <h3>Valor Estimado</h3>
-    <!--4.1-->
+    <!-- VALOR ESTIMADO -->
+    <div class="group">
+      <h3>Valor Estimado</h3>
       <v-row class="rowGroup">
         <v-col cols="12">
           <h5>Total contrato</h5>
@@ -683,52 +772,62 @@
               ></v-textarea>
           </v-col>
       </v-row>
-      <br />
+    </div>
 
+    <!-- LUGAR DE PRESTACIÓN -->
+    <div class="group">
+      <h3>Lugar de prestación:</h3>
+      <v-row class="rowGroup">
+        <v-col cols="12">
+          <h5 class="subtitle">La empresa adjudicataria está autorizada a ejecutar los servicios objeto del contrato, o parte de los mismos, en las siguientes dependencias:</h5>
+          <v-textarea filled auto-grow v-model="datos.lugarPrestacion"></v-textarea>
+        </v-col>
+      </v-row>
+    </div>
 
-    <h3>Lugar de prestación:</h3>
-    <v-row class="rowGroup">
-      <v-col cols="12">
-        <h5 class="subtitle">La empresa adjudicataria está autorizada a ejecutar los servicios objeto del contrato, o parte de los mismos, en las siguientes dependencias:</h5>
-        <v-textarea filled auto-grow v-model="datos.lugarPrestacion"></v-textarea>
-      </v-col>
-    </v-row>
-    <br/> 
+    <!-- DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
+    <div class="group">
+      <h3>Documentos que revisten carácter contractual</h3>
+      <v-row class="rowGroup">
+        <v-col cols="12">
+        <h5>A los efectos del artículo 35 de la LCSP, la relación de documentos que revisten carácter contractual está enumerada en la CLÁUSULA 6 en el orden en que aparecen</h5>
+            <v-radio-group v-model="datos.docsCaracterContractual">
+                <v-radio label="Jerarquizada" :value="true"></v-radio>
+                <v-radio label="No jerarquizada" :value="false"></v-radio>
+            </v-radio-group>
+        </v-col>
+      </v-row>
+    </div>
 
-    <!-- 6 DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
-    <h3>Documentos que revisten carácter contractual</h3>
-    <v-row class="rowGroup">
-      <v-col cols="12">
-      <h5>A los efectos del artículo 35 de la LCSP, la relación de documentos que revisten carácter contractual está enumerada en la CLÁUSULA 6 en el orden en que aparecen</h5>
-          <v-radio-group v-model="datos.docsCaracterContractual">
-              <v-radio label="Jerarquizada" :value="true"></v-radio>
-              <v-radio label="No jerarquizada" :value="false"></v-radio>
-          </v-radio-group>
-      </v-col>
-    </v-row>
-    <br />
-
-    <!-- 7 TRAMITACIÓN DEL PROCEDIMIENTO -->
-    <h3>Procedimiento</h3>
-    <v-row class="rowGroup">
-      <v-col cols="12">
-        <h5>Seleccionar tramitación del procedimiento</h5>
-          <v-radio-group v-model="datos.tramitacionProc">
-              <v-radio label="Ordinaria" :value="true"></v-radio>
-              <v-radio label="Urgente, (Se acompañará la correspondiente declaración de urgencia). En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP." :value="false"></v-radio>
-          </v-radio-group>
-      </v-col>
-    </v-row>
-    <br />
+    <!-- PROCEDIMIENTO -->
+    <div class="group">
+      <h3>Procedimiento</h3>
+      <v-row class="rowGroup">
+        <v-col cols="12">
+          <h5>Seleccionar tramitación del procedimiento</h5>
+            <v-radio-group v-model="datos.tramitacionProc">
+                <v-radio label="Ordinaria" :value="true"></v-radio>
+                <v-radio label="Urgente, (Se acompañará la correspondiente declaración de urgencia). En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP." :value="false"></v-radio>
+            </v-radio-group>
+        </v-col>
+      </v-row>
+    </div>
 
 
     <!-- DIALOGO APLICACION PRESUPUESTARIA -->
     <v-dialog
       width="80rem"
       :value="showAplicacionPresWindow">
-      <AplicacionPres @close="closeDialog" @aplicPres="getAplicacionPres"></AplicacionPres>
+      <AplicacionPres 
+        @close="(()=>showAplicacionPresWindow = false)" 
+        @aplicPres="((data)=>datos.aplicacionPrep = data)"
+      ></AplicacionPres>
     </v-dialog>
 
+    <!--ALERTAS-->
+    <v-overlay absolute v-if="alerta">
+      <v-alert :type="alertType" prominent>{{alertMsg}}</v-alert>
+    </v-overlay>
   </div>
 </template>
 
@@ -736,87 +835,87 @@
 
 import AplicacionPres from '@/components/common/AplicacionPres.vue';
 
+import {currencyFormat} from "@/assets/mixins/currencyFormat";
+
 export default {
   name: "PresupuestoLoteAnualidades",
   props:['datosGuardados'],
   components: {AplicacionPres},
+  mixins: [currencyFormat],
   
   data() {
     return {
       date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       dateInicio: '',
       dateFin: '',
+      showOverlayPbase: false,
+
 
 
       anualidades: [1, 2, 3, 4, 5],
       impuestos: [
-        {tipo: 'IVA', valor: 21},
-        {tipo: 'IGIC', valor: 7}
+        {tipo: 'IVA (21%)', valor: 21},
+        {tipo: 'IGIC (7%)', valor: 7},
+        {tipo: 'Reducido (10%)', valor: 10},
+        {tipo: 'Superreducido (5%)', valor: 5},
+        {tipo: 'Superreducido (4%)', valor: 4},
+        {tipo: 'No aplicable (0%)', valor: 0},
       ],
       itemsAplicacionPrep: ['1718495A620'],
       rules: {
           required: (value) => !!value || "Este campo es obligatorio.",
           max: (value) => value <= 20 || "Se supera el máximo permitido (20% presupuesto base)",
           zero: (value) => value > 0 || "El importe no puede ser igual a 0",
+          min13: (value) => value > 13 || "El valor mínimo permitido es 13"
       },
+      costesGeneralesValid: true,
 
       lotesHeaders: [
-        { text: "", align: "start", sortable: false, value: "idLote", divider: true,},
-        { text: "Base de licitación (sin impuestos) €", align: "end", sortable: false, value: "baseLote", divider: true,},
-        { text: "Impuesto aplicable (%)", align: "end", sortable: false, value: "tipoImpuesto", divider: true, width:"5%"},
-        { text: "Total Impuestos €", align: "end", sortable: false, value: "totalImpuestos", divider: true,},
-        { text: "Costes Directos €", align: "end", sortable: false, value: "costesDirectos", divider: true},
-        { text: "Costes generales (13%) €", align: "end", sortable: false, value: "costesGenerales", divider: true}, 
-        { text: "Beneficio industrial (6%) €", align: "end", sortable: false, value: "beneficioIndustrial", divider: true},
-        { text: "Costes Indirectos (generales + industriales) €", align: "end", sortable: false, value: "costesIndirectos", divider: true},
-        { text: "Total (imp. incluidos) €", align: "end", sortable: false, value: "totalLote", divider: true,},
-        { text: "Borrar", align: "center", sortable: false, value: "actions", divider: true,},
+        { width:"4%", text: "", align: "center", sortable: false, value: "idLote", divider: true,},
+        { width:"13%", text: "Base de licitación (sin impuestos)", align: "center", sortable: false, value: "baseLote", divider: true,},
+        { width:"5%", text: "% Impuesto", align: "center", sortable: false, value: "tipoImpuesto", divider: true,},
+        { width:"10%", text: "Total Impuestos", align: "center", sortable: false, value: "totalImpuestos", divider: true,},
+        { width:"10%", text: "Total (imp. incluidos)", align: "center", sortable: false, value: "totalLote", divider: true,},
+        { width:"55%", text: "Desglose del presupuesto base de licitación", align: "center", sortable: false, value: "costesIndirectos", divider: true},
+        { width:"2%", text: "Borrar", align: "center", sortable: false, value: "actions", divider: true,},
       ],
 
       identificacionLotesHeaders: [
-        { text: "Lote", align: "start", sortable: false, value: "idLote", divider: true, width:"5%"},
-        { text: "Descripción Lote", align: "start", sortable: false, value: "descripcion", divider: true,},
+        { width:"2%", text: "Lote", align: "center", sortable: false, value: "idLote", divider: true, },
+        { width:"98%", text: "Descripción Lote", align: "start", sortable: false, value: "descripcion", divider: true,},
+
       ],
 
       anualidadesHeaders: [
         { text: "Año", align: "start", sortable: false, value: "year", divider: true,},
-        { text: "Importe (sin impuestos)", align: "end", sortable: false, value: "importeSinIVA", width: "20%", divider: true, },
-        { text: "Impuestos (IVA o IGIC en €)", align: "end", sortable: false, value: "IVA", width: "25%", divider: true, },
-        { text: "Total (impuestos inc.)", align: "end", sortable: false, value: "importeConIVA", width: "25%" },
+        { text: "Importe (sin impuestos)", align: "end", sortable: false, value: "importeSinIVA", divider: true, },
+        { text: "Impuesto aplicable", align: "end", sortable: false, value: "nombreImpuesto", divider: true, },
+        { text: "Impuestos", align: "end", sortable: false, value: "IVA", divider: true, },
+        { text: "Total (impuestos inc.)", align: "end", sortable: false, value: "importeConIVA" },
       ],
 
       tipoPlazo: ['dias', 'meses', 'años'],
 
       showAplicacionPresWindow: false,
+      alerta: false,
+      alertType: 'info',
+      alertMsg: undefined,
 
       datos: {
         componente: 'PresupuestoAnualidades',
 
         //SECCION 3
-        presupuestoBaseLicitacion: undefined,
-        presupuestoBaseLicitacionIVA: undefined,
-        costesDirectos: undefined,
-        costesGenerales: undefined,
-        beneficioIndustrial: undefined,
-        totalCostes: undefined,
         aplicacionPrep: '',
         tramitacion: true,
         desglose: 'no procede',
         tipoDesglose: undefined,
         tipoDesgloseGenero: undefined,
         anualidadesGuardadas: false,
-        tipoImpuesto: undefined,
-        porcentajeImpuesto: undefined,
-        totalImpuestos: undefined,
-        costesIndirectos: undefined,
-        totalImpInc: undefined,
-
-
+        
         //SECCION 4
         totalEstimado: undefined,
         metodoCalculo: 'Para calcular el valor estimado se han tenido en cuenta los costes derivados de la aplicación de la normativa laboral vigente. Además, se han tenido en cuenta los apartados 2 y 10 del artículo 101 de la LCSP.',
   
-        
         
         //SECCIÓN 5
         divisionLotes: 'no es posible',
@@ -908,15 +1007,18 @@ export default {
         //CONSISTENCIA DE DATOS
         if(datos.divisionLotes !== 'no es posible'){
           if(datos.divisionLotes === "posible no divisible"){
+            this.datos.numLotes = 1
             this.datos.posibleNoDivisible = true
             datos.hayDivisionLotes = false
             datos.posibleDivisible = false
           } else {
+            this.datos.numLotes = 2
             datos.hayDivisionLotes = true
             datos.posibleNoDivisible = false
             datos.posibleDivisible = true
           }
         } 
+
 
         if(datos.divisionPosibleDivisible !== false){
           this.datos.justificacionNoDivisionPosible = datos.divisionPosibleDivisible
@@ -949,30 +1051,25 @@ export default {
 
   beforeDestroy(){
     this.$emit('datos', this.datos)
+
   },
 
   created(){
     this.initialize();
   },
-  
+ 
   methods: {
-
-    closeDialog(closed){
-      if(closed === true){
-        this.showAplicacionPresWindow = false;
+    initialize(){
+    if(this.datosGuardados !== undefined){
+        this.datos = this.datosGuardados
       }
     },
 
-    getAplicacionPres(data){
-      this.datos.aplicacionPrep = data
-    },
-
-    showAplicacionPres(){
-      this.showAplicacionPresWindow = true;
-    },
-
-    deleteAplicacionPres(){
-      this.datos.aplicacionPrep = ''
+    throwMsg(type, msg, timeout){
+      this.alertType = type;
+      this.alertMsg = msg
+      this.alerta = true;
+      setTimeout(()=>{this.alerta = false}, timeout)
     },
 
     calculoImporteModif(base, modif1, modif2){
@@ -992,40 +1089,28 @@ export default {
         }
       }
       this.datos.anualidadesGuardadas = true;
-      console.log(this.datos)
     },
 
-    saveLotes(){
-      if(this.datos.numLotes === 1){
-        this.datos.presupuestoBaseLicitacion = this.datos.lotes[0].baseLote;
-        this.datos.porcentajeImpuesto = this.datos.lotes[0].tipoImpuesto;
-        if(this.datos.porcentajeImpuesto === 21){this.datos.tipoImpuesto = 'IVA'} else {this.datos.tipoImpuesto = 'IGIC'}
-          this.datos.totalImpuestos = (parseFloat(this.datos.presupuestoBaseLicitacion)) * 0.21
-          this.datos.costesDirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) / 1.19
-          this.datos.costesIndirectos = (parseFloat(this.datos.presupuestoBaseLicitacion)) - this.datos.costesDirectos
-          this.datos.beneficioIndustrial = (this.datos.costesDirectos * 0.06).toFixed(2)
-          this.datos.costesGenerales = (this.datos.costesDirectos * 0.13).toFixed(2)
-          this.datos.costesDirectos = (this.datos.costesDirectos).toFixed(2)
-          this.datos.costesIndirectos = (this.datos.costesIndirectos).toFixed(2)
-          this.datos.totalCostes = (parseFloat(this.datos.presupuestoBaseLicitacion)).toFixed(2)
-          this.datos.totalImpuestos = (this.datos.totalImpuestos).toFixed(2)
-          this.datos.totalImpInc = (parseFloat(this.datos.presupuestoBaseLicitacion) + parseFloat(this.datos.totalImpuestos)).toFixed(2)
-      } else {
-          this.datos.hayLotes = true;
-          this.datos.presupuestoBaseLicitacion = 0;
-          for(this.index in this.datos.lotes){
-            this.lote = this.datos.lotes[this.index]
-            this.datos.presupuestoBaseLicitacion = this.datos.presupuestoBaseLicitacion + parseFloat(this.lote.baseLote)
-            this.lote.totalImpuestos = ((parseFloat(this.lote.baseLote)) * (parseFloat(this.lote.tipoImpuesto) / 100)).toFixed(2);
-            this.lote.totalLote = (parseFloat(this.lote.totalImpuestos) + parseFloat(this.lote.baseLote)).toFixed(2)
-            this.lote.costesGenerales = parseFloat((this.lote.baseLote * 0.1299999).toFixed(2));
-            this.lote.beneficioIndustrial = parseFloat((this.lote.baseLote * 0.059999999).toFixed(2));
-            this.lote.costesDirectos = this.lote.costesGenerales + this.lote.beneficioIndustrial;
-            this.lote.costesIndirectos = parseFloat(this.lote.baseLote) - this.lote.costesDirectos
-          }
+
+    returnTaxes(value){
+      switch(value){
+        case 21:
+          return 'IVA (21%)'
+        case 7:
+          return 'IGIC (7%)'
+        case 10:
+          return 'IVA (10%)'
+        case 5:
+          return 'IVA (5%)'
+        case 4:
+          return 'IVA (4%)'
+        case 0:
+          return 'IVA (0%)'
+        default:
+          return 'IVA (21%)'
       }
-      this.datos.lotesGuardados = true;
     },
+
 
     deleteLote(idLote){
       for(this.index in this.datos.lotes){
@@ -1041,15 +1126,20 @@ export default {
       for (let i = 0; i < this.datos.numLotes; i++){
         this.newLote = {
           idLote: i+1,
-          descripcion: 'Descripción del lote',
+          descripcion: 'Introducir descripción del lote',
           baseLote: 0,
           tipoImpuesto: 21,
+          nombreImpuesto: 'IVA',
           totalImpuestos: 0,
+          totalImpIncl: 0,
           totalLote: 0,
-          costesDirectos: undefined,
-          costesIndirectos: undefined,
-          costesGenerales: undefined,
-          beneficioIndustrial: undefined,
+          costesDirectos: 0,
+          costesIndirectos: 0,
+          porcCostesGenerales: 13,
+          costesGenerales: 0,
+          porcBeneficioIndustrial: 6,
+          beneficioIndustrial: 0,
+          totalCostes: 0,
           selectAnualidades: 2,
           anualidades:[],
           alert: undefined,
@@ -1059,11 +1149,41 @@ export default {
 
     },
 
-    initialize(){
-      if(this.datosGuardados !== undefined){
-        this.datos = this.datosGuardados
-      }
+    updateBatches(){
+      this.datos.lotes.forEach((lote)=>{
+        lote.totalImpuestos = this.calcularImpuestos(lote.baseLote, parseFloat(lote.tipoImpuesto));
+        lote.nombreImpuesto = this.returnTaxes(lote.tipoImpuesto);
+        lote.totalLote = parseFloat(lote.baseLote) + parseFloat(lote.totalImpuestos);
+        lote.costesDirectos = this.calcularCostesDirectos(lote.baseLote, parseInt(lote.porcBeneficioIndustrial), parseInt(lote.porcCostesGenerales))
+        lote.costesGenerales = this.calcularCostesGenerales(lote.costesDirectos, parseInt(lote.porcCostesGenerales))
+        lote.beneficioIndustrial = this.calcularBeneficioIndustrial(lote.costesDirectos, lote.porcBeneficioIndustrial)
+        lote.costesIndirectos = lote.costesGenerales + lote.beneficioIndustrial;
+        lote.totalCostes = lote.baseLote + (lote.costesDirectos + lote.costesIndirectos);
+        lote.totalImpIncl = lote.baseLote + lote.totalImpuestos;
+      })
     },
+
+    calcularImpuestos(pBase, percImpuesto){
+      return ((percImpuesto / 100) * pBase);
+    },
+
+    calcularCostesDirectos(pbase, porcBenInd, percCostGen){
+      return pbase/(1+((porcBenInd + percCostGen)/100));
+    },
+
+    calcularCostesGenerales(costesDirectos, percCostGen){
+      return costesDirectos * ((percCostGen)/100);
+    },
+
+    calcularBeneficioIndustrial(costesDirectos, percBenInd){
+      return costesDirectos * ((percBenInd)/100);
+    },
+  
+
+    returnIVA(percImpuesto, pBase) {
+      return (parseFloat((pBase * (percImpuesto/100)).toFixed(2)))
+    },
+    
 
     colorLotes(){
       if(this.datos.lotesGuardados === false){
@@ -1090,12 +1210,6 @@ export default {
       }
     },
   
-    returnIVA(impuesto, base) {
-      impuesto = impuesto / 100;
-      this.iva = parseFloat((base * impuesto).toFixed(2));
-      return this.iva;
-    },
-
     returnTotal(impuesto, base) {
       this.total = parseFloat(base);
       this.iva = this.returnIVA(impuesto, base);
@@ -1124,22 +1238,11 @@ export default {
 
 .actionButton {
   margin-bottom: 0.25rem;
-}
-
-.editField {
-  color: blue;
-  text-decoration: underline;
+  height: 2.5rem !important;
 }
 
 .aplicacionPrep {
   margin: 0rem;
-}
-
-.rowGroup {
-    margin-top: 0.1rem;
-    border: 1px solid lightgray;
-    border-radius: 4px;
-    padding: 1rem 0rem 1rem 0rem;
 }
 
 .subRow {
@@ -1153,5 +1256,39 @@ export default {
 .adjustHeight{
   margin: 0.7rem 0rem 0rem 0rem;
 }
+
+.icon {
+  margin-left: 0.5rem;
+}
+
+
+/*ESTILOS TABLA DESGLOSE*/
+.tableDesglose{
+  margin:0.25rem 0rem 0.25rem 0rem; 
+  border-collapse: collapse; 
+  width:100%; 
+  font-size:90%;
+}
+
+.desgloseElmHeader {
+  padding: 0.2rem; 
+  font-weight: 400; 
+  text-align:center !important; 
+  border:thin solid white;
+}
+
+.desgloseElmBody {
+  border: thin solid #e3e3e3;
+}
+
+.bgLigthGray {
+  background-color: #e3e3e3;
+}
+
+.bgWhite {
+  background-color:white;
+}
+
+
 
 </style>

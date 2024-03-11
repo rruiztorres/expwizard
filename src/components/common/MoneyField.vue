@@ -10,10 +10,10 @@ el numero correcto lo que permite al componente padre hacer cálculos
             title="introduzca la cifra sin puntos separadores de miles. Para introducir decimales utilice el punto (.) TAB para terminar."
             class="input"
             v-if="!display"
-            filled solo
-            dense
+            filled dense 
             :value="currencyFormat(value)"
             @focus="display = !display"
+            :readonly="readonly"
             >
         </v-text-field>
         <!--INTRODUCIR VALORES-->
@@ -23,16 +23,23 @@ el numero correcto lo que permite al componente padre hacer cálculos
             title="introduzca la cifra sin puntos separadores de miles. Para introducir decimales utilice el punto (.). Pulse TAB para terminar."
             type="number"
             v-model="value"
-            filled solo dense dark
+            filled dense
             @blur="display = !display"
+            :readonly="readonly"
             >
         </v-text-field>
     </div>
 </template>
 
 <script>
+    import {currencyFormat} from '@/assets/mixins/currencyFormat';
+
     export default {
         name: 'MoneyField',
+
+        props: ['input','readonly'],
+        mixins: [currencyFormat],
+
         data(){
             return {
                 value: undefined,
@@ -41,23 +48,22 @@ el numero correcto lo que permite al componente padre hacer cálculos
             }
         },
 
-        watch:{
-            value(){
-                this.$emit("value", parseFloat(this.value))
+        created(){
+            if(this.input !== undefined){
+                this.value = this.input;
             }
         },
-        
+
+        watch:{
+            value(){
+                this.outerValue(this.value)
+            }
+        },
+
         methods:{
-            currencyFormat(value){
-                if(!isNaN(value)){
-                    let euro = Intl.NumberFormat('es-ES', {
-                        style: 'currency',
-                        currency: 'EUR',
-                        useGrouping: true,
-                    });
-                    return (`${euro.format(value)}`);
-                }
-            },
+            outerValue(value){
+                this.$emit("output", value)
+            }
         }
     }
 </script>

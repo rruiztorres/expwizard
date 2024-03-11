@@ -252,31 +252,31 @@ import axios from 'axios';
                 this.complete1, this.complete2, this.complete3, this.complete4, this.complete5, this.complete6, this.complete7, this.complete8 = false; 
                 this.color1, this.color2, this.color3, this.color4, this.color5, this.color6, this.color7, this.color8 = 'info';
                 this.buttonLoader = true;
-                this.sleep(1000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(1))
-                this.sleep(2000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(2))
-                this.sleep(3000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(3))
-                this.sleep(4000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(4))
-                this.sleep(5000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(5))
-                this.sleep(6000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(6))
-                this.sleep(7000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(7))
-                this.sleep(8000)
+                this.sleep(0)
                 .then(() => this.forwardStepper(8))
-                this.sleep(8100)
+                this.sleep(0)
                 .then(() => this.fakeEnd())
                 
                 
-                this.sleep(8200)
+                this.sleep(0)
                 .then(() => this.infoValidate())
                 
 
-                this.sleep(8200)
+                this.sleep(0)
                 .then(() => this.allowSaveDownload = false )
 
                 
@@ -291,8 +291,8 @@ import axios from 'axios';
             },
 
             async save(){
-                if(this.edited === true){
-                    this.expEditId = this.datosExpGuardado.id_exp;
+                if(this.edited){
+                    this.expEditId = this.datosExpGuardado.id_expediente;
                 } else {
                     this.expEditId = undefined;
                 }

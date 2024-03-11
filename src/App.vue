@@ -14,3 +14,9 @@
     }
   }
 </script>
+
+<style scoped>
+ #app{
+  overflow: hidden !important;
+ }
+</style>

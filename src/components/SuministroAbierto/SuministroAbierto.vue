@@ -190,8 +190,6 @@ import ModificacionesPenalidades from "@/components/SuministroAbierto/Modificaci
 import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcontrataOtros";
 import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
-//import {renderDoc} from "@/assets/mixins/renderDoc";
-
 
     export default{
         name: 'SuministroAbierto',
@@ -237,14 +235,15 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
             loadStoredData(){
                 if(this.dataInput !== undefined){
                     // DATOS DE GUARDADO
-                    const data = JSON.parse(this.dataInput.data);
+                    let data = this.dataInput.data;
+                    data.id_expediente = this.dataInput.id_expediente;
 
                     this.datosExpGuardadoPrev = {
-                        id_exp: data.expData.id_exp,
+                        id_expediente: data.id_expediente,
                         nombre_exp: data.expData.nombre,
                         descripcion_expediente: data.expData.descripcion,
-                    };       
-
+                    };
+                    
                     this.datosObjetoNecesidades = data.seccion1;
                     this.datosPresupuestoAnualidades = data.seccion2;
                     this.datosCapacidadSolvencia = data.seccion3;
@@ -325,8 +324,9 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
 <style>
     #mainWrapper {
-        margin: 0 auto;
-        max-width: 80rem;
+        margin: auto auto;
+        width: 105rem;
+        max-width: 92vw;
     }
 
     .exitDialogContainer{
@@ -406,7 +406,7 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
     }
 
     .badge{
-        margin-left: 0.25rem;
+        margin-left: 0.5rem;
     }
 
     .icon {
@@ -414,14 +414,20 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
     }
 
     .editField {
-        color: blue;
-        display: block;
-        min-width: 10rem;
-        min-height: 2rem;
-        border-radius: 4px;
-        padding: 0.35rem;
-        background-color: white;
+        color: black;
+        font-weight: 500;
         text-decoration: underline;
+    }
+
+    .group {
+        margin-bottom: 0.5rem;
+    }
+
+    .rowGroup {
+        margin: 0.1rem 0rem 2rem 0rem !important;
+        border: 1px solid lightgray;
+        border-radius: 4px;
+        padding: 1rem 0rem 1rem 0rem;
     }
 </style>
 
