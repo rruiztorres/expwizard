@@ -181,9 +181,10 @@
         data(){
             return {
                 subdirecciones: [   
-                    'Astronomía, Geodesia y Geofísica',
-                    'Cartografía y Observación del territorio',
-                    'Secretaria General',
+                    'Secretaría General',
+                    'Subdirección General de Astronomía y Geodesia',
+                    'Subdirección General de Cartografía y Observación del Territorio',
+                    'Subdirección General de Vigilancia, Alerta y Estudios Geofísicos',
                 ],
                 modalidades: ['Plazo', 'Periodo'],
                 
