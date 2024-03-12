@@ -13,6 +13,7 @@
                                 width="45%" 
                                 color="error" 
                                 :disabled="selected.length === 0"
+                                @click="deleteExp(selected)"
                             >Borrar selección
                             </v-btn>
                             <v-btn 
@@ -43,8 +44,9 @@
                     :items-per-page="12"
                     :search="search"
                     show-select
-                    item-key="id_exp"
+                    item-key="id_expediente"
                     v-model="selected"
+                    group-by="tipo"
                 >   
                     <template v-slot:[`item.edit`] = "props">
                         <v-btn 
@@ -99,6 +101,7 @@ import axios from 'axios';
                 selected: [],
                 expHeaders: [
                     { text: "Editar", align: "start", sortable: false, value: "edit"},
+                    { text: "ID", align: "start", sortable: true, value: "id_expediente"},
                     { text: "Nombre", align: "start", sortable: true, value: "nombre_exp" },
                     { text: "Fecha", align: "start", sortable: true, value: "fecha" },
                     { text: "Descripción", align: "start", sortable: true, value: "descripcion_expediente"},
@@ -117,15 +120,29 @@ import axios from 'axios';
                 await axios
                 .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + localStorage.usrName)
                 .then((data) => {
-                    this.expedientes = data.data.response;
+                    if(data.status === 200){
+                        this.expedientes = data.data.response;
+                    } else {
+                        //LANZAR AVISO
+                    }
                 })
             },
 
             edit(data){
                 this.$emit("edit", data.tipo)
                 this.$emit("dataEdit", data)
-            }
+            },
 
+            async deleteExp(selection){
+                const deleteItems = selection.map((item)=>item.id_expediente)
+                await axios
+                .delete(`${process.env.VUE_APP_API_ROUTE}/expedientes/submitDelete`, {headers: {'Autorization': localStorage.token}, data: deleteItems})
+                .then((deletedExp)=>{
+                    if(deletedExp){
+                        this.initialize();
+                    }
+                })
+            }
         }
     }
 </script>

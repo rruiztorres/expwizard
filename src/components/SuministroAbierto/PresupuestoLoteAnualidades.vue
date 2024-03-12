@@ -173,7 +173,7 @@
                     persistent
                     cancel-text="Cancelar"
                     save-text="Guardar"
-                    @save="updateBatches"
+                    @save="updateLotes"
                     :return-value.sync="props.item.baseLote">
                       <span class="editField">{{currencyFormat(props.item.baseLote)}}</span>
                       <template v-slot:input>
@@ -192,7 +192,7 @@
                   <v-edit-dialog large persistent
                   cancel-text="Cancelar"
                   save-text="Guardar"
-                  @save="updateBatches"
+                  @save="updateLotes"
                   :return-value.sync="props.item.tipoImpuesto">
                     <!-- MOSTRAR DATOS -->
                     <span class="editField">{{parseFloat(props.item.tipoImpuesto)}} %</span>
@@ -245,7 +245,7 @@
                             <v-form ref="costesGeneralesForm" v-model="costesGeneralesValid" lazy-validation>
                               <v-edit-dialog  
                                 persistent large
-                                @save="updateBatches"
+                                @save="updateLotes"
                                 save-text="GUARDAR"
                                 cancel-text="CANCELAR"
                                 >
@@ -274,7 +274,7 @@
                             <v-edit-dialog large 
                             cancel-text="Cancelar"
                             save-text="Guardar"
-                            @save="updateBatches"
+                            @save="updateLotes"
                             >
                               <!-- MOSTRAR DATOS -->
                               <table><tbody><tr>
@@ -308,31 +308,6 @@
                     <v-icon color="red" @click="deleteLote(props.item.idLote)">mdi-delete</v-icon>
                 </template>
               </v-data-table>
-            </v-col>
-
-            <!-- GUARDAR -->
-            <v-col cols="12" md="3">
-                <v-btn
-                v-if="datos.lotesGuardados === false"
-                class="actionButton"
-                width="100%" 
-                dark
-                :color="colorLotes()"  
-                :disabled="datos.lotes.length === 0"
-                >
-                  GUARDAR DATOS
-                  <v-icon class="icon">mdi-content-save</v-icon>
-                </v-btn>
-                <v-btn
-                v-else
-                class="actionButton" 
-                color="grey" dark
-                width="100%"
-                
-                >
-                DATOS GUARDADOS
-                <v-icon class="icon">mdi-check-all</v-icon>
-                </v-btn>
             </v-col>
           </v-row>
       </v-row>
@@ -415,16 +390,23 @@
         <v-col cols="12">
           <div v-if="datos.lotes.length !== 0">
             <v-row v-for="lote in datos.lotes" :key="lote.id">
+              <!--INFORMACIÓN PRESUPUESTO BASE -->
               <v-col cols="12" v-if="datos.lotes.length > 1">
                 Anualidades lote nº {{lote.idLote}}: <b>{{lote.descripcion}}</b>
                 <br/>
                 Presupuesto base lote: <b>{{currencyFormat(lote.baseLote)}}</b>
               </v-col>
-              <br/>
+              <v-col cols="12" v-else>
+                Presupuesto base: <b>{{currencyFormat(lote.baseLote)}}</b>
+              </v-col>
+
+              <!-- SELECCIONAR ANUALIDADES -->
               <v-col cols="12" md="1">
                 <v-select dense filled :items="anualidades" v-model="lote.selectAnualidades">
                 </v-select>
               </v-col>
+              
+              <!-- BOTON GENERAR -->
               <v-col cols="12" md="2">
                 <v-btn
                   class="actionButton"
@@ -437,85 +419,95 @@
                   <v-icon class="icon">mdi-animation-outline</v-icon>
                 </v-btn>
               </v-col>
+
+              <!-- DATA TABLE ANUALIDADES -->
               <v-col cols="12" md="9">
-                <!-- DATA TABLE ANUALIDADES -->
                 <v-data-table
                   style="margin-bottom:1rem;"
                   class="dataTable"
                   :headers="anualidadesHeaders"
                   :items="lote.anualidades"
                   hide-default-footer
+                  key="idLote"
                 >
-                  <!-- IMPORTE SIN IMPUESTOS -->
-                  <template v-slot:[`item.importeSinIVA`]="props" v-if="datos.anualidadesGuardadas == false">
+                  <!-- AÑO -->
+                  <template v-slot:[`item.year`]="props">
                     <v-edit-dialog
                     large persistent
                     cancel-text="CANCELAR"
                     save-text="GUARDAR"
-                    :return-value.sync="props.item.importeSinIVA">
+                    :return-value.sync="props.item.year"
+                    @save="saveAnualidad(props.item)"
+                    >
                       <template v-slot:input>
                         <!-- INTRODUCIR DATOS -->
                         <v-text-field
-                          v-model="props.item.importeSinIVA"
+                          v-model="props.item.year"
                           label="Editar"
                           single-line
+                          type="number"
                         ></v-text-field>
                       </template>
                       <!-- MOSTRAR DATOS -->
-                      <span class="editField">{{currencyFormat(props.item.importeSinIVA)}}</span>
-                      
+                      <span class="editField">{{(props.item.year)}}</span>
+                    </v-edit-dialog>
+                  </template>
+                  
+                  <!-- IMPORTE SIN IMPUESTOS -->
+                  <template v-slot:[`item.importeSinImp`]="props" v-if="datos.anualidadesGuardadas == false">
+                    <v-edit-dialog
+                    large persistent
+                    cancel-text="CANCELAR"
+                    save-text="GUARDAR"
+                    :return-value.sync="props.item.importeSinImp"
+                    @save="saveAnualidad(props.item)"
+                    >
+                      <template v-slot:input>
+                        <!-- INTRODUCIR DATOS -->
+                        <v-text-field
+                          v-model="props.item.importeSinImp"
+                          label="Editar"
+                          single-line
+                          type="number"
+                          :rules="[rules.zero]"
+                        ></v-text-field>
+                      </template>
+                      <!-- MOSTRAR DATOS -->
+                      <span class="editField">{{currencyFormat(props.item.importeSinImp)}}</span>
                     </v-edit-dialog>
                   </template>
 
-                  <!-- IMPUESTOS -->
+                  <!-- IMPUESTO APLICABLE (nombre impuesto) -->
                   <template v-slot:[`item.IVA`]="{ item }">
                     {{ currencyFormat(returnIVA(lote.tipoImpuesto, item.importeSinIVA)) }}
                   </template>
 
-                  <!-- TOTAL (IMP. INCLUIDOS) -->
-                  <template v-slot:[`item.importeConIVA`]="{ item }">
-                    {{ currencyFormat(returnTotal(lote.tipoImpuesto, item.importeSinIVA)) }}
+                  <!-- TOTAL IMPUESTOS -->
+                  <template v-slot:[`item.totalImp`]="{ item }">
+                    {{ currencyFormat(item.totalImp) }}
+                  </template>
+
+                  <!-- TOTAL IMPUESTOS INCLUIDOS -->
+                  <template v-slot:[`item.totalImpInc`]="{ item }">
+                    {{ currencyFormat(item.totalImpInc) }}
                   </template>
                 </v-data-table>
 
                 <!-- ALERTAS VALIDACION -->
-                <v-alert v-if="lote.alert === undefined" type="info">No se han introducido datos</v-alert>
-                <v-alert v-if="lote.alert === false" type="success">Datos Correctos</v-alert>
-                <v-alert v-if="lote.alert === true" type="error">La suma de las anualidades no coincide con el presupuesto base</v-alert>
-
+                  <v-alert v-if="lote.alert === 'noData'" type="info">No se han introducido datos.</v-alert>
+                  <v-alert v-if="lote.alert === 'igualcero'" type="error">La suma de las anualidades no puede ser igual a cero.</v-alert>
+                  <v-alert v-if="lote.alert === 'mayorQuePbase'" type="error">La suma de las anualidades no puede ser mayor que el presupuesto base.</v-alert>
+                  <v-alert v-if="lote.alert === 'notEqual'" type="error">La suma de las anualidades no coincide con el presupuesto base.</v-alert>
+                  <v-alert v-if="lote.alert === 'dataOK'" type="success">¡Datos correctos!</v-alert>
               </v-col>
             </v-row>
           </div>
+
+          <!-- ALERTA EN CASO DE NO EXISTIR DATOS DE PRESUPUESTO BASE -->
           <div v-else>
             <v-alert type="info">Guarde los datos del presupuesto si desea introducir anualidades</v-alert>
           </div>
         </v-col>
-        <br/>
-
-        <v-row class="subRow">
-          <v-col cols="12" md="3">
-            <v-btn
-            v-if="datos.lotes.length >= 1 && datos.anualidadesGuardadas === false"
-            color="green" class="actionButton" dark
-            width="100%"
-            large
-            @click="saveAnualidades"
-            >
-              GUARDAR DATOS
-              <v-icon class="icon">mdi-content-save</v-icon>
-            </v-btn>
-
-            <v-btn
-            v-if="datos.anualidadesGuardadas === true"
-            color="grey" class="actionButton" dark
-            width="100%"
-            large
-            >
-              GUARDADO CORRECTO
-              <v-icon class="icon">mdi-check-all</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
       </v-row>
     </div>
 
@@ -850,8 +842,6 @@ export default {
       dateFin: '',
       showOverlayPbase: false,
 
-
-
       anualidades: [1, 2, 3, 4, 5],
       impuestos: [
         {tipo: 'IVA (21%)', valor: 21},
@@ -883,15 +873,14 @@ export default {
       identificacionLotesHeaders: [
         { width:"2%", text: "Lote", align: "center", sortable: false, value: "idLote", divider: true, },
         { width:"98%", text: "Descripción Lote", align: "start", sortable: false, value: "descripcion", divider: true,},
-
       ],
 
       anualidadesHeaders: [
         { text: "Año", align: "start", sortable: false, value: "year", divider: true,},
-        { text: "Importe (sin impuestos)", align: "end", sortable: false, value: "importeSinIVA", divider: true, },
-        { text: "Impuesto aplicable", align: "end", sortable: false, value: "nombreImpuesto", divider: true, },
-        { text: "Impuestos", align: "end", sortable: false, value: "IVA", divider: true, },
-        { text: "Total (impuestos inc.)", align: "end", sortable: false, value: "importeConIVA" },
+        { text: "Importe (sin impuestos)", align: "end", sortable: false, value: "importeSinImp", divider: true, },
+        { text: "Impuesto aplicable", align: "end", sortable: false, value: "impAplicable", divider: true, },
+        { text: "Impuestos", align: "end", sortable: false, value: "totalImp", divider: true, },
+        { text: "Total (impuestos inc.)", align: "end", sortable: false, value: "totalImpInc" },
       ],
 
       tipoPlazo: ['dias', 'meses', 'años'],
@@ -982,21 +971,36 @@ export default {
           }
         }
 
-        //VALIDACIONES SUMA BASE ANUALIDADES
+        //VALIDACIONES DE ANUALIDADES
         if(datos.lotes.length !== 0){
-          for(this.index in datos.lotes){
-            let totalLote = 0;
-            if(datos.lotes[this.index].anualidades.length !== 0){
-              for(this.anualidad in datos.lotes[this.index].anualidades)
-              totalLote = totalLote + (parseFloat(datos.lotes[this.index].anualidades[this.anualidad].importeSinIVA))
-              if(totalLote !== parseFloat(datos.lotes[this.index].baseLote)){
-                datos.lotes[this.index].alert = true;
+          datos.lotes.forEach((lote)=>{
+            if(lote.anualidades.length > 0){
+              lote.totalAnualidades = 0
+              const valorAnualidades = lote.anualidades.map((anualidad)=>parseFloat(anualidad.importeSinImp))
+              valorAnualidades.forEach((valor)=>lote.totalAnualidades += valor)
+
+              //SUMAS ANUALIDADES COMPARADA CON PRESUPUESTO BASE
+              //TODO: CUANDO CARGAMOS DATOS DE UN EXPEDIENTE GUARDADO HAY UN BUG DE BUCLE INFINITO
+              if(parseFloat(lote.totalAnualidades) !== parseFloat(lote.baseLote)){
+                if(lote.totalAnualidades === 0){
+                  lote.alert = 'igualcero';
+                } else if (parseFloat(lote.totalAnualidades) > parseFloat(lote.baseLote)){
+                  lote.alert = 'mayorQuePbase';
+                } else {
+                  lote.alert = 'notEqual';
+                }
               } else {
-                datos.lotes[this.index].alert = false;
+                lote.alert = 'dataOK';
               }
-            }     
-          }
+              
+            }
+          })
+        } else {
+          datos.lotes.forEach((lote)=>{
+            lote.alert = 'noData'
+          })
         }
+
 
         //MODIFICACIONES
         if(datos.preveModif === 'si'){
@@ -1079,18 +1083,6 @@ export default {
       }
     },
 
-    saveAnualidades(){
-      for(this.index in this.datos.lotes){
-        this.lote = this.datos.lotes[this.index];
-        for(this.anualidad in this.lote.anualidades){
-          this.elemento = this.lote.anualidades[this.anualidad]
-          this.elemento.IVA = (parseFloat(this.elemento.importeSinIVA) * 0.21).toFixed(2);
-          this.elemento.importeConIVA = parseFloat(this.elemento.IVA) + parseFloat(this.elemento.importeSinIVA);
-        }
-      }
-      this.datos.anualidadesGuardadas = true;
-    },
-
 
     returnTaxes(value){
       switch(value){
@@ -1142,21 +1134,21 @@ export default {
           totalCostes: 0,
           selectAnualidades: 2,
           anualidades:[],
-          alert: undefined,
+          alert: null,
         }
         this.datos.lotes.push(this.newLote)
       }
 
     },
 
-    updateBatches(){
+    updateLotes(){
       this.datos.lotes.forEach((lote)=>{
         lote.totalImpuestos = this.calcularImpuestos(lote.baseLote, parseFloat(lote.tipoImpuesto));
         lote.nombreImpuesto = this.returnTaxes(lote.tipoImpuesto);
         lote.totalLote = parseFloat(lote.baseLote) + parseFloat(lote.totalImpuestos);
         lote.costesDirectos = this.calcularCostesDirectos(lote.baseLote, parseInt(lote.porcBeneficioIndustrial), parseInt(lote.porcCostesGenerales))
         lote.costesGenerales = this.calcularCostesGenerales(lote.costesDirectos, parseInt(lote.porcCostesGenerales))
-        lote.beneficioIndustrial = this.calcularBeneficioIndustrial(lote.costesDirectos, lote.porcBeneficioIndustrial)
+        lote.beneficioIndustrial = this.calcularBeneficioIndustrial(lote.costesDirectos, parseInt(lote.porcBeneficioIndustrial))
         lote.costesIndirectos = lote.costesGenerales + lote.beneficioIndustrial;
         lote.totalCostes = lote.baseLote + (lote.costesDirectos + lote.costesIndirectos);
         lote.totalImpIncl = lote.baseLote + lote.totalImpuestos;
@@ -1168,14 +1160,17 @@ export default {
     },
 
     calcularCostesDirectos(pbase, porcBenInd, percCostGen){
+      /*Por defecto => Presupuesto base / 1.19 */
       return pbase/(1+((porcBenInd + percCostGen)/100));
     },
 
     calcularCostesGenerales(costesDirectos, percCostGen){
+      /* Por defecto => Costes Directos * 0.13 */
       return costesDirectos * ((percCostGen)/100);
     },
 
     calcularBeneficioIndustrial(costesDirectos, percBenInd){
+      /* Por defecto => Costes Directos * 0.06 */
       return costesDirectos * ((percBenInd)/100);
     },
   
@@ -1198,16 +1193,26 @@ export default {
       lote.anualidades = [];
       let fecha = new Date();
       let ano = fecha.getFullYear();
-      
-      for (let i = 0; i < lote.selectAnualidades; i++) {
-        const newData = {
-          year: ano + i,
-          importeSinIVA: 0,
-          IVA: this.importeSinIVA * 0.21,
-          importeConIVA: this.importeSinIVA + this.IVA,
-        };
-        lote.anualidades.push(newData);
+      //SI ES TRAMITACION ANTICIPADA EMPEZAMOS EN EL AÑO SIGUIENTE
+      if(!this.datos.tramitacion){
+        ano = ano+1
       }
+      for (let i = 0; i < lote.selectAnualidades; i++) {
+        this.newData = {
+          year: ano + i,
+          importeSinImp: 0,
+          impAplicable: lote.nombreImpuesto,
+          valueImp: lote.tipoImpuesto,
+          totalImp: 0,
+          totalImpInc: 0,
+        };
+        lote.anualidades.push(this.newData);
+      }
+    },
+
+    saveAnualidad(data){
+      data.totalImp = parseFloat(data.importeSinImp) * ((data.valueImp / 100));
+      data.totalImpInc = parseFloat(data.importeSinImp) + data.totalImp;
     },
   
     returnTotal(impuesto, base) {

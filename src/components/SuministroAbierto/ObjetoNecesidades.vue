@@ -11,8 +11,8 @@
           </h3>
             <v-text-field
             v-model="datos.tituloExpediente"
-            :rules="[rules.required, rules.counter]"
-            label="Titulo del Expediente" counter filled               
+            :rules="[rules.required, rules.max200]"
+            label="Pliego de Cláusulas Administrativas Particulares para la contratación de:" filled                
             >
             </v-text-field>
         </v-col>
@@ -118,6 +118,7 @@
           v-model="datos.necesidadesContrato"
           label="Necesidades del contrato" 
           filled
+          :rules="[rules.max8800]"
           auto-grow
           >
           </v-textarea>
@@ -141,7 +142,8 @@ props:['datosGuardados'],
     return {
       rules: {
         required: (value) => !!value || "Este campo es obligatorio.",
-        counter: (value) => value.length <= 200 || "Máximo 200 caracteres",
+        max200: (value) => value.length <= 200 || "Máximo 200 caracteres",
+        max8800: (value) => value.length <= 8800 || "Máximo 8800 caracteres",
       },
 
       showCPVSelect: false,
