@@ -329,6 +329,16 @@
             @click="(()=>showAplicacionPresWindow = true)"
             label="Aplicación presupuestaria" filled>
           </v-text-field>
+
+          <!-- DIALOGO APLICACION PRESUPUESTARIA -->
+          <v-overlay
+            :value="showAplicacionPresWindow">
+            <AplicacionPres
+              :inputData="datos.aplicacionPrep"
+              @close="(()=>showAplicacionPresWindow = false)" 
+              @aplicPres="((data)=>datos.aplicacionPrep = data)"
+            ></AplicacionPres>
+          </v-overlay>
         </v-col>
 
         <v-col cols="12" sm="4">
@@ -338,6 +348,8 @@
           </v-radio-group>
         </v-col>
       </v-row>
+
+      
     </div>
     
     <!-- DESGLOSE -->
@@ -806,15 +818,7 @@
     </div>
 
 
-    <!-- DIALOGO APLICACION PRESUPUESTARIA -->
-    <v-dialog
-      width="80rem"
-      :value="showAplicacionPresWindow">
-      <AplicacionPres 
-        @close="(()=>showAplicacionPresWindow = false)" 
-        @aplicPres="((data)=>datos.aplicacionPrep = data)"
-      ></AplicacionPres>
-    </v-dialog>
+    
 
     <!--ALERTAS-->
     <v-overlay absolute v-if="alerta">

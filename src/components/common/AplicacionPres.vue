@@ -1,62 +1,131 @@
 <template>
-    <div id="cpvTable">
-        <v-toolbar>
-            <v-btn color="error" @click="closeDialog">
-                CERRAR
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="info">
-                AYUDA
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn 
-            @click="exportAplicPres"
-            color="success">
-                ACEPTAR
-            </v-btn>
-        </v-toolbar>
-        <v-text-field
-        label="Buscar"
-        class="searchBox"
-        v-model="search"
-        >
-        </v-text-field>
-
-        <v-data-table
-            class="showTable"
-            :headers="aplicacionPresHeaders"
-            :search="search"
-            :items="aplicacionPresItems"
-            show-select
-            dense
-            v-model="selected"
-            :items-per-page="itemsPerPage"
-            :key="codigo"
-        >
-            <template v-slot:no-data>
-                <div class="loaderContainer">
-                    <v-progress-circular
-                    :size="70"
-                    :width="7"
-                    color="purple"
-                    indeterminate
-                    ></v-progress-circular>
-                    <h3>Recuperando datos, por favor espere</h3>
-                </div>
-            </template>
-        </v-data-table>
-    </div>
+    <v-card id="appPresTable">
+        <v-card-actions class="actions">
+            <v-row dense>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    solo light dense
+                    label="Buscar"
+                    class="searchBox"
+                    v-model="search"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols="12" md="3">
+                    <v-btn block color="error" @click="closeDialog">
+                        CERRAR
+                    </v-btn>
+                </v-col>
+                <v-col cols="12" md="3">
+                    <v-btn block color="success"
+                    @click="exportAppPres">
+                        ACEPTAR
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-card-actions>
+        <v-card-text>
+            <v-data-table
+                light
+                class="showTable"
+                :headers="aplicacionHeaders"
+                :search="search"
+                :items="aplicacionItems"
+                dense
+                show-select
+                item-key="id_part"
+                v-model="selected"
+                :items-per-page="itemsPerPage"
+                hide-default-footer
+            >
+                <template v-slot:no-data>
+                    <div class="loaderContainer">
+                        <v-progress-circular
+                        :size="70"
+                        :width="7"
+                        color="purple"
+                        indeterminate
+                        ></v-progress-circular>
+                        <h3>Recuperando datos, por favor espere</h3>
+                    </div>
+                </template>
+            </v-data-table>
+        </v-card-text>
+    </v-card>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default{
+    name: 'Comunidades',
+    props: ['inputData'],
+    data(){
+        return {
+            itemsPerPage: 20,
+            search: '',
+            selected: [],
+            aplicacionHeaders: [
+                {text: 'Código', align: 'start', sortable: true, value:'codigo'},
+                {text: 'Descripción', align: 'start', sortable: true, value:'descripcion'},
+            ],
+            aplicacionItems: [],
+        }
+    },
+
+    created(){
+        this.initialize();
+    },
+    
+    methods: {
+        async initialize(){
+            await axios
+            .get(`${process.env.VUE_APP_API_ROUTE}/parameters`)
+            .then( (data) => {
+                if(data.status === 200){
+                    this.aplicacionItems = data.data.response.partidas_presupuestarias;
+                    
+                    // AUTOSELECCIONAR ITEMS EN CASO DE QUE EXISTA SELECCION PREVIA
+                    if(this.inputData){
+                        this.selected = this.aplicacionItems.filter((appPres)=>this.inputData.includes(` ${appPres.codigo}`))
+                    }
+
+                } else if (data.status === 204){
+                    this.aplicacionItems = [];
+                }
+            })
+        },
+
+        closeDialog(){
+            this.$emit("close", true)
+        },
+
+        exportAppPres(){
+            const exportPartPres = this.selected.map((part)=>` ${part.codigo}`)
+            this.$emit("aplicPres", exportPartPres)
+            this.closeDialog();
+        }
+    }
+}
+</script>
 
 <style scoped>
     h3{
         font-weight: 400;
     }
 
-    #cpvTable{
-        max-width: 80rem;
+    #appPresTable{
+        max-height: 98vh;
+        width: 65rem;
+        max-width: 90vw;
         margin: 0 auto;
         background-color: white;
+    }
+
+    .actions {
+        background-color: rgb(149, 214, 214);
+        min-height: 4rem;
+        padding: 1rem;
     }
 
     .loaderContainer{
@@ -64,51 +133,14 @@
     }
 
     .searchBox{
-        padding: 1rem;
+        margin: 0rem 0rem -1.5rem 0rem !important;
+        padding:0.5rem;
     }
 
-    .showTable {
+    .showTable{
         padding: 0.5rem;
         border-radius: 4px;
+        max-height: 72vh;
+        overflow-y: auto;
     }
 </style>
-
-
-<script>
-
-export default{
-    name: 'AplicacionPres',
-    data(){
-        return {
-            itemsPerPage: -1,
-            search: '',
-            selected: [],
-            codigo: '',
-            aplicacionPresHeaders: [
-                {text: 'Código', align: 'start', sortable: true, value:'codigo'},
-                {text: 'Descripción', align: 'start', sortable: true, value:'descripcion'},
-            ],
-            aplicacionPresItems: [
-                {id: 1, codigo: '1718495 A 630', descripcion: ''},
-                {id: 2, codigo: '1718495 A 640', descripcion: ''},
-            ],
-        }
-    },
-
-   
-    methods: {
-        closeDialog(){
-            this.$emit("close", true)
-        },
-
-        exportAplicPres(){
-            this.aplicacionPres = [];
-            for (this.index in this.selected) {
-                this.aplicacionPres.push(" " + this.selected[this.index].codigo);
-            }
-            this.$emit("aplicPres", this.aplicacionPres)
-            this.closeDialog();
-        }
-    }
-}
-</script>
