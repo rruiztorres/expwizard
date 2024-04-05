@@ -1807,10 +1807,7 @@ export default {
         /*VALOR ESTIMADO: Calcula el importe total de la modificación a
         partir del porcentaje introducido en el cuadro de dialogo en el
         apartado MODIFICACIÓN DEL CONTRATO*/
-        if(datos.preveModif === true){
-          this.estimateValueTotals()
-        }
-       
+        this.estimateValueTotals()
       }
     },
   },
