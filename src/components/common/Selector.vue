@@ -69,7 +69,7 @@
             <div class="group">
                 <v-row>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12">
                         <h3>Expedientes de servicios</h3>
                         <hr/>
                     </v-col>
@@ -121,11 +121,11 @@
                 </v-row>
             </div>
 
-            <!-- NEGOCIADOS -->
+            <!-- OBRAS -->
             <div class="group">
                 <v-row>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12">
                         <h3>Obras abiertas</h3>
                         <hr/>
                     </v-col>

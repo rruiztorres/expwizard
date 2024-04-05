@@ -1,65 +1,67 @@
 <template>
     <div>
-        <!-- 8 INCOMPATIBILIDADES PARA LA LICITACIÓN -->
-        <h3>Incompatibilidades para la licitación
-            <v-badge 
-            class="badge" color="#c7d6f2" content="?"
-            title="Punto 8.1 (Incompatibilidades para la licitación)"></v-badge >
-        </h3>
-        <v-row class="rowGroup"> 
-            <v-row class="subRow">
-                <!--8.0 -->
+        <!-- INCOMPATIBILIDADES PARA LA LICITACIÓN -->
+        <div class="group">
+            <h3>Incompatibilidades para la licitación
+                <v-badge 
+                class="badge" color="#c7d6f2" content="?"
+                title="Punto 8.1 (Incompatibilidades para la licitación)">
+                </v-badge >
+            </h3>
+            <v-row class="rowGroup">
                 <v-col cols="12">
                     <h5 class="subtitle">
                     Participación en la licitación de las empresas que hubieran participado previamente en la 
                     elaboración de las especificaciones técnicas o de los documentos preparatorios del contrato
                     o hubieran asesorado al órgano de contratación durante la preparación del procedimiento de 
-                    contratación [artículo 70.1 LCSP]
+                    contratación 
+                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a7-2" target="blank" title="Ver artículo 70 LCSP">[artículo 70.1 LCSP]
+                        </a>
                     </h5>
                 </v-col>
-
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="5">
                     <h5>Consideración:</h5>
                     <v-radio-group v-model="datos.participacionEmpresas">
                         <v-radio label="No tiene consideración el contrato que se licita" :value="true"></v-radio>
                         <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
-
-                <v-col cols="12" md="6" v-if="datos.participacionEmpresas === false">
+                <v-col cols="12" md="7" v-if="datos.participacionEmpresas === false">
                     <h5>Empresas que deben ser excluidas de dicha licitación:</h5>
-                    <v-textarea filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
+                    <v-textarea style="margin-bottom:-2rem;"
+                    dense filled auto-grow v-model="datos.empresasExcluidas"></v-textarea>
                 </v-col>
             </v-row>
-        </v-row>
-        <br/>
-
-        <!-- 9 CAPACIDAD Y SOLVENCIA -->
-        <h3>Capacidad y solvencia</h3>
-        <br/>
-
-        <h5>Requisitos de solvencia
-            <v-badge 
-            class="badge" color="#c7d6f2" content="?"
-            title="Punto 9.1 (Requisitos de solvencia)"></v-badge >
-        </h5>
-        <v-row class="rowGroup">
-            <!--9.1 Requisitos de solvencia-->
-            <v-row class="subRow">
+        </div>
+        
+        <!-- CAPACIDAD Y SOLVENCIA -->
+        <div class="group">
+            <h3>Capacidad y solvencia</h3>
+            <v-row class="rowGroup">
+                <!-- REQUISITOS DE SOLVENCIA -->     
                 <v-col cols="12">
-                    <i>Se acreditará mediante los documentos acreditativos de 
-                    los requisitos especificados a continuación: </i>
+                    <h4 class="subtitle">Requisitos de solvencia
+                        <v-badge 
+                        class="badge" color="#c7d6f2" content="?"
+                        title="Punto 9.1 (Requisitos de solvencia)"></v-badge >
+                    </h4>
+                    <h5>Se acreditará mediante los documentos acreditativos de 
+                    los requisitos especificados a continuación: 
+                    <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-9" target="blank" title="Ver artículo 87 LCSP">[artículo 87.3 LCSP]</a>
+                    , <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver artículo 89 LCSP">[artículo 89 LCSP]</a>
+                    </h5>
                     <v-radio-group v-model="datos.requisitos">
                         <v-radio label="Los exigidos supletoriamente, a falta de especificación, en los artículos 87.3 y 89 de la LCSP" :value="true"></v-radio>
                         <v-radio label="Los que se especifican a continuación (de entre los criterios de solvencia económica y financiera -artículo 87- y técnica -artículo 89- de la LCSP)" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
-                <!-- ESPECIFICADOS -->
-
                 <!-- SOLVENCIA ECONOMICA FINANCIERA-->
                 <v-col cols="12" md="6" v-if="datos.requisitos === false">
-                    <h5>Solvencia económica y financiera [art. 87 LCSP]</h5>
+                    <h5>Solvencia económica y financiera 
+                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-9" target="blank" title="Ver artículo 87 LCSP">[art. 87 LCSP]
+                        </a>
+                    </h5>
                     <v-radio-group v-model="datos.solvenciaEconFinanc">
                         <v-radio label="El volumen anual de negocios, que referido al mejor ejercicio de los tres (3) últimos concluidos deberá ser:" value="volumen"></v-radio>
                         <v-radio label="El patrimonio neto al cierre del último ejercicio económico para el que esté vencida la obligación de aprobación de las cuentas anuales no será inferior a:" value="patrimonio"></v-radio>
@@ -68,108 +70,109 @@
                     </v-radio-group>
                 </v-col>
 
-                    <!-- CASO VOLUMEN ANUAL NEGOCIOS -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'volumen'">
-                        <h5>Especificar importe exigido volumen anual de negocios:</h5>
-                        <br/>
-                        <v-data-table
-                            v-if="presBase.hayLotes === true"
-                            class="dataTable"
-                            :items="datos.volumenAnualNegocio"
-                            :headers="solvenciaLotesHeaders"
-                            hide-default-footer
-                        >
-                            <template v-slot:[`item.importeReq`]="props">
-                                <v-edit-dialog :return-value.sync="props.item.importeReq">
-                                <span class="editField">{{
-                                parseFloat(props.item.importeReq)
-                                }}</span>
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="props.item.importeReq"
-                                    label="Editar"
-                                    single-line
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
-                            </template>
-
-                            <template v-slot:[`item.actions`]="props">
-                                <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
-                                <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
-                            </template>
-                        </v-data-table>
-
-                        <v-data-table
-                            v-else
-                            class="dataTable"
-                            :items="datos.volumenAnualNegocio"
-                            :headers="solvenciaHeaders"
-                            hide-default-footer
-                        >
-                            <template v-slot:[`item.importeReq`]="props">
-                                <v-edit-dialog :return-value.sync="props.item.importeReq">
-                                <span class="editField">{{
-                                parseFloat(props.item.importeReq)
-                                }}</span>
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="props.item.importeReq"
-                                    label="Editar"
-                                    single-line
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
-                            </template>
-
-                            <template v-slot:[`item.actions`]="props">
-                                <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
-                                <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
-                            </template>
-                        </v-data-table>
-                        <br/>
-                    </v-col>
-
-                    <!-- CASO PATRIMONIO NETO AL CIERRE -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'patrimonio'">
-                    <h5>Especificar patrimonio neto</h5>
+                <!-- CASO VOLUMEN ANUAL NEGOCIOS -->
+                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'volumen'">
+                    <h5>Especificar importe exigido volumen anual de negocios:</h5>
                     <br/>
-                    <v-text-field filled label="€" v-model="datos.patrimonioNeto" type="number"></v-text-field>
-                    </v-col>
+                    <v-data-table
+                        v-if="presBase.hayLotes === true"
+                        class="dataTable"
+                        :items="datos.volumenAnualNegocio"
+                        :headers="solvenciaLotesHeaders"
+                        hide-default-footer
+                    >
+                        <template v-slot:[`item.importeReq`]="props">
+                            <v-edit-dialog :return-value.sync="props.item.importeReq">
+                            <span class="editField">{{
+                            parseFloat(props.item.importeReq)
+                            }}</span>
+                            <template v-slot:input>
+                                <v-text-field
+                                v-model="props.item.importeReq"
+                                label="Editar"
+                                single-line
+                                ></v-text-field>
+                            </template>
+                            </v-edit-dialog>
+                        </template>
 
-                    <!-- CASO RATIO ACTIVOS / PASIVOS -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'ratio'">
-                    <h5>Especificar ratio activos / pasivos</h5>
+                        <template v-slot:[`item.actions`]="props">
+                            <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
+                            <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
+                        </template>
+                    </v-data-table>
+
+                    <v-data-table
+                        v-else
+                        class="dataTable"
+                        :items="datos.volumenAnualNegocio"
+                        :headers="solvenciaHeaders"
+                        hide-default-footer
+                    >
+                        <template v-slot:[`item.importeReq`]="props">
+                            <v-edit-dialog :return-value.sync="props.item.importeReq">
+                            <span class="editField">{{
+                            parseFloat(props.item.importeReq)
+                            }}</span>
+                            <template v-slot:input>
+                                <v-text-field
+                                v-model="props.item.importeReq"
+                                label="Editar"
+                                single-line
+                                ></v-text-field>
+                            </template>
+                            </v-edit-dialog>
+                        </template>
+
+                        <template v-slot:[`item.actions`]="props">
+                            <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
+                            <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
+                        </template>
+                    </v-data-table>
                     <br/>
-                    <v-text-field filled label="€" v-model="datos.ratioActivos" type="number"></v-text-field>
-                    </v-col>
+                </v-col>
 
-                    <!-- CASO PROFESIONAL (NO EMPRESA) -->
-                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'profesional'">
-                    <h5>En el caso de que el licitador sea un profesional (y no una empresa)</h5>
-                    <br/>
-                    <i>
-                        Justificante de la existencia de un seguro de indemnización por riesgos 
-                        profesionales por importe igual o superior al valor estimado del contrato, 
-                        vigente hasta el fin del plazo de presentación de ofertas, asi como el compromiso 
-                        vinculante de suscripción, prórroga o renovación, en caso  de resultar adjudicatario, 
-                        para garantizar la cobertura durante toda la ejecución del contrato.
-                    </i>
-                    <br/><br/>
-                    <v-btn color="info"><v-icon style="margin-right: 0.5rem;">mdi-content-save</v-icon>ADJUNTAR</v-btn>
-                    </v-col>
-            </v-row>
+                <!-- CASO PATRIMONIO NETO AL CIERRE -->
+                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'patrimonio'">
+                <h5>Especificar patrimonio neto</h5>
+                <br/>
+                <v-text-field filled label="€" v-model="datos.patrimonioNeto" type="number"></v-text-field>
+                </v-col>
 
-            <v-row class="subRow">
+                <!-- CASO RATIO ACTIVOS / PASIVOS -->
+                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'ratio'">
+                <h5>Especificar ratio activos / pasivos</h5>
+                <br/>
+                <v-text-field filled label="€" v-model="datos.ratioActivos" type="number"></v-text-field>
+                </v-col>
+
+                <!-- CASO PROFESIONAL (NO EMPRESA) -->
+                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'profesional'">
+                <h5>En el caso de que el licitador sea un profesional (y no una empresa)</h5>
+                <br/>
+                <v-alert dense type="info">
+                    Se aportará justificante de la existencia de un seguro de indemnización por riesgos 
+                    profesionales por importe igual o superior al valor estimado del contrato, 
+                    vigente hasta el fin del plazo de presentación de ofertas, asi como el compromiso 
+                    vinculante de suscripción, prórroga o renovación, en caso  de resultar adjudicatario, 
+                    para garantizar la cobertura durante toda la ejecución del contrato.
+                </v-alert>
+                <br/><br/>
+                </v-col>
+            
                 <!-- SOLVENCIA TÉCNICA O PROFESIONAL-->
                 <v-col cols="12" md="6" v-if="datos.requisitos === false">
-                    <h5>Solvencia técnica o profesional [art. 89 LCSP]</h5>
+                    <h5>Solvencia técnica o profesional 
+                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver artículo 89 LCSP">[art. 89 LCSP]
+                        </a>
+                    </h5>
                     <v-radio-group v-model="datos.solvenciaTecProfe">
                         <v-radio label="Relación de los principales suministros realizados en los últimos 3 años" :value="true"></v-radio>
                         <v-radio label="Otros de los previstos en el artículo 89" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
-
+                
+                <!-- ANUALIDAD MEDIA DEL CONTRATO -->
                 <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
                     <h5>Indicar % anualidad media del contrato</h5>
                     <br/>
@@ -178,29 +181,44 @@
                     <h5>Total % anualidad media: {{datos.importeAnualidadMedia}}</h5>
                 </v-col>
 
+                <!-- ALERTA NO ARMONIZADA -->
                 <v-col cols="12" 
-                class="warn"
                 v-if="datos.requisitos === false && 
                 datos.solvenciaTecProfe === true && 
                 this.objetoNecesidades.regArmonizada === false">
-                    <h4>ATENCIÓN:</h4>
-                    <p><i>El contrato se está realizando bajo regulación <b>NO ARMONIZADA</b></i></p>
-                    <p><i>En los contratos no sujetos a regularización armonizada, si el 
-                        contratista es una empresa de nueva creación no será necesario acreditar este 
-                        apartado [artículo 89.14 h] de la LCSP
-                    </i></p>
-                    <p><i>
-                        Para el <b>cumplimiento</b> de este apartado se tendrá en cuenta lo siguiente:
-                    </i></p>
-                    <ol>
-                        <li>El importe de los contratos se calculará con <b>exclusión del IVA</b></li>
-                        <li>Cuando la empresa licitadora hubiera ejecutado el contrato a través de una unión
-                            temporal de empresas <b>(UTE)</b>, se computará el importe de aquél en <b>proporción a la
-                            participación</b> de dicha empresa en la citada UTE.</li>
-                        <li>Cuando las empresas liciten <b>agrupadas en UTE</b> se considerarán <b>indistintamente</b>
-                            los contratos de cualquiera de las empresas constituyentes de la UTE para alcanzar
-                            los porcentajes de valor estimado fijados.</li>
-                    </ol>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-alert
+                            text
+                            border="top"
+                            colored-border
+                            type="warning"
+                            elevation="2"
+                            >
+                                <h4>ATENCIÓN:</h4>
+                                <p><i>El contrato se está realizando bajo regulación <b>NO ARMONIZADA</b></i></p>
+                                <p><i>En los contratos no sujetos a regularización armonizada, si el 
+                                    contratista es una empresa de nueva creación no será necesario acreditar este 
+                                    apartado 
+                                    <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver Artículo 89 LCSP">
+                                    [artículo 89.14 h] 
+                                    de la LCSP</a>
+                                </i></p>
+                                <p><i>
+                                    Para el <b>cumplimiento</b> de este apartado se tendrá en cuenta lo siguiente:
+                                </i></p>
+                                <ol>
+                                    <li>El importe de los contratos se calculará con <b>exclusión del IVA</b></li>
+                                    <li>Cuando la empresa licitadora hubiera ejecutado el contrato a través de una unión
+                                        temporal de empresas <b>(UTE)</b>, se computará el importe de aquél en <b>proporción a la
+                                        participación</b> de dicha empresa en la citada UTE.</li>
+                                    <li>Cuando las empresas liciten <b>agrupadas en UTE</b> se considerarán <b>indistintamente</b>
+                                        los contratos de cualquiera de las empresas constituyentes de la UTE para alcanzar
+                                        los porcentajes de valor estimado fijados.</li>
+                                </ol>
+                            </v-alert>   
+                        </v-col>
+                    </v-row>
                 </v-col>
                 
                 <!-- OTROS -->
@@ -208,69 +226,72 @@
                     <h5 class="subtitle">En caso de que sean otros, especificar:</h5>
                     <v-textarea filled auto-grow v-model="datos.otrosReqSolvTecProfe"></v-textarea>
                 </v-col>
-            </v-row>
-        </v-row>
-        <br/>
-
-        <!--9.2.- Integracion de la solvencia -->
-        <h5>Integración de la solvencia</h5>
-        <v-row class="rowGroup">
-            <v-col cols="12">
-                <i>Si el licitador se basa en la solvencia y medios de otras entidades
-                    para acreditar su solvencia, se establece la responsabilidad
-                    solidaria de todos ellos [artículo 75 LCSP]</i>
-                <br/>
-                <v-radio-group v-model="datos.integracionSolvencia">
-                    <v-radio label="Si" :value="true"></v-radio>
-                    <v-radio label="No" :value="false"></v-radio>
-                </v-radio-group>
-            </v-col>
-        </v-row>
-        <br/>
-        
-        <!--9.3.- Concrecion de las condiciones de solvencia -->
-        <h5>Concreción de las condiciones de solvencia</h5>
-        <v-row class="rowGroup">
+                
+                <!-- INTEGRACIÓN DE LA SOLVENCIA -->
                 <v-col cols="12">
-                    <h5 class="subtitle">1.- Obligación de adscribir medios personales o materiales</h5>
-                    <v-radio-group v-model="datos.obligacionMediosMateriales">
-                        <v-radio label="Si se exige, mediante compromiso en la declaración responsable complementaria al DEUC" :value="true"></v-radio>
-                        <v-radio label="No se exige" :value="false"></v-radio>
+                    <h4 class="subtitle">Integración de la solvencia
+                        <v-badge 
+                        class="badge" color="#c7d6f2" content="?"
+                        title=""></v-badge >
+                    </h4>
+                    <h5>Si el licitador se basa en la solvencia y medios de otras entidades
+                        para acreditar su solvencia, se establece la responsabilidad
+                        solidaria de todos ellos [artículo 75 LCSP]</h5>
+                    <v-radio-group v-model="datos.integracionSolvencia">
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
-                <v-col cols="12" md="6">
-                    <h5 class="subtitle">2.- Obligación de especificar nombres o cualificación profesional
-                        del personal responsable de ejecutar la prestación
-                    </h5>
-                    <v-radio-group v-model="datos.obligacionNombresCualificacion">
-                        <v-radio label="Si se exige, en la siguiente forma:" :value="true"></v-radio>
-                        <v-radio label="No se exige" :value="false"></v-radio>  
-                    </v-radio-group>
+                <!-- CONCRECION DE LAS CONDICIONES DE SOLVENCIA -->
+                <v-col cols="12">
+                    <v-row>
+                        <v-col cols="12">
+                            <h4 class="subtitle">Concreción de las condiciones de solvencia</h4>
+                            <h5 class="subtitle">1.- Obligación de adscribir medios personales o materiales</h5>
+                            <v-radio-group v-model="datos.obligacionMediosMateriales">
+                                <v-radio label="Si se exige, mediante compromiso en la declaración responsable complementaria al DEUC" :value="true"></v-radio>
+                                <v-radio label="No se exige" :value="false"></v-radio>
+                            </v-radio-group>
+                        </v-col>
+                        <v-col cols="12" md="6">
+                            <h5 class="subtitle">2.- Obligación de especificar nombres o cualificación profesional
+                                del personal responsable de ejecutar la prestación
+                            </h5>
+                            <v-radio-group v-model="datos.obligacionNombresCualificacion">
+                                <v-radio label="Si se exige, en la siguiente forma:" :value="true"></v-radio>
+                                <v-radio label="No se exige" :value="false"></v-radio>  
+                            </v-radio-group>
+                        </v-col>
+                        
+                        <!-- SI SE EXIGE ESPECIFICAR -->
+                        <v-col cols="12" md="6" v-if="datos.obligacionNombresCualificacion === true">
+                            <h5 class="subtitle">Si se exige, especificar</h5>
+                            <br/>
+                            <v-textarea style="margin-bottom:-2rem;" dense v-model="datos.especificarObligacion" filled></v-textarea>
+                        </v-col>
+                        <v-col cols="6" v-else><!-- evita salto de linea --></v-col>                        
+                    </v-row>
                 </v-col>
-
-                <v-col cols="12" md="6" v-if="datos.obligacionNombresCualificacion === true">
-                    <h5 class="subtitle">Si se exige, especificar</h5>
-                    <br/>
-                    <v-textarea auto-grow v-model="datos.especificarObligacion" filled></v-textarea>
+                
+                <!-- HABILITACIÓN EMPRESARIAL EXIGIBLE -->
+                <v-col cols="12">
+                    <v-row>
+                        <v-col cols="12" md="6">
+                            <h5 class="subtitle">Habilitación empresaria exigible</h5>
+                            <v-radio-group v-model="datos.habilitacionExigible">
+                                <v-radio label="La siguiente habilitación:" :value="true"></v-radio>
+                                <v-radio label="Ninguna en especial" :value="false"></v-radio>
+                            </v-radio-group>
+                        </v-col>
+                        <v-col cols="12" md="6" v-if="datos.habilitacionExigible === true">
+                            <h5 class="subtitle">Especificar</h5>
+                            <v-textarea style="margin-bottom:-2rem;" v-model="datos.especificarHabilitacion" filled></v-textarea>
+                        </v-col>
+                    </v-row>
                 </v-col>
-        </v-row>
-        <br/>
-
-        <h5>Habilitación empresaria exigible</h5>
-        <v-row class="rowGroup">
-            <v-col cols="12" md="4">
-                <v-radio-group v-model="datos.habilitacionExigible">
-                    <v-radio label="La siguiente habilitación:" :value="true"></v-radio>
-                    <v-radio label="Ninguna en especial" :value="false"></v-radio>
-                </v-radio-group>
-            </v-col>
-
-            <v-col cols="12" md="8" v-if="datos.habilitacionExigible === true">
-                <h5 class="subtitle">Especificar</h5>
-                <v-textarea auto-grow v-model="datos.especificarHabilitacion" filled label="Habilitación exigible"></v-textarea>
-            </v-col>
-        </v-row>        
+            </v-row>
+        </div>
     </div>
 </template>
 
