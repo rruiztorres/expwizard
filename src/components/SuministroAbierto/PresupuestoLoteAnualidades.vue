@@ -673,7 +673,7 @@
     <div class="group">
       <h3>Plazo de ejecución o duración</h3>
       <div class="rowGroup" v-if="datos.lotes.length !== 0">
-        <!-- Se define como (plazo ejecución - duración) -->
+        <!-- SE DEFINE COMO (plazo ejecución - duración) -->
         <v-row dense class="subRow">
           <v-col cols="12">
               <h5 class="subtitle">Se define como:</h5>
@@ -684,8 +684,9 @@
           </v-col>
         </v-row>
 
-        <!-- IF: Se define como contrato con plazo ejecucion / (Seleccionar modalidad - Plazo máximo ejecucion > Plazos parciales) -->
+        <!-- UN CONTRATO CON PLAZO DE EJECUCIÓN -->
         <v-row dense class="subRow" v-if="datos.definicion === true">
+          <!-- SELECCIONAR MODALIDAD -->
           <v-col cols="12" md="3">
             <h5 class="subtitle">Seleccionar modalidad</h5>
             <v-radio-group v-model="datos.modalidad">
@@ -694,80 +695,178 @@
             </v-radio-group>
           </v-col>
           <v-col cols="12" md="9">
-            <!-- IF: Se define como contrato con plazo ejecucion & plazo máximo ejecución (plazo ejecucion - observaciones)-->
+            <!-- PLAZO MAXIMO DE EJECUCION -->
             <v-row v-if="datos.definicion === true && datos.modalidad === true">
               <!-- HAY LOTES -->
               <v-col cols="12" v-if="datos.lotes.length>1">
-                <h5 class="subtitle" style="margin-bottom:0.5rem;">Definir plazo máximo de ejecución</h5>
-                <div v-for="lote, i in datos.lotes" :key="i">
-                  {{`Lote nº ${i+1} - `}}<b>{{`${lote.descripcion}`}}</b>
+                <!-- SE APLICA DE MODO INDIVIDUAL O PARA TODOS LOS LOTES -->
+                <h5 class="subtitle" style="margin-bottom:0.5rem;">Se han detectado lotes ¿Cómo se aplicará el plazo máximo de ejecución?</h5>
+                <v-radio-group v-model="datos.tipoPlazoMaximo">
+                  <v-radio label="El mismo plazo máximo para todos los lotes" :value="true" @click="resetTipoPlazoMaximo"></v-radio>
+                  <v-radio label="Un plazo máximo diferente para cada lote" :value="false" @click="resetTipoPlazoMaximo"></v-radio>
+                </v-radio-group>
+                <!-- PARA TODOS LOS LOTES -->
+                <div v-if="datos.tipoPlazoMaximo===true">
                   <v-data-table
-                    dense class="dataTable" style="margin-bottom:1rem;"
-                    hide-default-footer
-                    :items="[lote.plazoMaximoEjecucion]"
-                    :headers="[
-                      {width:'20%', text:'Plazo máximo', align:'start', value:'plazoMaxExec'},
-                      {width:'20%', text:'Tipo plazo', align:'start', value:'plazoMaxExecTipo'},
-                      {width:'60%', text:'Observaciones', align:'start', value:'plazoMaxExecObserv'},
-                    ]"
-                  >
-                    <!-- DURACIÓN -->
+                  dense
+                  class="dataTable"
+                  hide-default-footer
+                  :items="[{
+                    plazoMaxExec: datos.lotes[0].plazoMaximoEjecucion.plazoMaxExec,
+                    plazoMaxExecTipo: datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecTipo,
+                    plazoMaxExecObserv: datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecObserv,
+                  }]"
+                  :headers="[
+                    {width:'15%', text: 'Plazo máximo', align:'start', value:'plazoMaxExec'},
+                    {width:'25%', text: 'Tipo plazo', align:'start', value:'plazoMaxExecTipo'},
+                    {width:'60%', text: 'Observaciones', align:'start', value:'plazoMaxExecObserv'},
+                  ]">
+                    <!-- PLAZO MÁXIMO -->
                     <template v-slot:[`item.plazoMaxExec`]="props">
-                        <v-edit-dialog large
-                        persistent
-                        cancel-text="Cancelar"
-                        save-text="Guardar"
-                        :return-value.sync="props.plazoMaxExec">
+                      <v-edit-dialog  
+                        persistent large
+                        save-text="GUARDAR"
+                        cancel-text="CANCELAR"
+                        @save="applyGlobalMaxExec"
+                        >
+                        <!-- MOSTRAR DATOS -->
+                        <span class="editField">{{props.item.plazoMaxExec}}</span>
+                        <!-- INTRODUCIR DATOS -->
+                        <template v-slot:input>
+                          <v-text-field
+                          v-model="datos.lotes[0].plazoMaximoEjecucion.plazoMaxExec"
+                          label="Introducir Plazo"
+                          type="number"
+                          single-line
+                          persistent-hint
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <!-- TIPO PLAZO -->
+                    <template v-slot:[`item.plazoMaxExecTipo`]="props">
+                      <v-edit-dialog  
+                        persistent large
+                        save-text="GUARDAR"
+                        cancel-text="CANCELAR"
+                        @save="applyGlobalMaxExec"
+                        >
+                        <!-- MOSTRAR DATOS -->
+                        <span class="editField">{{props.item.plazoMaxExecTipo}}</span>
+                        <!-- INTRODUCIR DATOS -->
+                        <template v-slot:input>
+                          <v-select :items="['Meses', 'Días', 'Años']" v-model="datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecTipo">
+                          </v-select>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <!-- OBSERVACIONES -->
+                    <template v-slot:[`item.plazoMaxExecObserv`]="props">
+                      <v-edit-dialog  
+                        persistent large
+                        save-text="GUARDAR"
+                        cancel-text="CANCELAR"
+                        @save="applyGlobalMaxExec"
+                        >
+                        <!-- MOSTRAR DATOS -->
+                        <span class="editField" v-if="props.item.plazoMaxExecObserv === undefined">
+                          <v-icon color="info" small>mdi-pencil</v-icon>
+                          Introducir observaciones
+                        </span>
+                        <span class="editField" v-else>{{props.item.plazoMaxExecObserv}}</span>
+                        <!-- INTRODUCIR DATOS -->
+                        <template v-slot:input>
+                          <v-textarea
+                          v-model="datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecObserv"
+                          dense
+                          single-line
+                          ></v-textarea>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                  </v-data-table> 
+                </div>
+                <!-- INDIVIDUAL POR LOTE -->
+                <div v-else>
+                  <div v-for="lote, k in datos.lotes" :key="k">
+                    Lote nº {{k+1}}: <b>{{lote.descripcion}}</b>
+                    <v-data-table
+                      dense
+                      class="dataTable"
+                      hide-default-footer
+                      :items="[{
+                        plazoMaxExec: lote.plazoMaximoEjecucion.plazoMaxExec,
+                        plazoMaxExecTipo: lote.plazoMaximoEjecucion.plazoMaxExecTipo,
+                        plazoMaxExecObserv: lote.plazoMaximoEjecucion.plazoMaxExecObserv,
+                      }]"
+                      :headers="[
+                        {width:'15%', text: 'Plazo máximo', align:'start', value:'plazoMaxExec'},
+                        {width:'25%', text: 'Tipo plazo', align:'start', value:'plazoMaxExecTipo'},
+                        {width:'60%', text: 'Observaciones', align:'start', value:'plazoMaxExecObserv'},
+                      ]">
+                      <!-- PLAZO MAXIMO -->
+                      <template v-slot:[`item.plazoMaxExec`]="props">
+                        <v-edit-dialog  
+                          persistent large
+                          save-text="GUARDAR"
+                          cancel-text="CANCELAR"
+                          >
+                          <!-- MOSTRAR DATOS -->
                           <span class="editField">{{props.item.plazoMaxExec}}</span>
+                          <!-- INTRODUCIR DATOS -->
                           <template v-slot:input>
                             <v-text-field
-                            v-model="props.item.plazoMaxExec"
-                            label="Editar"
-                            single-line
+                            v-model="datos.lotes[k].plazoMaximoEjecucion.plazoMaxExec"
+                            label="Introducir Plazo"
                             type="number"
+                            single-line
+                            persistent-hint
                             ></v-text-field>
                           </template>
                         </v-edit-dialog>
-                    </template>
-
-                    <!-- TIPO -->
-                    <template v-slot:[`item.plazoMaxExecTipo`]="props">
-                        <v-edit-dialog large
-                        persistent
-                        cancel-text="Cancelar"
-                        save-text="Guardar"
-                        :return-value.sync="props.plazoMaxExecTipo">
+                      </template>
+                      <!-- TIPO PLAZO -->
+                      <template v-slot:[`item.plazoMaxExecTipo`]="props">
+                        <v-edit-dialog  
+                          persistent large
+                          save-text="GUARDAR"
+                          cancel-text="CANCELAR"
+                          >
+                          <!-- MOSTRAR DATOS -->
                           <span class="editField">{{props.item.plazoMaxExecTipo}}</span>
+                          <!-- INTRODUCIR DATOS -->
                           <template v-slot:input>
-                            <v-select 
-                            style="margin-top:1rem;"
-                            dense filled
-                            :items="['Días', 'Meses', 'Años']"
-                            v-model="props.item.plazoMaxExecTipo">
+                            <v-select :items="['Meses', 'Días', 'Años']" v-model="datos.lotes[k].plazoMaximoEjecucion.plazoMaxExecTipo">
                             </v-select>
                           </template>
                         </v-edit-dialog>
-                    </template>
-
-                    <!-- DESCRIPCION -->
-                    <template v-slot:[`item.plazoMaxExecObserv`]="props">
-                        <v-edit-dialog large
-                        persistent
-                        cancel-text="Cancelar"
-                        save-text="Guardar"
-                        :return-value.sync="props.plazoMaxExecObserv">
-                          <span class="editField" v-if="props.item.plazoMaxExecObserv !== undefined">{{props.item.plazoMaxExecObserv}}</span>
-                          <span class="editField" v-else><v-icon color="info" small>mdi-pencil</v-icon></span>
+                      </template>
+                      <!-- OBSERVACIONES -->
+                      <template v-slot:[`item.plazoMaxExecObserv`]="props">
+                        <v-edit-dialog  
+                          persistent large
+                          save-text="GUARDAR"
+                          cancel-text="CANCELAR"
+                          >
+                          <!-- MOSTRAR DATOS -->
+                          <span class="editField" v-if="props.item.plazoMaxExecObserv === undefined">
+                            <v-icon color="info" small>mdi-pencil</v-icon>
+                            Introducir observaciones
+                          </span>
+                          <span class="editField" v-else>{{props.item.plazoMaxExecObserv}}</span>
+                          <!-- INTRODUCIR DATOS -->
                           <template v-slot:input>
-                            <v-text-field
-                            v-model="props.item.plazoMaxExecObserv"
-                            label="Editar"
+                            <v-textarea
+                            v-model="datos.lotes[k].plazoMaximoEjecucion.plazoMaxExecObserv"
+                            dense
                             single-line
-                            ></v-text-field>
+                            ></v-textarea>
                           </template>
                         </v-edit-dialog>
-                    </template>
-                  </v-data-table>
+                      </template>
+                    </v-data-table>
+                    <br/>
+                  </div>
                 </div>
               </v-col>
               <!-- NO HAY LOTES -->
@@ -844,17 +943,110 @@
               <!-- ALERTAS -->
               <v-col cols="12" v-if="checkMaxTerms()">
                 <v-alert 
-                  dense type="error">No puede haber plazos parciales con valor igual a cero. Revise los datos
+                  dense type="error">No puede haber plazos máximos de ejecución con valor igual a cero. Revise los datos
                 </v-alert>
               </v-col>
             </v-row>
-            <!-- IF: Se define como contrato con plazo ejecucion & plazos parciales (indicar plazos parciales) -->
+            <!-- PLAZOS PARCIALES -->
             <v-row v-if="datos.definicion === true && datos.modalidad === false">
-              <v-col cols="12">
-                <h5 class="subtitle">Definir plazos parciales:</h5>
-                <br/>
-                <!-- SI HAY LOTES -->
-                <div v-if="datos.lotes.length > 1">
+              <!-- HAY LOTES -->
+              <v-col cols="12" v-if="datos.lotes.length>1">
+                <!-- SE APLICA DE MODO INDIVIDUAL O PARA TODOS LOS LOTES -->
+                <h5 class="subtitle" style="margin-bottom:0.5rem;">Se han detectado lotes ¿Cómo se aplicará el plazo máximo de ejecución?</h5>
+                <v-radio-group v-model="datos.tipoPlazoParcial">
+                  <v-radio label="Los mismos plazos parciales para todos los lotes" :value="true" @click="resetPlazosParciales()"></v-radio>
+                  <v-radio label="Plazos parciales diferentes para cada lote" :value="false" @click="resetPlazosParciales()"></v-radio>
+                </v-radio-group>
+                <!-- LOS MISMOS PLAZOS PARCIALES PARA TODOS LOS LOTES -->
+                <div v-if="datos.tipoPlazoParcial===true">
+                  <v-row>
+                      <v-col cols="12" md="3">
+                        <v-btn small block color="success" @click="createTerm(0)">Añadir plazo</v-btn>
+                      </v-col>
+                      <v-col cols="12" md="9">
+                        <v-data-table
+                          dense hide-default-footer
+                          class="dataTable" style="margin-bottom:1rem;"
+                          :items="datos.lotes[0].plazosParciales"
+                          :headers="[
+                          {width:'40%', text: 'Descripción', align: 'start', value:'ppDescripcion'},
+                          {width:'20%', text: 'Duración', align: 'start', value: 'ppDuracion'},
+                          {width:'20%', text: 'Tipo', align: 'start', value: 'ppTipo'},
+                          {width:'20%', text: 'Acciones', align: 'center', value: 'actions'}
+                          ]">
+                          <!-- DESCRIPCIÓN -->
+                          <template v-slot:[`item.ppDescripcion`]="props">
+                            <v-edit-dialog  
+                              persistent large
+                              save-text="GUARDAR"
+                              cancel-text="CANCELAR"
+                              @save="applyGlobalPartials"
+                              >
+                              <!-- MOSTRAR DATOS -->
+                              <span class="editField">{{props.item.ppDescripcion}}</span>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-text-field
+                                v-model="datos.lotes[0].plazosParciales[props.index].ppDescripcion"
+                                label="Introducir Descripción"
+                                single-line
+                                persistent-hint
+                                ></v-text-field>
+                              </template>
+                            </v-edit-dialog>
+                          </template>
+                          <!-- DURACIÓN -->
+                          <template v-slot:[`item.ppDuracion`]="props">
+                            <v-edit-dialog  
+                              persistent large
+                              save-text="GUARDAR"
+                              cancel-text="CANCELAR"
+                              @save="applyGlobalPartials"
+                              >
+                              <!-- MOSTRAR DATOS -->
+                              <span class="editField">{{props.item.ppDuracion}}</span>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-text-field
+                                v-model="datos.lotes[0].plazosParciales[props.index].ppDuracion"
+                                label="Introducir Duracion"
+                                type="number"
+                                single-line
+                                persistent-hint
+                                ></v-text-field>
+                              </template>
+                            </v-edit-dialog>
+                          </template>
+                          <!-- TIPO -->
+                          <template v-slot:[`item.ppTipo`]="props">
+                            <v-edit-dialog  
+                              persistent large
+                              save-text="GUARDAR"
+                              cancel-text="CANCELAR"
+                              @save="applyGlobalPartials"
+                              >
+                              <!-- MOSTRAR DATOS -->
+                              <span class="editField">{{props.item.ppTipo}}</span>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-select
+                                v-model="datos.lotes[0].plazosParciales[props.index].ppTipo"
+                                :items="['Meses', 'Días', 'Años']"></v-select>
+                              </template>
+                            </v-edit-dialog>
+                          </template>
+                          <!-- BORRAR PLAZO PARCIAL -->
+                          <template v-slot:[`item.actions`]="props">
+                            <v-icon 
+                            :disabled="datos.lotes[0].plazosParciales.length === 1"
+                            color="error" @click="deleteTerm(0, props.index)">mdi-delete</v-icon>
+                          </template>
+                        </v-data-table>
+                      </v-col>
+                  </v-row>
+                </div>
+                <!-- PLAZOS PARCIALES DIFERENTES PARA CADA LOTE -->
+                <div v-if="datos.tipoPlazoParcial===false">
                   <div v-for="lote, i in datos.lotes" :key="i">
                     <v-row>
                       <v-col cols="12" md="3">
@@ -871,77 +1063,85 @@
                           {width:'20%', text: 'Duración', align: 'start', value: 'ppDuracion'},
                           {width:'20%', text: 'Tipo', align: 'start', value: 'ppTipo'},
                           {width:'20%', text: 'Acciones', align: 'center', value: 'actions'}
-                          ]"
-                        > 
-                          <!-- DESCRIPCION -->
+                          ]">
+                          <!-- DESCRIPCIÓN -->
                           <template v-slot:[`item.ppDescripcion`]="props">
-                              <v-edit-dialog large
-                              persistent
-                              cancel-text="Cancelar"
-                              save-text="Guardar"
-                              :return-value.sync="props.ppDescripcion">
-                                <span class="editField">{{props.item.ppDescripcion}}</span>
-                                <template v-slot:input>
-                                  <v-text-field
-                                  v-model="props.item.ppDescripcion"
-                                  label="Editar"
-                                  single-line
-                                  ></v-text-field>
-                                </template>
-                              </v-edit-dialog>
+                            <v-edit-dialog  
+                              persistent large
+                              save-text="GUARDAR"
+                              cancel-text="CANCELAR"
+                              >
+                              <!-- MOSTRAR DATOS -->
+                              <span class="editField">{{props.item.ppDescripcion}}</span>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-text-field
+                                v-model="datos.lotes[i].plazosParciales[props.index].ppDescripcion"
+                                label="Introducir Descripción"
+                                single-line
+                                persistent-hint
+                                ></v-text-field>
+                              </template>
+                            </v-edit-dialog>
                           </template>
-
                           <!-- DURACIÓN -->
                           <template v-slot:[`item.ppDuracion`]="props">
-                              <v-edit-dialog large
-                              persistent
-                              cancel-text="Cancelar"
-                              save-text="Guardar"
-                              :return-value.sync="props.ppDuracion">
-                                <span class="editField">{{props.item.ppDuracion}}</span>
-                                <template v-slot:input>
-                                  <v-text-field
-                                  v-model="props.item.ppDuracion"
-                                  label="Editar"
-                                  single-line
-                                  type="number"
-                                  ></v-text-field>
-                                </template>
-                              </v-edit-dialog>
+                            <v-edit-dialog  
+                              persistent large
+                              save-text="GUARDAR"
+                              cancel-text="CANCELAR"
+                              >
+                              <!-- MOSTRAR DATOS -->
+                              <span class="editField">{{props.item.ppDuracion}}</span>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-text-field
+                                v-model="datos.lotes[i].plazosParciales[props.index].ppDuracion"
+                                label="Introducir Duracion"
+                                type="number"
+                                single-line
+                                persistent-hint
+                                ></v-text-field>
+                              </template>
+                            </v-edit-dialog>
                           </template>
-
                           <!-- TIPO -->
                           <template v-slot:[`item.ppTipo`]="props">
-                              <v-edit-dialog large
-                              persistent
-                              cancel-text="Cancelar"
-                              save-text="Guardar"
-                              :return-value.sync="props.ppTipo">
-                                <span class="editField">{{props.item.ppTipo}}</span>
-                                <template v-slot:input>
-                                  <v-select 
-                                  style="margin-top:1rem;"
-                                  dense filled
-                                  :items="['Días', 'Meses', 'Años']"
-                                  v-model="props.item.ppTipo">
-                                  </v-select>
-                                </template>
-                              </v-edit-dialog>
+                            <v-edit-dialog  
+                              persistent large
+                              save-text="GUARDAR"
+                              cancel-text="CANCELAR"
+                              >
+                              <!-- MOSTRAR DATOS -->
+                              <span class="editField">{{props.item.ppTipo}}</span>
+                              <!-- INTRODUCIR DATOS -->
+                              <template v-slot:input>
+                                <v-select
+                                v-model="datos.lotes[i].plazosParciales[props.index].ppTipo"
+                                :items="['Meses', 'Días', 'Años']"></v-select>
+                              </template>
+                            </v-edit-dialog>
                           </template>
-
-                          <!-- ACCIONES -->
+                          <!-- BORRAR PLAZO PARCIAL -->
                           <template v-slot:[`item.actions`]="props">
-                            <v-btn @click="deleteTerm(i, props.index)"
+                            <v-icon 
                             :disabled="lote.plazosParciales.length === 1"
-                            icon color="error" small><v-icon>mdi-delete</v-icon></v-btn>
+                            color="error" @click="deleteTerm(i, props.index)">mdi-delete</v-icon>
                           </template>
                         </v-data-table>
                       </v-col>
                     </v-row>
                   </div>
                 </div>
-                <!-- SI NO HAY LOTES -->
-                <div v-else>
+                <!-- ALERTAS -->
+                <v-alert type="error" dense v-if="checkPartials()">
+                  Existen plazos con una duración igual a cero. Por favor, revise los datos.
+                </v-alert>
+              </v-col>
+              <!-- NO HAY LOTES -->
+              <v-col cols="12" v-else>
+                <h5 class="subtitle">Definir plazos parciales:</h5>
+                <br/>
                   <v-row>
                      <v-col cols="12" md="3">
                         <v-btn small block color="success" @click="createTerm(0)">Añadir plazo</v-btn>
@@ -1024,7 +1224,6 @@
                       </v-data-table>
                     </v-col>
                   </v-row>
-                </div>
                 <v-alert 
                 v-if="checkTerms()"
                 dense type="error">No puede haber plazos parciales con valor igual a cero. Revise los datos
@@ -1034,7 +1233,23 @@
           </v-col>
         </v-row>
 
-        <!-- IF: Se define como contrato con plazo de duración / (Seleccionar modalidad - plazo en meses - periodo) -->
+        <!-- UN CONTRATO CON PLAZO DE EJECUCIÓN / (Ampliación del plazo de ejecución) -->
+        <v-row dense class="subRow" v-if="datos.definicion === true">
+          <v-col cols="12" md="3">
+            <h5 class="subtitle">Ampliación del plazo de ejecución</h5>
+            <v-radio-group v-model="datos.ampliacionPlazo">
+                <v-radio label="Si se prevé" :value="true"></v-radio>
+                <v-radio label="No se prevé" :value="false"></v-radio>
+            </v-radio-group>
+          </v-col>
+          <v-col cols="12" md="9" v-if="datos.ampliacionPlazo === true">
+            <h5 class="subtitle">Justificación en caso de que se prevea ampliación del plazo de ejecución:</h5>
+            <br/>
+            <v-textarea filled auto-grow v-model="datos.justificacionAmpliacionPlazoEjecucion"></v-textarea>
+          </v-col>
+        </v-row>
+
+        <!-- UN CONTRATO CON PLAZO DE DURACION -->
         <v-row dense class="subRow" v-if="datos.definicion === false">
           <!-- SELECTOR PLAZO EN MESES / PERIODO -->
           <v-col cols="12" md="2">
@@ -1044,7 +1259,7 @@
               <v-radio label="Periodo" :value="false"></v-radio>
             </v-radio-group>
           </v-col>
-          <!-- IF: MESES --> 
+          <!-- MESES --> 
           <v-row v-if="datos.definicion === false && datos.modoPlazo === true"> 
             <v-col cols="12" md="2">
               <h5 class="subtitle">Introducir plazo en meses</h5>
@@ -1052,7 +1267,7 @@
               <v-text-field filled label="Meses" v-model="datos.plazoMeses"></v-text-field>
             </v-col>
           </v-row>
-          <!-- IF: PERIODO --> 
+          <!-- PERIODO --> 
           <v-row v-if="datos.definicion === false && datos.modoPlazo === false">
             <!-- TANTO SI HAY LOTES COMO SI NO-->
             <v-col cols="12">
@@ -1078,7 +1293,7 @@
                         cancel-text="Cancelar"
                         save-text="Guardar"
                         :return-value.sync="props.item.inicio">
-                          <span class="editField">{{props.item.inicio}}</span>
+                          <span class="editField">{{returnLocalDate(props.item.inicio)}}</span>
                           <template v-slot:input>
                             <v-date-picker
                             style="margin:1rem 0rem -2rem 0rem;"
@@ -1099,7 +1314,7 @@
                         cancel-text="Cancelar"
                         save-text="Guardar"
                         :return-value.sync="props.item.fin">
-                          <span class="editField">{{props.item.fin}}</span>
+                          <span class="editField">{{returnLocalDate(props.item.fin)}}</span>
                           <template v-slot:input>
                             <v-date-picker
                               style="margin:1rem 0rem -2rem 0rem;"
@@ -1138,23 +1353,7 @@
           </v-row>
         </v-row>
 
-        <!-- IF: Se define como contrato con plazo ejecucion / (Ampliación del plazo de ejecución) -->
-        <v-row dense class="subRow" v-if="datos.definicion === true">
-          <v-col cols="12" md="3">
-            <h5 class="subtitle">Ampliación del plazo de ejecución</h5>
-            <v-radio-group v-model="datos.ampliacionPlazo">
-                <v-radio label="Si se prevé" :value="true"></v-radio>
-                <v-radio label="No se prevé" :value="false"></v-radio>
-            </v-radio-group>
-          </v-col>
-          <v-col cols="12" md="9" v-if="datos.ampliacionPlazo === true">
-            <h5 class="subtitle">Justificación en caso de que se prevea ampliación del plazo de ejecución:</h5>
-            <br/>
-            <v-textarea filled auto-grow v-model="datos.justificacionAmpliacionPlazoEjecucion"></v-textarea>
-          </v-col>
-        </v-row>
-
-        <!-- IF: Se define como contrato con plazo de duración / Configurador prorroga -->
+        <!-- UN CONTRATO CON PLAZO DE DURACION / Configurador prorroga -->
         <v-row dense class="subRow" v-if="datos.definicion === false">
           <v-col cols="12" md="2" > 
             <h5 class="subtitle">Prórroga</h5>
@@ -1396,7 +1595,7 @@
           </v-col>
         </v-row>
 
-        <!-- El plazo del contrato se iniciará -->
+        <!-- EL PLAZO DEL CONTRATO SE INICIARÁ -->
         <v-row dense class="subRow">
             <v-col cols="12" md="3">
               <h5 class="subtitle">El plazo del contrato se iniciará:</h5>
@@ -1496,10 +1695,9 @@
 
     <!-- LUGAR DE PRESTACIÓN -->
     <div class="group">
-      <h3>Lugar de prestación:</h3>
+      <h3>Lugar de entrega:</h3>
       <v-row class="rowGroup">
         <v-col cols="12">
-          <h5 class="subtitle">La empresa adjudicataria está autorizada a ejecutar los servicios objeto del contrato, o parte de los mismos, en las siguientes dependencias:</h5>
           <v-textarea filled auto-grow v-model="datos.lugarPrestacion"></v-textarea>
         </v-col>
       </v-row>
@@ -1662,6 +1860,8 @@ export default {
           modoPlazo: true,
           prorroga: false,
           tipoProrroga: false,
+          tipoPlazoMaximo: false,
+          tipoPlazoParcial: false,
           plazoInicio: true,
           ampliacionPlazo: false,
           fechaInicioObservaciones: '',
@@ -1807,8 +2007,8 @@ export default {
         /*VALOR ESTIMADO: Calcula el importe total de la modificación a
         partir del porcentaje introducido en el cuadro de dialogo en el
         apartado MODIFICACIÓN DEL CONTRATO*/
-        this.estimateValueTotals()
-      }
+        this.estimateValueTotals()   
+              }
     },
   },
 
@@ -1846,6 +2046,66 @@ export default {
           lote.plazoProrrogaObservaciones = datos.plazoProrrogaObservaciones
         })
       }
+    },
+
+    resetTipoPlazoMaximo(){
+      this.datos.lotes.forEach((lote)=>{
+        lote.plazoMaximoEjecucion = {
+            plazoMaxExec: 0,
+            plazoMaxExecTipo: 'Meses',
+            plazoMaxExecObserv: undefined,
+        }
+      })
+    },
+
+    resetPlazosParciales(){
+      this.datos.lotes.forEach((lote)=>{
+        lote.plazosParciales = [{
+          ppDescripcion: 'Nuevo plazo',
+          ppDuracion: 0,
+          ppTipo: 'Meses',
+        }]
+      })
+    },
+
+    applyGlobalMaxExec(){
+      if(this.datos.lotes.length !== 0){
+        const datos = {
+          plazoMaxExec: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExec,
+          plazoMaxExecTipo: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecTipo,
+          plazoMaxExecObserv: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecObserv,
+        }
+
+        this.datos.lotes.forEach((lote)=>{
+          lote.plazoMaximoEjecucion = datos
+        })
+      }
+    },
+    
+    applyGlobalPartials(){
+      if(this.datos.lotes.length !== 0){
+        const datos = this.datos.lotes[0].plazosParciales;
+        this.datos.lotes.forEach((lote)=>{
+          lote.plazosParciales = datos;
+        })
+      }
+    },
+
+    checkPartials(){
+      let alert = false;
+      this.datos.lotes.forEach((lote)=>{
+        lote.plazosParciales.forEach((plazo)=>{
+          if(plazo.ppDuracion == 0){
+            alert = true
+          }
+        })
+      })
+      return alert;
+    },
+
+    returnLocalDate(date){
+      const localDate = date.split("-")
+      return (`${localDate[2]} / ${localDate[1]} / ${localDate[0]}`)
     },
 
     estimateValueTotals(){
