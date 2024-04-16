@@ -464,7 +464,7 @@
                     cancel-text="CANCELAR"
                     save-text="GUARDAR"
                     :return-value.sync="props.item.year"
-                    @save="saveAnualidad(props.item)"
+                    @save="saveAnualidad(props)"
                     >
                       <template v-slot:input>
                         <!-- INTRODUCIR DATOS -->
@@ -487,7 +487,7 @@
                     cancel-text="CANCELAR"
                     save-text="GUARDAR"
                     :return-value.sync="props.item.importeSinImp"
-                    @save="saveAnualidad(props.item)"
+                    @save="saveAnualidad(props)"
                     >
                       <template v-slot:input>
                         <!-- INTRODUCIR DATOS -->
@@ -521,17 +521,16 @@
                 </v-data-table>
 
                 <!-- ALERTAS VALIDACION -->
-                  <v-alert v-if="lote.alert === 'noData'" type="info">No se han introducido datos.</v-alert>
-                  <v-alert v-if="lote.alert === 'igualcero'" type="error">La suma de las anualidades no puede ser igual a cero.</v-alert>
-                  <v-alert v-if="lote.alert === 'mayorQuePbase'" type="error">La suma de las anualidades no puede ser mayor que el presupuesto base.</v-alert>
-                  <v-alert v-if="lote.alert === 'notEqual'" type="error">La suma de las anualidades no coincide con el presupuesto base.</v-alert>
-                  <v-alert v-if="lote.alert === 'dataOK'" type="success">¡Datos correctos!</v-alert>
+                  <v-alert dense text v-if="lote.alert === 'igualcero'" type="error">La suma de las anualidades no puede ser igual a cero.</v-alert>
+                  <v-alert dense text v-if="lote.alert === 'mayorQuePbase'" type="error">La suma de las anualidades no puede ser mayor que el presupuesto base.</v-alert>
+                  <v-alert dense text v-if="lote.alert === 'notEqual'" type="error">La suma de las anualidades no coincide con el presupuesto base.</v-alert>
+                  <v-alert dense text v-if="lote.alert === 'dataOK'" type="success">¡Datos correctos!</v-alert>
               </v-col>
             </v-row>
           </div>
           <!-- ALERTA EN CASO DE NO EXISTIR DATOS DE PRESUPUESTO BASE -->
           <div v-else>
-            <v-alert type="info">Debe introducir primero un presupuesto base de licitación o definir los lotes antes de introducir anualidades.</v-alert>
+            <v-alert dense type="info">Debe introducir primero un presupuesto base de licitación o definir los lotes antes de introducir anualidades.</v-alert>
           </div>
         </v-col>
       </v-row>
@@ -569,7 +568,7 @@
         <!-- IF: Se preven modificaciones && tipo modificacion es numero unidades -->
         <v-row dense class="subRow" v-if="datos.preveModif === true && datos.tipoModif === 'numeroUnidades'">
           <v-col cols="12" m>
-            <v-alert dense type="info">
+            <v-alert dense text type="info">
               <b>ATENCIÓN:</b><br/>
               Si selecciona variar el número de unidades previstas en el contrato, será siempre 
               necesario que las nuevas unidades sean iguales a las previamente
@@ -581,7 +580,7 @@
         <!-- IF: Se preven modificaciones && tipo modificacion resto de casos -->
         <v-row dense class="subRow" v-if="datos.preveModif === true && datos.tipoModif !== 'numeroUnidades'">
           <v-col cols="12" m>
-            <v-alert dense type="info">
+            <v-alert dense text type="info">
               <b>ATENCIÓN:</b><br/>
               Será necesario que los precios del contrato inicial se hubieran 
               definido descomponiéndose en sus costes elementales y que los precios 
@@ -678,8 +677,8 @@
           <v-col cols="12">
               <h5 class="subtitle">Se define como:</h5>
               <v-radio-group v-model="datos.definicion">
-                  <v-radio label="Un contrato con plazo de ejecución" :value="true"></v-radio>
-                  <v-radio label="Un contrato con plazo de duración" :value="false"></v-radio>
+                  <v-radio label="Un contrato con plazo de ejecución" :value="true" @click="resetPlazos"></v-radio>
+                  <v-radio label="Un contrato con plazo de duración" :value="false" @click="resetPlazos"></v-radio>
               </v-radio-group>
           </v-col>
         </v-row>
@@ -690,8 +689,8 @@
           <v-col cols="12" md="3">
             <h5 class="subtitle">Seleccionar modalidad</h5>
             <v-radio-group v-model="datos.modalidad">
-                <v-radio label="Plazo máximo de ejecución" :value="true"></v-radio>
-                <v-radio label="Plazos parciales" :value="false"></v-radio>
+                <v-radio label="Plazo máximo de ejecución" :value="true" @click="resetPlazosParciales"></v-radio>
+                <v-radio label="Plazos parciales" :value="false" @click="resetTipoPlazoMaximo"></v-radio>
             </v-radio-group>
           </v-col>
           <v-col cols="12" md="9">
@@ -1586,10 +1585,10 @@
               </div>
             </div>
             <!-- ALERTAS -->
-            <v-alert dense v-if="checkExtensions()" type="error" style="margin-left:1rem;">
+            <v-alert dense text v-if="checkExtensions()" type="error" style="margin-left:1rem;">
               Existen prórrogas con importe o plazo igual a cero. Por favor, compruebe los datos.
             </v-alert>
-            <v-alert dense v-else type="success" style="margin-left:1rem;">
+            <v-alert dense text v-else type="success" style="margin-left:1rem;">
               Datos correctos
             </v-alert>
           </v-col>
@@ -1722,7 +1721,10 @@
       <h3>Procedimiento</h3>
       <v-row class="rowGroup">
         <v-col cols="12">
-          <h5>Seleccionar tramitación del procedimiento</h5>
+          <h5>Seleccionar tramitación del procedimiento 
+            <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-31" target="blank" title="Ver artículo 119.2 LCSP">[artículo 119.2 LCSP]
+            </a>
+          </h5>
             <v-radio-group v-model="datos.tramitacionProc">
                 <v-radio label="Ordinaria" :value="true"></v-radio>
                 <v-radio label="Urgente, (Se acompañará la correspondiente declaración de urgencia). En este caso, los plazos mencionados en este pliego para la licitación, adjudicación y formalización del contrato se reducirán a la mitad, con las excepciones previstas en el artículo 119.2 de la LCSP." :value="false"></v-radio>
@@ -1904,36 +1906,6 @@ export default {
           datos.descripcionDesgloseCategoria = undefined;
         }
 
-        //VALIDACIONES DE ANUALIDADES
-        if(datos.lotes.length !== 0){
-          datos.lotes.forEach((lote)=>{
-            if(lote.anualidades.length > 0){
-              lote.totalAnualidades = 0
-              const valorAnualidades = lote.anualidades.map((anualidad)=>parseFloat(anualidad.importeSinImp))
-              valorAnualidades.forEach((valor)=>lote.totalAnualidades += valor)
-
-              //SUMAS ANUALIDADES COMPARADA CON PRESUPUESTO BASE
-              //TODO: CUANDO CARGAMOS DATOS DE UN EXPEDIENTE GUARDADO HAY UN BUG DE BUCLE INFINITO
-              if(parseFloat(lote.totalAnualidades) !== parseFloat(lote.baseLote)){
-                if(lote.totalAnualidades === 0){
-                  lote.alert = 'igualcero';
-                } else if (parseFloat(lote.totalAnualidades) > parseFloat(lote.baseLote)){
-                  lote.alert = 'mayorQuePbase';
-                } else {
-                  lote.alert = 'notEqual';
-                }
-              } else {
-                lote.alert = 'dataOK';
-              }
-              
-            }
-          })
-        } else {
-          datos.lotes.forEach((lote)=>{
-            lote.alert = 'noData'
-          })
-        }
-      
         /*Presupuesto base de licitación y lotes: Necesario para generar
         el pliego a Word. TODO: repasar si esto es imprescindible 
         */
@@ -2198,6 +2170,31 @@ export default {
       }
     },
 
+    resetPlazos(){
+    /* Si hay un cambio de seleccion en "Se define como" se resetean los valores
+    de los plazos para evitar valores residuales */ 
+      this.datos.lotes.forEach((lote)=>{
+        lote.plazoMaximoEjecucion = {
+            plazoMaxExec: 0,
+            plazoMaxExecTipo: 'Meses',
+            plazoMaxExecObserv: undefined,
+          };
+        lote.plazosParciales = [
+          {
+            ppDescripcion: 'Nuevo plazo',
+            ppDuracion: 0,
+            ppTipo: 'Meses',
+          }
+        ];
+        lote.periodo = {
+          inicio:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+          fin: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+          observaciones: undefined,
+        }
+      })
+      this.datos.plazoMeses = undefined;
+    },
+
     createLotes(){
       this.datos.lotes = [];
       this.datos.lotesGuardados = false;
@@ -2243,6 +2240,9 @@ export default {
           plazoProrrogaObservaciones: undefined,
           porcentajeModificacion: 0,
           valorEstimadoLote: 0,
+          //SE UTILIZAN MAS ADELANTE
+          vanRequerido: 0,
+          vanMaxExigible: 0,
           alert: null,
         }
         this.datos.lotes.push(this.newLote)
@@ -2352,11 +2352,35 @@ export default {
         };
         lote.anualidades.push(this.newData);
       }
+      this.checkAnnuality();
     },
 
-    saveAnualidad(data){
+    saveAnualidad(props){
+      const data = props.item;
       data.totalImp = parseFloat(data.importeSinImp) * ((data.valueImp / 100));
       data.totalImpInc = parseFloat(data.importeSinImp) + data.totalImp;
+
+      //VALIDAR Y LANZAR ALERTA EN SU CASO
+      this.checkAnnuality();
+    },
+
+    checkAnnuality(){
+      this.datos.lotes.forEach((lote)=>{
+        this.total = 0;
+        lote.anualidades.forEach((anualidad)=>{
+          this.total += parseFloat(anualidad.importeSinImp)
+        })  
+        //EVALUAMOS Y LANZAMOS ALERTA EN SU CASO
+        if(this.total > parseFloat(lote.baseLote)){
+          lote.alert = 'mayorQuePbase'
+        } else if (this.total === 0){
+          lote.alert = 'igualcero'
+        } else if (this.total !== parseFloat(lote.baseLote)){
+          lote.alert = 'notEqual'
+        } else if (this.total == parseFloat(lote.baseLote)) {
+          lote.alert = 'dataOK'
+        }
+      })
     },
   
     returnTotal(impuesto, base) {

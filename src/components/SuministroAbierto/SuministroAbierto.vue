@@ -29,6 +29,7 @@
                         background-color="#00BCD4"
                         dark
                         show-arrows
+                        center-active
                         fixed-tabs
                         v-model="tab"
                         @change="goToEnd(tab)"
@@ -146,25 +147,6 @@
                 </v-sheet>
             </v-col>
         </v-row>
-        <v-row>
-            <v-col cols="12">
-                <v-row>
-                    <v-col cols="12">
-                        <v-card-actions class="bottomActions">
-                                <v-btn color="info" class="footerButton" @click="prevTab" :disabled="tab < 1">
-                                    <v-icon>mdi-arrow-left</v-icon>
-                                    ANTERIOR
-                                </v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary" class="footerButton" @click="nextTab" :disabled="tab > 7">
-                                    SIGUIENTE
-                                    <v-icon>mdi-arrow-right</v-icon>
-                                </v-btn>
-                        </v-card-actions>
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
         <v-dialog max-width="40rem" v-model="confirmExitDialog">
             <v-card class="exitDialogContainer">
                 <h1>ATENCIÓN</h1>
@@ -263,16 +245,6 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
                 }
             },
 
-            nextTab(){
-                this.tab = this.tab + 1
-                this.activateTab(this.tab + 1)
-            },
-
-            prevTab(){
-                this.tab = this.tab - 1
-                this.activateTab(this.tab + 1)
-            },
-
             goToEnd(data){        
                 this.tab = data;
                 this.activeTab = data + 1
@@ -300,6 +272,8 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
                 }
                 else if (data.componente === 'CapacidadSolvencia'){
                     this.datosCapacidadSolvencia = Object.assign(data)
+                    //Pueden existir datos de lotes actualizados.
+                    this.datosPresupuestoAnualidades.lotes = this.datosCapacidadSolvencia.lotes;
                 }
                 else if (data.componente === 'Garantias'){
                     this.datosGarantias = Object.assign(data)
@@ -323,10 +297,9 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
 </script>
 
 <style>
-    #mainWrapper {
-        margin: auto auto;
-        width: 105rem;
-        max-width: 92vw;
+    #mainWrapper > * {
+        width: 98vw;
+        margin-left: 0.5rem;
     }
 
     .exitDialogContainer{
@@ -360,7 +333,7 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
 
     .tabContent{
         padding: 1rem;
-        height: 65.5vh;
+        height: 70.5vh;
         overflow-y: auto;
     }
 

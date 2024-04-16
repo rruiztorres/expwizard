@@ -1,28 +1,28 @@
 <template>
     <div>
         <!-- SEARCH -->
-        <div>
-            <v-row class="searchBar">
-            <v-col cols="12">
-                <v-text-field
-                v-model="textoBuscar"
-                solo rounded placeholder="BUSCAR MODELO"></v-text-field>
-            </v-col>
+        <div class="searchBar">
+            <v-row>
+                <v-col cols="12">
+                    <v-text-field
+                    v-model="textoBuscar"
+                    solo rounded placeholder="BUSCAR MODELO"></v-text-field>
+                </v-col>
             </v-row>
         </div>
         
         <div class="mainContainer">
             <!-- SUMINISTROS -->
-            <div class="group">
+            <div>
                 <v-row>
                     <v-col cols="12">
                         <h3>Expedientes de suministro</h3>
                         <hr/>
                     </v-col>
                 </v-row>  
-                <v-row class="row">
+                <v-row>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card 
                         color="#0091EA" dark class="selection" @click="selectTipo('Suministro abierto varios criterios')" elevation="0">
                             <div class="titleContainer">
@@ -35,7 +35,7 @@
                         </v-card>
                     </v-col>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled
                         color="#00B8D4" dark class="selection" elevation="0">
@@ -49,7 +49,7 @@
                         </v-card>
                     </v-col>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled 
                         color="#00BFA5" dark class="selection" elevation="0">
@@ -66,7 +66,7 @@
             </div>
 
             <!-- SERVICIOS -->
-            <div class="group">
+            <div>
                 <v-row>
                     <v-col 
                     cols="12">
@@ -76,7 +76,7 @@
                 </v-row>
                 <v-row class="row">
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled 
                         color="#00C853" dark class="selection" elevation="0">
@@ -90,7 +90,7 @@
                         </v-card>
                     </v-col>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled 
                         color="#64DD17" dark class="selection" elevation="0">
@@ -104,7 +104,7 @@
                         </v-card>
                     </v-col>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled 
                         color="#AEEA00" dark class="selection" elevation="0">
@@ -122,7 +122,7 @@
             </div>
 
             <!-- OBRAS -->
-            <div class="group">
+            <div>
                 <v-row>
                     <v-col 
                     cols="12">
@@ -132,7 +132,7 @@
                 </v-row>
                 <v-row class="row">
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled
                         color="#7E57C2" dark class="selection" elevation="0">
@@ -146,7 +146,7 @@
                         </v-card>
                     </v-col>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         disabled
                         color="#EA80FC" dark class="selection" elevation="0">
@@ -160,7 +160,7 @@
                         </v-card>
                     </v-col>
                     <v-col 
-                    cols="12" sm="6" md="4" xl="2">
+                    cols="12" sm="6" md="4">
                         <v-card
                         color="#AB47BC" 
                         disabled dark class="selection" elevation="0">
@@ -207,14 +207,11 @@
 .mainContainer {
     max-height: 79vh;
     overflow-y: auto;
+    width: 100vw;
 }
 
 h1, h2, h4 {
     font-weight: 400;
-}
-
-.group{
-    margin-bottom: 1rem;
 }
 
 .selection{
@@ -247,6 +244,7 @@ h1, h2, h4 {
 }
 
 .searchBar {
+    width: 100vw;
     height: 5rem;
 }
 

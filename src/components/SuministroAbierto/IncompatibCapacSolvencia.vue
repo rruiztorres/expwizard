@@ -1,7 +1,13 @@
 <template>
     <div>
+        <!-- ALERTA PRESUPUESTO NO DETECTADO -->
+        <v-alert v-if="!presBase" type="error">
+            No se han detectado datos en la sección "Presupuesto, lotes y anualidades". Por favor, introduzca en primer
+            lugar los datos económicos en esa sección. 
+        </v-alert>
+
         <!-- INCOMPATIBILIDADES PARA LA LICITACIÓN -->
-        <div class="group">
+        <div class="group" v-if="presBase">
             <h3>Incompatibilidades para la licitación
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
@@ -22,7 +28,7 @@
                 <v-col cols="12" md="5">
                     <h5>Consideración:</h5>
                     <v-radio-group v-model="datos.participacionEmpresas">
-                        <v-radio label="No tiene consideración el contrato que se licita" :value="true"></v-radio>
+                        <v-radio @click="()=>datos.empresasExcluidas = undefined" label="No tiene consideración el contrato que se licita" :value="true"></v-radio>
                         <v-radio label="Si tiene esa consideración, las siguientes empresas han participado" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
@@ -35,7 +41,7 @@
         </div>
         
         <!-- CAPACIDAD Y SOLVENCIA -->
-        <div class="group">
+        <div class="group" v-if="presBase">
             <h3>Capacidad y solvencia</h3>
             <v-row class="rowGroup">
                 <!-- REQUISITOS DE SOLVENCIA -->     
@@ -51,135 +57,226 @@
                     , <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver artículo 89 LCSP">[artículo 89 LCSP]</a>
                     </h5>
                     <v-radio-group v-model="datos.requisitos">
-                        <v-radio label="Los exigidos supletoriamente, a falta de especificación, en los artículos 87.3 y 89 de la LCSP" :value="true"></v-radio>
-                        <v-radio label="Los que se especifican a continuación (de entre los criterios de solvencia económica y financiera -artículo 87- y técnica -artículo 89- de la LCSP)" :value="false"></v-radio>
+                        <v-radio @click="()=>datos.solvenciaEconFinanc = undefined" label="Los exigidos supletoriamente, a falta de especificación, en los artículos 87.3 y 89 de la LCSP" :value="true"></v-radio>
+                        <v-radio @click="()=>datos.solvenciaEconFinanc = undefined" label="Los que se especifican a continuación (de entre los criterios de solvencia económica y financiera -artículo 87- y técnica -artículo 89- de la LCSP)" :value="false"></v-radio>
                     </v-radio-group>
                 </v-col>
 
                 <!-- SOLVENCIA ECONOMICA FINANCIERA-->
-                <v-col cols="12" md="6" v-if="datos.requisitos === false">
-                    <h5>Solvencia económica y financiera 
-                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-9" target="blank" title="Ver artículo 87 LCSP">[art. 87 LCSP]
-                        </a>
-                    </h5>
-                    <v-radio-group v-model="datos.solvenciaEconFinanc">
-                        <v-radio label="El volumen anual de negocios, que referido al mejor ejercicio de los tres (3) últimos concluidos deberá ser:" value="volumen"></v-radio>
-                        <v-radio label="El patrimonio neto al cierre del último ejercicio económico para el que esté vencida la obligación de aprobación de las cuentas anuales no será inferior a:" value="patrimonio"></v-radio>
-                        <v-radio label="La ratio entre activos y pasivos al cierre del último ejercicio económico para el que esté vencida la obligación de aprobación de las cuentas anuales no inferior a:" value="ratio"></v-radio>
-                        <v-radio label="El licitador es un profesional (no una empresa)" value="profesional"></v-radio>
-                    </v-radio-group>
-                </v-col>
+                <v-row class="subRow">
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false">
+                        <h5>Solvencia económica y financiera 
+                            <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-9" target="blank" title="Ver artículo 87 LCSP">[art. 87 LCSP]
+                            </a>
+                        </h5>
+                        <v-radio-group v-model="datos.solvenciaEconFinanc">
+                            <v-radio @click="resetSolvenciaEconFinanc" label="El volumen anual de negocios, que referido al mejor ejercicio de los tres (3) últimos concluidos deberá ser:" value="volumen"></v-radio>
+                            <v-radio @click="resetSolvenciaEconFinanc" label="El patrimonio neto al cierre del último ejercicio económico para el que esté vencida la obligación de aprobación de las cuentas anuales no será inferior a:" value="patrimonio"></v-radio>
+                            <v-radio @click="resetSolvenciaEconFinanc" label="La ratio entre activos y pasivos al cierre del último ejercicio económico para el que esté vencida la obligación de aprobación de las cuentas anuales no inferior a:" value="ratio"></v-radio>
+                            <v-radio @click="resetSolvenciaEconFinanc" label="El licitador es un profesional (no una empresa)" value="profesional"></v-radio>
+                        </v-radio-group>
+                    </v-col>
 
-                <!-- CASO VOLUMEN ANUAL NEGOCIOS -->
-                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'volumen'">
-                    <h5>Especificar importe exigido volumen anual de negocios:</h5>
+                    <!-- CASO VOLUMEN ANUAL NEGOCIOS -->
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'volumen'">
+                        <div v-if="!checkVan()">
+                            <h5>Especificar importe exigido volumen anual de negocios:</h5>
+                            <br/>
+                            <!-- HAY LOTES -->
+                            <div v-if="this.presBase.lotes.length > 1">
+                                <v-data-table
+                                dense class="dataTable"
+                                hide-default-footer
+                                :items="presBase.lotes"
+                                :headers="[
+                                {width:'39%', text:'Lote', align:'start', value:'descripcion'},
+                                {width:'21%', text:'Valor estimado', align:'end', value:'valorEstimadoLote'},
+                                {width:'20%', text:'Importe Exigido', align:'end', value:'vanRequerido'},
+                                {width:'20%', text:'Máximo exigible', align:'end', value:'vanMaxExigible'},
+                                ]">
+                                    <!-- PRESUPUESTO BASE -->
+                                    <template v-slot:[`item.valorEstimadoLote`]="props">
+                                        {{currencyFormat(props.item.valorEstimadoLote)}}
+                                    </template>
+                                    <!-- EXIGIDO -->
+                                    <template v-slot:[`item.vanRequerido`]="props">
+                                        <v-edit-dialog  
+                                        persistent large
+                                        save-text="GUARDAR"
+                                        cancel-text="CANCELAR"
+                                        >
+                                        <!-- MOSTRAR DATOS -->
+                                        <span class="editField">{{currencyFormat(props.item.vanRequerido)}}
+                                        </span>
+                                        <!-- INTRODUCIR DATOS -->
+                                        <template v-slot:input>
+                                            <v-text-field
+                                            v-model="props.item.vanRequerido"
+                                            label="Volumen anual de negocios requerido"
+                                            type="number"
+                                            single-line
+                                            persistent-hint
+                                            ></v-text-field>
+                                        </template>
+                                        </v-edit-dialog>
+                                    </template>
+                                    <!-- MAXIMO EXIGIBLE -->
+                                    <template v-slot:[`item.vanMaxExigible`]="props">
+                                        <b
+                                        :title="props.item.info"
+                                        >{{currencyFormat(calculateVANMaxReq(props.item))}}</b>
+                                    </template>
+
+                                </v-data-table>
+                                <br/>
+                                <!-- ALERTAS -->
+                                <v-alert dense text v-if="vanRules()" type="error">
+                                    Hay valores exigidos que superan el máximo exigible o bien son igual a cero. Por favor, compruebe los datos.
+                                </v-alert>
+                            </div>
+                            <!-- NO HAY LOTES -->
+                            <div v-else>
+                                <v-data-table
+                                dense class="dataTable"
+                                hide-default-footer
+                                :items="[presBase.lotes[0]]"
+                                :headers="[
+                                {width:'34%', text:'Valor estimado', align:'end', value:'valorEstimadoLote'},
+                                {width:'33%', text:'Importe Exigido', align:'end', value:'vanRequerido'},
+                                {width:'33%', text:'Máximo exigible', align:'end', value:'vanMaxExigible'},
+                                ]">
+                                    <!-- PRESUPUESTO BASE -->
+                                    <template v-slot:[`item.valorEstimadoLote`]="props">
+                                        {{currencyFormat(props.item.valorEstimadoLote)}}
+                                    </template>
+                                    <!-- EXIGIDO -->
+                                    <template v-slot:[`item.vanRequerido`]="props">
+                                        <v-edit-dialog  
+                                        persistent large
+                                        save-text="GUARDAR"
+                                        cancel-text="CANCELAR"
+                                        >
+                                        <!-- MOSTRAR DATOS -->
+                                        <span class="editField">{{currencyFormat(props.item.vanRequerido)}}
+                                        </span>
+                                        <!-- INTRODUCIR DATOS -->
+                                        <template v-slot:input>
+                                            <v-text-field
+                                            v-model="props.item.vanRequerido"
+                                            label="Volumen anual de negocios requerido"
+                                            type="number"
+                                            single-line
+                                            persistent-hint
+                                            ></v-text-field>
+                                        </template>
+                                        </v-edit-dialog>
+                                    </template>
+                                    <!-- MAXIMO EXIGIBLE -->
+                                    <template v-slot:[`item.vanMaxExigible`]="props">
+                                        <b>{{currencyFormat(calculateVANMaxReq(props.item))}}</b>
+                                    </template>                              
+                                </v-data-table>
+                                <br/>
+                                <!-- ALERTAS -->
+                                <v-alert type="error" dense v-if="vanRules()" style="padding:0.5rem;">
+                                    El importe exigido es igual a cero o superior al máximo exigible. Por favor, revise los datos
+                                </v-alert>
+                            </div>
+                            <br/>
+                        </div>
+                        <div v-else>
+                            <h5><b>¡ANTENCIÓN!</b></h5><br/>
+                            <v-alert type="info" dense>
+                                {{alertVan}}
+                            </v-alert>
+                        </div>
+                    </v-col>
+
+                    <!-- CASO PATRIMONIO NETO AL CIERRE -->
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'patrimonio'">
+                    <h5>Especificar patrimonio neto (en Euros)</h5>
                     <br/>
-                    <v-data-table
-                        v-if="presBase.hayLotes === true"
-                        class="dataTable"
-                        :items="datos.volumenAnualNegocio"
-                        :headers="solvenciaLotesHeaders"
-                        hide-default-footer
-                    >
-                        <template v-slot:[`item.importeReq`]="props">
-                            <v-edit-dialog :return-value.sync="props.item.importeReq">
-                            <span class="editField">{{
-                            parseFloat(props.item.importeReq)
-                            }}</span>
-                            <template v-slot:input>
-                                <v-text-field
-                                v-model="props.item.importeReq"
-                                label="Editar"
-                                single-line
-                                ></v-text-field>
-                            </template>
-                            </v-edit-dialog>
-                        </template>
+                    <v-text-field dense filled v-model="datos.patrimonioNeto" 
+                    append-icon="mdi-euro"
+                    type="number"></v-text-field>
+                    </v-col>
 
-                        <template v-slot:[`item.actions`]="props">
-                            <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
-                            <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
-                        </template>
-                    </v-data-table>
-
-                    <v-data-table
-                        v-else
-                        class="dataTable"
-                        :items="datos.volumenAnualNegocio"
-                        :headers="solvenciaHeaders"
-                        hide-default-footer
-                    >
-                        <template v-slot:[`item.importeReq`]="props">
-                            <v-edit-dialog :return-value.sync="props.item.importeReq">
-                            <span class="editField">{{
-                            parseFloat(props.item.importeReq)
-                            }}</span>
-                            <template v-slot:input>
-                                <v-text-field
-                                v-model="props.item.importeReq"
-                                label="Editar"
-                                single-line
-                                ></v-text-field>
-                            </template>
-                            </v-edit-dialog>
-                        </template>
-
-                        <template v-slot:[`item.actions`]="props">
-                            <v-icon color="green" v-if="props.item.actions === true">mdi-check-all</v-icon>
-                            <v-icon color="red" v-if="props.item.actions === false"> mdi-alert-circle</v-icon>
-                        </template>
-                    </v-data-table>
+                    <!-- CASO RATIO ACTIVOS / PASIVOS -->
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'ratio'">
+                    <h5>Especificar ratio activos / pasivos</h5>
                     <br/>
-                </v-col>
+                    <v-text-field dense filled v-model="datos.ratioActivos"  
+                    append-icon="mdi-euro"
+                    type="number"></v-text-field>
+                    </v-col>
 
-                <!-- CASO PATRIMONIO NETO AL CIERRE -->
-                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'patrimonio'">
-                <h5>Especificar patrimonio neto</h5>
-                <br/>
-                <v-text-field filled label="€" v-model="datos.patrimonioNeto" type="number"></v-text-field>
-                </v-col>
-
-                <!-- CASO RATIO ACTIVOS / PASIVOS -->
-                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'ratio'">
-                <h5>Especificar ratio activos / pasivos</h5>
-                <br/>
-                <v-text-field filled label="€" v-model="datos.ratioActivos" type="number"></v-text-field>
-                </v-col>
-
-                <!-- CASO PROFESIONAL (NO EMPRESA) -->
-                <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'profesional'">
-                <h5>En el caso de que el licitador sea un profesional (y no una empresa)</h5>
-                <br/>
-                <v-alert dense type="info">
-                    Se aportará justificante de la existencia de un seguro de indemnización por riesgos 
-                    profesionales por importe igual o superior al valor estimado del contrato, 
-                    vigente hasta el fin del plazo de presentación de ofertas, asi como el compromiso 
-                    vinculante de suscripción, prórroga o renovación, en caso  de resultar adjudicatario, 
-                    para garantizar la cobertura durante toda la ejecución del contrato.
-                </v-alert>
-                <br/><br/>
-                </v-col>
+                    <!-- CASO PROFESIONAL (NO EMPRESA) -->
+                    <v-col cols="12" md="6" v-if="datos.requisitos === false && datos.solvenciaEconFinanc === 'profesional'">
+                    <h5>En el caso de que el licitador sea un profesional (y no una empresa)</h5>
+                    <br/>
+                    <v-alert text border="top" type="info" elevation="2">
+                        Se aportará justificante de la existencia de un seguro de indemnización por riesgos 
+                        profesionales por importe igual o superior al valor estimado del contrato, 
+                        vigente hasta el fin del plazo de presentación de ofertas, asi como el compromiso 
+                        vinculante de suscripción, prórroga o renovación, en caso  de resultar adjudicatario, 
+                        para garantizar la cobertura durante toda la ejecución del contrato.
+                    </v-alert>
+                    <br/><br/>
+                    </v-col>
+                </v-row>
             
                 <!-- SOLVENCIA TÉCNICA O PROFESIONAL-->
-                <v-col cols="12" md="6" v-if="datos.requisitos === false">
-                    <h5>Solvencia técnica o profesional 
-                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver artículo 89 LCSP">[art. 89 LCSP]
-                        </a>
-                    </h5>
-                    <v-radio-group v-model="datos.solvenciaTecProfe">
-                        <v-radio label="Relación de los principales suministros realizados en los últimos 3 años" :value="true"></v-radio>
-                        <v-radio label="Otros de los previstos en el artículo 89" :value="false"></v-radio>
-                    </v-radio-group>
-                </v-col>
+                <v-row class="subRow" v-if="datos.requisitos === false">
+                    <v-col cols="12" md="6">
+                        <h5>Solvencia técnica o profesional 
+                            <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver artículo 89 LCSP">[art. 89 LCSP]
+                            </a>
+                        </h5>
+                        <v-radio-group v-model="datos.solvenciaTecProfe">
+                            <v-radio label="Relación de los principales suministros realizados en los últimos 3 años" :value="true"></v-radio>
+                            <v-radio label="Otros de los previstos en el artículo 89" :value="false"></v-radio>
+                        </v-radio-group>
+                    </v-col>
                 
-                <!-- ANUALIDAD MEDIA DEL CONTRATO -->
-                <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
-                    <h5>Indicar % anualidad media del contrato</h5>
-                    <br/>
-                    <v-text-field filled label="% Anualidad media del contrato" v-model="datos.porcentajeAnualidadMedia"></v-text-field>
-                    <h5>Importe anualidad media: {{datos.importeAnualidadMedia}}</h5>
-                    <h5>Total % anualidad media: {{datos.importeAnualidadMedia}}</h5>
-                </v-col>
+                    <!-- VALOR MÁXIMO DE REFERENCIA -->
+                    <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
+                        <h5>Valor máximo de referencia</h5>
+                        <br/>
+                        <div v-if="presBase.lotes.length > 1"> 
+                            <v-data-table
+                            dense class="dataTable"
+                            hide-default-footer
+                            :items="presBase.lotes"
+                            :headers="[
+                                {text:'Lote', align:'start', value:'descripcion'},
+                                {text:'Anualidad media', align:'center', value:'anualidadMedia'},
+                                {text:'Valor máximo de referencia', align:'center', value:'valMaxRef'}
+                            ]">
+                                <!-- ANUALIDAD MEDIA -->
+                                <template v-slot:[`item.anualidadMedia`]="props">
+                                    {{currencyFormat(calculateAverageAnnuity(props.item))}}
+                                </template>
+                                <!-- VALOR MAXIMO DE REFERENCIA -->
+                                <template v-slot:[`item.valMaxRef`]="props">
+                                <v-edit-dialog
+                                    large persistent
+                                    cancel-text="Cancelar"
+                                    save-text="Guardar">                
+                                    <!-- MOSTRAR DATOS -->
+                                    <span class="editField"> {{currencyFormat(calculateMaxRefValue(props))}}</span>
+                                    <!-- EDITAR DATOS -->
+                                    <template v-slot:input>
+                                        <v-text-field
+                                        v-model="props.item.valorMaximoReferencia"
+                                        single-line
+                                        ></v-text-field>
+                                    </template>
+                                    </v-edit-dialog>
+                                </template>
+                            </v-data-table>
+                        </div>
+                    </v-col>
+                </v-row>
 
                 <!-- ALERTA NO ARMONIZADA -->
                 <v-col cols="12" 
@@ -188,34 +285,30 @@
                 this.objetoNecesidades.regArmonizada === false">
                     <v-row>
                         <v-col cols="12">
-                            <v-alert
-                            text
-                            border="top"
-                            colored-border
-                            type="warning"
-                            elevation="2"
-                            >
-                                <h4>ATENCIÓN:</h4>
-                                <p><i>El contrato se está realizando bajo regulación <b>NO ARMONIZADA</b></i></p>
-                                <p><i>En los contratos no sujetos a regularización armonizada, si el 
-                                    contratista es una empresa de nueva creación no será necesario acreditar este 
-                                    apartado 
-                                    <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver Artículo 89 LCSP">
-                                    [artículo 89.14 h] 
-                                    de la LCSP</a>
-                                </i></p>
-                                <p><i>
-                                    Para el <b>cumplimiento</b> de este apartado se tendrá en cuenta lo siguiente:
-                                </i></p>
-                                <ol>
-                                    <li>El importe de los contratos se calculará con <b>exclusión del IVA</b></li>
-                                    <li>Cuando la empresa licitadora hubiera ejecutado el contrato a través de una unión
-                                        temporal de empresas <b>(UTE)</b>, se computará el importe de aquél en <b>proporción a la
-                                        participación</b> de dicha empresa en la citada UTE.</li>
-                                    <li>Cuando las empresas liciten <b>agrupadas en UTE</b> se considerarán <b>indistintamente</b>
-                                        los contratos de cualquiera de las empresas constituyentes de la UTE para alcanzar
-                                        los porcentajes de valor estimado fijados.</li>
-                                </ol>
+                            <v-alert text border="left" type="warning" elevation="2">
+                                <div style="color:gray; font-size:90%; line-height:1rem;">
+                                    <h3 style="font-weight:600; margin-bottom:1rem;">ATENCIÓN:</h3>
+                                    <p>El contrato se está realizando bajo regulación <b>NO ARMONIZADA</b>.</p>
+                                    <p>En los contratos no sujetos a regularización armonizada, si el 
+                                        contratista es una empresa de nueva creación no será necesario acreditar este 
+                                        apartado 
+                                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a8-11" target="blank" title="Ver Artículo 89 LCSP">
+                                        [artículo 89.14 h] 
+                                        de la LCSP</a>
+                                    </p>
+                                    <p><i>
+                                        Para el <b>cumplimiento</b> de este apartado se tendrá en cuenta lo siguiente:
+                                    </i></p>
+                                    <ol>
+                                        <li>El importe de los contratos se calculará con <b>exclusión del IVA</b></li>
+                                        <li>Cuando la empresa licitadora hubiera ejecutado el contrato a través de una unión
+                                            temporal de empresas <b>(UTE)</b>, se computará el importe de aquél en <b>proporción a la
+                                            participación</b> de dicha empresa en la citada UTE.</li>
+                                        <li>Cuando las empresas liciten <b>agrupadas en UTE</b> se considerarán <b>indistintamente</b>
+                                            los contratos de cualquiera de las empresas constituyentes de la UTE para alcanzar
+                                            los porcentajes de valor estimado fijados.</li>
+                                    </ol>
+                                </div>
                             </v-alert>   
                         </v-col>
                     </v-row>
@@ -260,7 +353,7 @@
                             </h5>
                             <v-radio-group v-model="datos.obligacionNombresCualificacion">
                                 <v-radio label="Si se exige, en la siguiente forma:" :value="true"></v-radio>
-                                <v-radio label="No se exige" :value="false"></v-radio>  
+                                <v-radio label="No se exige" :value="false" @click="()=>datos.especificarObligacion = undefined"></v-radio>  
                             </v-radio-group>
                         </v-col>
                         
@@ -268,7 +361,7 @@
                         <v-col cols="12" md="6" v-if="datos.obligacionNombresCualificacion === true">
                             <h5 class="subtitle">Si se exige, especificar</h5>
                             <br/>
-                            <v-textarea style="margin-bottom:-2rem;" dense v-model="datos.especificarObligacion" filled></v-textarea>
+                            <v-textarea style="margin-bottom:-2rem;" dense auto-grow v-model="datos.especificarObligacion" filled></v-textarea>
                         </v-col>
                         <v-col cols="6" v-else><!-- evita salto de linea --></v-col>                        
                     </v-row>
@@ -281,12 +374,12 @@
                             <h5 class="subtitle">Habilitación empresaria exigible</h5>
                             <v-radio-group v-model="datos.habilitacionExigible">
                                 <v-radio label="La siguiente habilitación:" :value="true"></v-radio>
-                                <v-radio label="Ninguna en especial" :value="false"></v-radio>
+                                <v-radio label="Ninguna en especial" :value="false" @click="datos.especificarHabilitacion = undefined"></v-radio>
                             </v-radio-group>
                         </v-col>
                         <v-col cols="12" md="6" v-if="datos.habilitacionExigible === true">
                             <h5 class="subtitle">Especificar</h5>
-                            <v-textarea style="margin-bottom:-2rem;" v-model="datos.especificarHabilitacion" filled></v-textarea>
+                            <v-textarea dense auto-grow style="margin-bottom:-2rem;" v-model="datos.especificarHabilitacion" filled></v-textarea>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -296,57 +389,43 @@
 </template>
 
 <script>
+    import {currencyFormat} from "@/assets/mixins/currencyFormat";
+
     export default {
         name: 'IncompatibCapacSolvencia',
         data(){
             return {
                 plazoContrato: 0,
-                solvenciaLotesHeaders: [
-                    { text: "Lote", align: "start", sortable: false, value: "idLote", divider: true,},
-                    { text: "Descripción", align: "start", sortable: false, value: "descripcion", divider: true,},
-                    { text: "Requerido", align: "start", sortable: false, value: "importeReq", divider: true,},
-                    { text: "Máximo exigible", align: "start", sortable: false, value: "maxSolvReq", divider: true,},
-                    { text: "Válido", align: "start", sortable: false, value: "actions", divider: true,}
-                ],
-
-                solvenciaHeaders: [
-                    { text: "Requerido", align: "start", sortable: false, value: "importeReq", divider: true,},
-                    { text: "Máximo exigible", align: "start", sortable: false, value: "maxSolvReq", divider: true,},
-                    { text: "Válido", align: "start", sortable: false, value: "actions", divider: true,}
-                ],
-
+                alertVan: undefined,
                 datos: {
-                    //SECCION 8
+                    componente: 'CapacidadSolvencia',
+
+                    //INCOMPATIBILIDADES PARA LA LICITACION
                     participacionEmpresas: true,
                     empresasExcluidas: undefined,
-                    componente:'CapacidadSolvencia',
-                    requisitos: undefined,
-                    solvenciaEconFinanc: undefined,
-                    volumenAnualNegocio: [],
-                    patrimonioNeto: undefined,
-                    ratioActivos: undefined,
-                    porcentajeAnualidadMedia: 0,
-                    importeAnualidadMedia: 0,
-                    solvenciaTecProfe: undefined,
-                    otrosReqSolvTecProfe: undefined,
-                    integracionSolvencia: 'no',
-                    obligacionMediosMateriales: '',
-                    obligacionNombresCualificacion: '',
-                    especificarObligacion: '',
-                    habilitacionExigible: 'ninguna',
-                    especificarHabilitación: '',
 
-                    hayVolumenAnualNegocio: false,
-                    hayPatrimonioNeto: false,
-                    hayRatioActivos: false,
-                    hayLicitadorProfe: false,
+                    //CAPACIDAD Y SOLVENCIA
+                    requisitos: true,
+                    patrimonioNeto: undefined,
+                    solvenciaEconFinanc: undefined,
+                    ratioActivos: undefined,
+                    solvenciaTecProfe: undefined,
+                    modoValorMaximo: false,
+                    otrosReqSolvTecProfe: undefined,
+                    integracionSolvencia: false,
+                    obligacionMediosMateriales: false,
+                    obligacionNombresCualificacion: false,
+                    especificarObligacion: '',
+                    habilitacionExigible: false,
+                    especificarHabilitación: '',
                 }
             }
         },
-        
+        mixins: [currencyFormat],
         props:['presBase', 'objetoNecesidades', 'datosGuardados'],
 
         beforeDestroy(){
+            this.datos.lotes = this.presBase.lotes;
             this.$emit('datos', this.datos)
         },
 
@@ -354,92 +433,118 @@
             this.initialize();
         },
 
-        watch:{
-            datos: {
-                deep: true,
-                handler(datos){
-                    //VALIDACION VOLUMEN NEGOCIOS
-                    for(this.index in datos.volumenAnualNegocio){
-                        if(parseFloat(datos.volumenAnualNegocio[this.index].maxSolvReq) < parseFloat(datos.volumenAnualNegocio[this.index].importeReq) || datos.volumenAnualNegocio[this.index].importeReq === 0){                         
-                           datos.volumenAnualNegocio[this.index].actions = false
-                        } else {
-                            datos.volumenAnualNegocio[this.index].actions = true
-                        }
-                    }
-
-                    //CONSISTENCIA DE DATOS
-                    if(datos.solvenciaEconFinanc === 'volumen') {
-                        datos.hayVolumenAnualNegocio = true; 
-                        datos.hayPatrimonioNeto = false;
-                        datos.hayRatioActivos = false;
-                        datos.hayLicitadorProfe = false;
-                    }
-                    else if (datos.solvenciaEconFinanc === 'patrimonio') {
-                        datos.hayVolumenAnualNegocio = false; 
-                        datos.hayPatrimonioNeto = true;
-                        datos.hayRatioActivos = false;
-                        datos.hayLicitadorProfe = false;
-                    }
-                    else if (datos.solvenciaEconFinanc === 'ratio') {
-                        datos.hayVolumenAnualNegocio = false; 
-                        datos.hayPatrimonioNeto = false;
-                        datos.hayRatioActivos = true;
-                        datos.hayLicitadorProfe = false;
-                    }
-                    else if (datos.solvenciaEconFinanc === 'profesional') {
-                        datos.hayVolumenAnualNegocio = false; 
-                        datos.hayPatrimonioNeto = false;
-                        datos.hayRatioActivos = false;
-                        datos.hayLicitadorProfe = true;
-                    }
-                }
-            }
-        },
-
         methods:{
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
                 }
-                
-                //PLAZO DURACION CONTRATO
-                if(this.presBase){
-                    if (this.presBase.plazoMaximoEjecucion !== undefined){
-                        this.plazoContrato = parseInt(this.presBase.plazoMaximoEjecucion)
-                    }
-                    else if (this.presBase.plazoMeses !== undefined){
-                        this.plazoContrato = parseInt(this.presBase.plazoMeses)
-                    }
-                
 
-                    //TABLAS SOLVENCIA
-                    if(this.datos.volumenAnualNegocio.length === 0){
-                        for (this.index in this.presBase.lotes){
-                            if (this.plazoContrato < 12){
-                                //Max menos de un año = 1.5 veces base licitacion
-                                this.maxImporteReq = (parseFloat(this.presBase.lotes[this.index].baseLote) * 1.5).toFixed(2)
-                                this.datos.importeAnualidadMedia = this.maxImporteReq;
-                            } else {
-                                //Max mas de un año = 1.5 veces anualidad media contrato
-                                console.log("Calculo para mas de un año")
-                                this.anualidadMed = parseFloat(this.presBase.lotes[this.index].baseLote);
-                                this.anualidadMed = (this.anualidadMed / parseInt(this.plazoContrato)) * 12
-                                this.maxImporteReq = parseFloat((this.anualidadMed * 1.5).toFixed(2))         
-                                this.datos.importeAnualidadMedia = this.maxImporteReq;
-                            }
-
-                            this.newLote = {
-                                idLote: this.presBase.lotes[this.index].idLote,
-                                descripcion: this.presBase.lotes[this.index].descripcion,
-                                importeReq: 0,
-                                maxSolvReq: this.maxImporteReq,
-                                actions: undefined,
-                            }
-                            this.datos.volumenAnualNegocio.push(this.newLote)
-                        }
+                this.presBase.lotes.forEach((lote)=>{
+                    if(lote.valMaxRef === undefined){
+                        lote.valMaxRef = 0;
                     }
-                }                  
+                })
             },
+
+            calculateVANMaxReq(loteData){
+                loteData.vanMaxExigible = loteData.valorEstimadoLote * 1.5;
+                return loteData.vanMaxExigible
+            },
+
+            checkTerms(data){
+                let alert = false;
+                if (data.plazoMaximoEjecucion.plazoMaxExec == 0 &&
+                    data.plazosParciales[0].ppDuracion == 0 &&
+                    data.plazoMeses == 0) {
+                        alert = true
+                    }
+                return alert
+            },
+
+            checkVan(){
+                let alert = false;
+                if(this.presBase.lotes.length !== 0){
+                    this.presBase.lotes.forEach((lote)=>{
+                        //INSERTAMOS PLAZO MESES GENERAL (NO VA POR LOTE)
+                        lote.plazoMeses = this.presBase.plazoMeses;
+                        //SE HAN DEFINIDO PLAZOS DE EJECUCION?
+                        if(this.checkTerms(lote)){
+                            alert = true
+                            this.alertVan = 'No se han definido plazos de ejecución'
+                        }
+                    })
+                } else {
+                    alert = true;
+                    this.alertVan = 'Debe definir en primer lugar el presupuesto base de licitación.'
+                }
+                return alert;
+            },
+
+            vanRules(){
+                let alert = false;
+                this.presBase.lotes.forEach((lote)=>{
+                    if(lote.vanRequerido > lote.vanMaxExigible || lote.vanRequerido == 0){
+                        alert = true;
+                    }
+                })
+                return alert
+            },
+
+            resetSolvenciaEconFinanc(){
+                //RESETEAR VOLUMEN ANUAL NEGOCIO
+                this.presBase.lotes.forEach((lote)=>{
+                    lote.vanRequerido = 0
+                })
+                //RESETEAR PATRIMONIO NETO
+                this.datos.patrimonioNeto = undefined;
+                //RESETEAR RATIO ACTIVOS / PASIVOS
+                this.datos.ratioActivos = undefined;
+            },
+
+            calculateMonths(plazo, tipo){
+                switch(tipo){
+                    case "Meses":
+                        return parseInt(plazo)
+                    case "Días":
+                        return (parseInt(plazo)/30)
+                    case "Años":
+                        return (parseInt(plazo)*12)
+                }
+            },
+
+            calculateAverageAnnuity(lote){
+                if(isNaN(lote.anualidadMedia)){
+                    let meses = 0;
+                    //CALCULAR MESES
+                    if(lote.plazoMaximoEjecucion.plazoMaxExec !== 0){
+                        meses = this.calculateMonths(lote.plazoMaximoEjecucion.plazoMaxExec, lote.plazoMaximoEjecucion.plazoMaxExecTipo)
+                    } else if (lote.plazosParciales[0].ppDuracion !== 0){
+                        lote.plazosParciales.forEach((plazo)=>{
+                            meses = meses + this.calculateMonths(plazo.ppDuracion, plazo.ppTipo)
+                        })
+                    } else if(lote.plazoMeses !== 0){
+                        meses = this.presBase.plazoMeses;
+                    }  else {
+                        this.averageAnnuityAlert = true;
+                    } 
+
+                    //CALCULO ANUALIDAD MEDIA
+                    if(meses >= 12){
+                        lote.anualidadMedia = parseFloat((parseFloat(lote.baseLote) / 12).toFixed(2))
+                    } else {
+                        lote.anualidadMedia = parseFloat(((parseFloat(lote.baseLote) / parseInt(meses)) * 12).toFixed(2))
+                    }
+                }
+                return lote.anualidadMedia        
+            },
+
+            calculateMaxRefValue(data){
+                //SI NO SE HA DEFINIDO UN VALOR APLICAMOS CALCULO POR DEFECTO (70% del presupuesto base de licitacion)
+                if(this.presBase.lotes[data.index].valorMaximoReferencia === undefined){
+                    this.presBase.lotes[data.index].valorMaximoReferencia = parseFloat(data.item.anualidadMedia) * 0.70;
+                }
+                return this.presBase.lotes[data.index].valorMaximoReferencia;
+            }
         }
 
 
@@ -460,7 +565,7 @@
     }
 
     .subRow {
-        margin:0.7rem;
+        margin:0rem;
     }
 
     p {
@@ -469,11 +574,6 @@
     
     li{
         margin-bottom: 0.5rem;
-    }
-
-    .editField {
-        color: blue;
-        text-decoration: underline;
     }
 
     .warn {

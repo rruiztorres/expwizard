@@ -1,5 +1,5 @@
 <template> 
-    <div>
+    <div id="mainWrapper">
         <h2>Mis Expedientes</h2>
         <v-row>
             <v-col cols="12">
@@ -148,6 +148,10 @@ import axios from 'axios';
 </script>
 
 <style scoped>
+    #mainWrapper{
+        margin: auto;
+    }
+
     h2 {
         font-weight: 400 !important;
     }

@@ -38,7 +38,7 @@
       <v-container v-if="active === 'selector'">
         <v-row class="rowWrapper">
           <v-col cols="12">
-            <Selector ç
+            <Selector
               @tipoExp="activeOption"
             ></Selector>
           </v-col>
@@ -110,6 +110,10 @@ import MisExpedientes from "@/components/common/MisExpedientes"
 </script>
 
 <style scoped>
+    .container {
+      margin: 0 !important;
+    }
+    
     h1,h2,h3,h4, #agexApp {
         font-weight: 400;
     }
@@ -128,7 +132,7 @@ import MisExpedientes from "@/components/common/MisExpedientes"
 
     .mainApp{
       background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
-      height: 50vh;
+      
     }
 
     .title{

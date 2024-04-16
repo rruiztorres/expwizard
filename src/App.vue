@@ -16,7 +16,7 @@
 </script>
 
 <style scoped>
- #app{
-  overflow: hidden !important;
- }
+  #app{
+    overflow: hidden !important;
+  }
 </style>
