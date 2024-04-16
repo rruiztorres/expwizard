@@ -242,7 +242,7 @@
                     <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
                         <h5>Valor máximo de referencia</h5>
                         <br/>
-                        <div v-if="presBase.lotes.length > 1"> 
+                        <div v-if="presBase.lotes.length >= 1"> 
                             <v-data-table
                             dense class="dataTable"
                             hide-default-footer
