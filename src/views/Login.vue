@@ -106,7 +106,6 @@ export default {
       .post(`${process.env.VUE_APP_API_ROUTE}/postAuth/${this.usrlogin.usuario}/${this.usrlogin.password}`)
       .then((data) => {
         if(data.status === 201){
-          console.log(data.data.usuario)
           localStorage.usrName = data.data.usuario[0].usrname;
           localStorage.role = data.data.usuario[0].rol;
           localStorage.nombre = data.data.usuario[0].nombre;

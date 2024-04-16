@@ -1254,8 +1254,8 @@
           <v-col cols="12" md="2">
             <h5 class="subtitle">Seleccionar modalidad</h5>
             <v-radio-group v-model="datos.modoPlazo">
-              <v-radio label="Plazo en meses" :value="true"></v-radio>
-              <v-radio label="Periodo" :value="false"></v-radio>
+              <v-radio @click="resetLotePeriodo" label="Plazo en meses" :value="true"></v-radio>
+              <v-radio @click="()=>datos.plazoMeses = undefined" label="Periodo" :value="false"></v-radio>
             </v-radio-group>
           </v-col>
           <!-- MESES --> 
@@ -2037,6 +2037,16 @@ export default {
           ppDuracion: 0,
           ppTipo: 'Meses',
         }]
+      })
+    },
+
+    resetLotePeriodo(){
+      this.datos.lotes.forEach((lote)=>{
+        lote.periodo = {
+          inicio: undefined,
+          fin: undefined,
+          observaciones: undefined
+        };
       })
     },
 

@@ -244,6 +244,7 @@
                         <br/>
                         <div v-if="presBase.lotes.length >= 1"> 
                             <v-data-table
+                            v-if="!averageAnnuityAlert"
                             dense class="dataTable"
                             hide-default-footer
                             :items="presBase.lotes"
@@ -274,6 +275,9 @@
                                     </v-edit-dialog>
                                 </template>
                             </v-data-table>
+                            <v-alert v-else dense text type="error">
+                                No se ha definido ningún plazo de ejecución.
+                            </v-alert>
                         </div>
                     </v-col>
                 </v-row>
@@ -329,7 +333,9 @@
                     </h4>
                     <h5>Si el licitador se basa en la solvencia y medios de otras entidades
                         para acreditar su solvencia, se establece la responsabilidad
-                        solidaria de todos ellos [artículo 75 LCSP]</h5>
+                        solidaria de todos ellos 
+                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a7-7" target="blank" title="Ver artículo 75 LCSP">[artículo 75 LCSP]</a>
+                        </h5>
                     <v-radio-group v-model="datos.integracionSolvencia">
                         <v-radio label="Si" :value="true"></v-radio>
                         <v-radio label="No" :value="false"></v-radio>
@@ -397,6 +403,7 @@
             return {
                 plazoContrato: 0,
                 alertVan: undefined,
+                averageAnnuityAlert: false,
                 datos: {
                     componente: 'CapacidadSolvencia',
 
@@ -515,24 +522,30 @@
             calculateAverageAnnuity(lote){
                 if(isNaN(lote.anualidadMedia)){
                     let meses = 0;
-                    //CALCULAR MESES
+                    //CALCULAR MESES DEPENDIENDO DEL TIPO DE PLAZO
                     if(lote.plazoMaximoEjecucion.plazoMaxExec !== 0){
                         meses = this.calculateMonths(lote.plazoMaximoEjecucion.plazoMaxExec, lote.plazoMaximoEjecucion.plazoMaxExecTipo)
                     } else if (lote.plazosParciales[0].ppDuracion !== 0){
                         lote.plazosParciales.forEach((plazo)=>{
                             meses = meses + this.calculateMonths(plazo.ppDuracion, plazo.ppTipo)
                         })
-                    } else if(lote.plazoMeses !== 0){
+                    } else if(lote.plazoMeses !== undefined){
                         meses = this.presBase.plazoMeses;
-                    }  else {
+                    } else if(lote.periodo.inicio !== undefined){
+                        let fechaInicio = new Date(lote.periodo.inicio).getTime();
+                        let fechaFin = new Date(lote.periodo.fin).getTime();
+                        let diff = fechaFin - fechaInicio;
+                        meses = this.calculateMonths((diff/(1000*60*60*24)),'Días')
+                    } else {
                         this.averageAnnuityAlert = true;
                     } 
-
-                    //CALCULO ANUALIDAD MEDIA
-                    if(meses >= 12){
-                        lote.anualidadMedia = parseFloat((parseFloat(lote.baseLote) / 12).toFixed(2))
-                    } else {
-                        lote.anualidadMedia = parseFloat(((parseFloat(lote.baseLote) / parseInt(meses)) * 12).toFixed(2))
+                    //SI NO HAY ALERTAS CALCULO ANUALIDAD MEDIA
+                    if(this.averageAnnuityAlert === false){
+                        if(meses >= 12){
+                            lote.anualidadMedia = parseFloat((parseFloat(lote.baseLote) / 12).toFixed(2))
+                        } else {
+                            lote.anualidadMedia = parseFloat(((parseFloat(lote.baseLote) / parseInt(meses)) * 12).toFixed(2))
+                        }
                     }
                 }
                 return lote.anualidadMedia        
