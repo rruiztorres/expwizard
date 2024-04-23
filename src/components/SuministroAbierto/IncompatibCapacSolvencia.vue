@@ -242,7 +242,8 @@
                     <v-col cols="12" md="6" v-if="datos.solvenciaTecProfe === true">
                         <h5>Valor máximo de referencia</h5>
                         <br/>
-                        <div v-if="presBase.lotes.length >= 1"> 
+                        <!-- CON LOTES -->
+                        <div v-if="presBase.lotes.length > 1"> 
                             <v-data-table
                             v-if="!averageAnnuityAlert"
                             dense class="dataTable"
@@ -251,14 +252,59 @@
                             :headers="[
                                 {text:'Lote', align:'start', value:'descripcion'},
                                 {text:'Anualidad media', align:'center', value:'anualidadMedia'},
-                                {text:'Valor máximo de referencia', align:'center', value:'valMaxRef'}
+                                {text:'Valor máximo de referencia', align:'center', value:'valorMaximoReferencia'}
                             ]">
+
                                 <!-- ANUALIDAD MEDIA -->
                                 <template v-slot:[`item.anualidadMedia`]="props">
                                     {{currencyFormat(calculateAverageAnnuity(props.item))}}
                                 </template>
                                 <!-- VALOR MAXIMO DE REFERENCIA -->
-                                <template v-slot:[`item.valMaxRef`]="props">
+                                <template v-slot:[`item.valorMaximoReferencia`]="props">
+                                <v-edit-dialog
+                                    large persistent
+                                    cancel-text="Cancelar"
+                                    save-text="Guardar">                
+                                    <!-- MOSTRAR DATOS -->
+                                    <span class="editField"> {{currencyFormat(calculateMaxRefValue(props))}}</span>
+                                    <!-- EDITAR DATOS -->
+                                    <template v-slot:input>
+                                        <v-text-field
+                                        v-model="props.item.valorMaximoReferencia"
+                                        type="number"
+                                        @save="checkMaxRef"
+                                        single-line
+                                        ></v-text-field>
+                                    </template>
+                                    </v-edit-dialog>
+                                </template>
+                            </v-data-table>
+                            <v-alert v-else dense text type="error">
+                                No se ha definido ningún plazo de ejecución.
+                            </v-alert>
+                            <v-alert v-if="checkMaxRef(presBase.lotes)" dense text type="error" style="margin-top:0.5rem;">
+                            El valor máximo de referencia no debe ser mayor que la anualidad media 
+                            , inferior al 50% de la misma o igual a cero. Por favor, revise los datos.
+                            </v-alert>
+                        </div>
+                        <!-- SIN LOTES -->
+                        <div v-else> 
+                            <v-data-table
+                            v-if="!averageAnnuityAlert"
+                            dense class="dataTable"
+                            hide-default-footer
+                            :items="presBase.lotes"
+                            :headers="[
+                                {text:'Anualidad media', align:'center', value:'anualidadMedia'},
+                                {text:'Valor máximo de referencia', align:'center', value:'valorMaximoReferencia'}
+                            ]">
+
+                                <!-- ANUALIDAD MEDIA -->
+                                <template v-slot:[`item.anualidadMedia`]="props">
+                                    {{currencyFormat(calculateAverageAnnuity(props.item))}}
+                                </template>
+                                <!-- VALOR MAXIMO DE REFERENCIA -->
+                                <template v-slot:[`item.valorMaximoReferencia`]="props">
                                 <v-edit-dialog
                                     large persistent
                                     cancel-text="Cancelar"
@@ -277,6 +323,10 @@
                             </v-data-table>
                             <v-alert v-else dense text type="error">
                                 No se ha definido ningún plazo de ejecución.
+                            </v-alert>
+                            <v-alert v-if="checkMaxRef(presBase.lotes)" dense text type="error" style="margin-top:0.5rem;">
+                            El valor máximo de referencia no debe ser mayor que la anualidad media 
+                            , inferior al 50% de la misma o igual a cero. Por favor, revise los datos.
                             </v-alert>
                         </div>
                     </v-col>
@@ -497,6 +547,23 @@
                 return alert
             },
 
+            checkMaxRef(data){
+                let alert = false;
+                if(data){
+                    data.forEach((lote)=>{
+                        if(
+                            parseInt(lote.valorMaximoReferencia) > lote.anualidadMedia ||
+                            parseInt(lote.valorMaximoReferencia) < lote.anualidadMedia * 0.5 ||
+                            parseInt(lote.valorMaximoReferencia) == 0 ||
+                            isNaN(parseInt(lote.valorMaximoReferencia))
+                            ){
+                            alert = true;
+                        }
+                    })
+                }
+                return alert
+            },
+
             resetSolvenciaEconFinanc(){
                 //RESETEAR VOLUMEN ANUAL NEGOCIO
                 this.presBase.lotes.forEach((lote)=>{
@@ -520,32 +587,30 @@
             },
 
             calculateAverageAnnuity(lote){
-                if(isNaN(lote.anualidadMedia)){
-                    let meses = 0;
-                    //CALCULAR MESES DEPENDIENDO DEL TIPO DE PLAZO
-                    if(lote.plazoMaximoEjecucion.plazoMaxExec !== 0){
-                        meses = this.calculateMonths(lote.plazoMaximoEjecucion.plazoMaxExec, lote.plazoMaximoEjecucion.plazoMaxExecTipo)
-                    } else if (lote.plazosParciales[0].ppDuracion !== 0){
-                        lote.plazosParciales.forEach((plazo)=>{
-                            meses = meses + this.calculateMonths(plazo.ppDuracion, plazo.ppTipo)
-                        })
-                    } else if(lote.plazoMeses !== undefined){
-                        meses = this.presBase.plazoMeses;
-                    } else if(lote.periodo.inicio !== undefined){
-                        let fechaInicio = new Date(lote.periodo.inicio).getTime();
-                        let fechaFin = new Date(lote.periodo.fin).getTime();
-                        let diff = fechaFin - fechaInicio;
-                        meses = this.calculateMonths((diff/(1000*60*60*24)),'Días')
+                let meses = 0;
+                //CALCULAR MESES DEPENDIENDO DEL TIPO DE PLAZO
+                if(lote.plazoMaximoEjecucion.plazoMaxExec !== 0){
+                    meses = this.calculateMonths(lote.plazoMaximoEjecucion.plazoMaxExec, lote.plazoMaximoEjecucion.plazoMaxExecTipo)
+                } else if (lote.plazosParciales[0].ppDuracion !== 0){
+                    lote.plazosParciales.forEach((plazo)=>{
+                        meses = meses + this.calculateMonths(plazo.ppDuracion, plazo.ppTipo)
+                    })
+                } else if(lote.plazoMeses !== undefined){
+                    meses = this.presBase.plazoMeses;
+                } else if(lote.periodo.inicio !== undefined){
+                    let fechaInicio = new Date(lote.periodo.inicio).getTime();
+                    let fechaFin = new Date(lote.periodo.fin).getTime();
+                    let diff = fechaFin - fechaInicio;
+                    meses = this.calculateMonths((diff/(1000*60*60*24)),'Días')
+                } else {
+                    this.averageAnnuityAlert = true;
+                } 
+                //SI NO HAY ALERTAS CALCULO ANUALIDAD MEDIA
+                if(this.averageAnnuityAlert === false){
+                    if(meses > 12){
+                        lote.anualidadMedia = parseFloat(((parseFloat(lote.baseLote) / parseInt(meses)) * 12).toFixed(2))
                     } else {
-                        this.averageAnnuityAlert = true;
-                    } 
-                    //SI NO HAY ALERTAS CALCULO ANUALIDAD MEDIA
-                    if(this.averageAnnuityAlert === false){
-                        if(meses >= 12){
-                            lote.anualidadMedia = parseFloat((parseFloat(lote.baseLote) / 12).toFixed(2))
-                        } else {
-                            lote.anualidadMedia = parseFloat(((parseFloat(lote.baseLote) / parseInt(meses)) * 12).toFixed(2))
-                        }
+                        lote.anualidadMedia = parseFloat(lote.baseLote)
                     }
                 }
                 return lote.anualidadMedia        

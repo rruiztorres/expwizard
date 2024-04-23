@@ -197,8 +197,6 @@ import axios from 'axios';
                     this.expEditId = undefined;
                 }
 
-                console.log(this.datosGuardados)
-
                 this.data = {
                     expData: {
                         nombre: this.saveTitle,
@@ -227,8 +225,6 @@ import axios from 'axios';
                         if(data.status === 201){
                             this.savingResultWindow = true;
                             setTimeout(this.closeInfoStore, 1500)
-                        } else {
-                            console.log("fail")
                         }
                     })
                 }

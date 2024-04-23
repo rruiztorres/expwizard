@@ -402,5 +402,9 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
         border-radius: 4px;
         padding: 1rem 0rem 1rem 0rem;
     }
+
+    .subRow {
+        margin: 0rem;
+    }
 </style>
 

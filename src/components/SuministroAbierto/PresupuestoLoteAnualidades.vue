@@ -117,7 +117,6 @@
                 <v-icon small class="icon">mdi-pencil</v-icon>
               </v-btn>
             </v-col>
-
             <v-col cols="12" md="3" v-if="datos.divisionLotes !== 'posible divisible'">
               <v-btn class="actionButton" color="info" width="100%" @click="createLotes">
                 INTRODUCIR DATOS
@@ -125,7 +124,6 @@
               </v-btn>
               <br/>
             </v-col>
-
             <!--DATA TABLE IDENTIFICACIÓN LOTES -->
             <v-col cols="12" v-if="datos.numLotes > 1">
               <h5>Identificación de los lotes</h5>
@@ -156,8 +154,59 @@
                     </v-edit-dialog>
                 </template>
               </v-data-table>
+              <!-- ALERTA SI NO SE HAN CREADO AUN LOS LOTES -->
+              <v-row v-else>
+                <v-col cols="12">
+                  <v-alert text type="info">Aun no se han creado los lotes</v-alert>
+                </v-col>
+              </v-row>
+              <br/>
+              <!-- LAS EMPRESAS LICITADORAS PODRÁN PRESENTARSE A: -->
+              <v-row>
+                <v-col cols="5">
+                  <h5>Las empresas licitadoras podrán presentarse a: </h5>
+                  <v-radio-group v-model="datos.empresasPuedenPresentarse">
+                    <v-radio @click="()=>datos.empresasPuedenPresentarseJustif = undefined" value="Un único lote" label="Un único lote"></v-radio>
+                    <v-radio @click="()=>datos.empresasPuedenPresentarseJustif = undefined" value="Todos los lotes" label="Todos los lotes"></v-radio>
+                    <v-radio value="Otro" label="Otro"></v-radio>
+                  </v-radio-group>
+                </v-col>
+                <!-- SI ES OTRO JUSTIFICAR -->
+                <v-col cols="7" v-if="datos.empresasPuedenPresentarse == 'Otro'">
+                  <h5>Especificar:</h5>
+                  <v-textarea filled auto-grow single-line v-model="datos.empresasPuedenPresentarseJustif"></v-textarea>
+                </v-col>
+              </v-row>
+              <!-- UNA MISMA EMPRESA LICITADORA PODRÁ SER ADJUDICATARIA DE: -->
+              <v-row>
+                  <v-col cols="5">
+                    <h5>Una misma empresa licitadora podrá ser adjudicataria:</h5>
+                    <v-radio-group v-model="datos.empresaPuedeSerAdjudicataria">
+                      <v-radio @click="()=>datos.empresaPuedeSerAdjudicatariaJustif = undefined" value="De un único lote" label="De un único lote, salvo en el caso de que alguno de los demás lotes fuera a quedar desierto. "></v-radio>
+                      <v-radio @click="()=>datos.empresaPuedeSerAdjudicatariaJustif = undefined" value="De todos los lotes" label="De todos los lotes"></v-radio>
+                      <v-radio value="Otro" label="Otro"></v-radio>
+                    </v-radio-group>
+                  </v-col>
+                  <v-col cols="7" v-if="datos.empresaPuedeSerAdjudicataria == 'Otro'">
+                    <h5>Especificar:</h5>
+                    <v-textarea filled auto-grow single-line v-model="datos.empresaPuedeSerAdjudicatariaJustif"></v-textarea>
+                  </v-col>
+              </v-row>
+              <!-- MISMA EMPRESA PRESENTE A VARIOS LOTES -->
+              <v-row>
+                <v-col cols="5">
+                  <h5>En caso de que una misma empresa se presentara a varios lotes, pudiendo ser solo adjudicataria de uno de ellos, el criterio por el cual se determinará de qué lote resulta adjudicataria es el siguiente: </h5>
+                  <v-radio-group v-model="datos.empresaPresenteVariosLotes">
+                    <v-radio @click="()=>datos.empresaPresenteVariosLotesJustif = undefined" value="Mayor puntuación" label="Se adjudicará a la empresa licitadora el lote en el cual hubiera obtenido una mayor puntuación en la valoración de su oferta."></v-radio>
+                    <v-radio value="Otro" label="Otro"></v-radio>
+                  </v-radio-group>
+                </v-col>
+                <v-col cols="7" v-if="datos.empresaPresenteVariosLotes == 'Otro'">
+                    <h5>Especificar:</h5>
+                    <v-textarea filled auto-grow single-line v-model="datos.empresaPresenteVariosLotesJustif"></v-textarea>
+                  </v-col>
+              </v-row>
             </v-col>
-          
             <!-- DATA TABLE PRESUPUESTOS BASE COSTES -->
             <v-col cols="12">
               <v-data-table
@@ -1826,6 +1875,12 @@ export default {
           numLotes: 1,
           lotes: [],
           lotesGuardados: false,
+          empresasPuedenPresentarse: 'Un único lote',
+          empresasPuedenPresentarseJustif: undefined,
+          empresaPuedeSerAdjudicataria: 'De un único lote',
+          empresaPuedeSerAdjudicatariaJustif: undefined,
+          empresaPresenteVariosLotes: 'Mayor puntuación',
+          empresaPresenteVariosLotesJustif: undefined,
           hayDivisionLotes: false,
           posibleNoDivisible: false,
           posibleDivisible: false,
@@ -2254,6 +2309,26 @@ export default {
           vanRequerido: 0,
           vanMaxExigible: 0,
           alert: null,
+          importeExigidoProvisional: 0,
+          provisionalJustif: undefined,
+          percCualitativos: 0,
+          relPrecio: 0,
+          pot: 0,
+          pof: 0,
+          puntosJuicioValor:[{
+            nombreCriterio: undefined,
+            nPaginas: 1,
+            puntMaxima: 0,
+          }],
+          puntosJuicioValorAlert: false,
+          puntosJuicioValorAlertText: undefined,
+          puntosFormulas:[{
+            nombreCriterio: 'Precio (proposición económica)',
+            nPaginas: 1,
+            puntMaxima: 0,
+          }],
+          puntosFormulasAlert: false,
+          puntosFormulasAlertText: undefined,
         }
         this.datos.lotes.push(this.newLote)
       }
