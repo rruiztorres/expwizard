@@ -40,11 +40,10 @@
                         <v-tab :class="compValidation(false)" @click="activateTab(2)">Presupuesto, lotes y anualidades</v-tab>
                         <v-tab :class="compValidation(false)" @click="activateTab(3)">Incompatibilidades, capacidad y solvencia</v-tab>
                         <v-tab :class="compValidation(false)" @click="activateTab(4)">Garantías y criterios adjudicación</v-tab>
-                        <v-tab :class="compValidation(false)" @click="activateTab(5)">Pagos, Rev. precios y Abonos a cuenta</v-tab>
-                        <v-tab :class="compValidation(false)" @click="activateTab(6)">Plazos, responsable y ejecución</v-tab>
-                        <v-tab :class="compValidation(false)" @click="activateTab(7)">Modificaciones y penalidades</v-tab>
-                        <v-tab :class="compValidation(false)" @click="activateTab(8)">Cesión, subcontratación, otros</v-tab>
-                        <v-tab :class="compValidation(false)" @click="activateTab(9)">Finalizar</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(5)">Plazos, responsable y ejecución</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(6)">Modificaciones y penalidades</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(7)">Cesión, subcontratación, otros</v-tab>
+                        <v-tab :class="compValidation(false)" @click="activateTab(8)">Finalizar</v-tab>
 
 
                         <!--Objeto y necesidades-->
@@ -86,20 +85,10 @@
                             ></GarantiasCritAdjudicacion>
                         </v-tab-item>
 
-                        <!--Pagos, Rev. precios y Abonos a cuenta-->
-                        <v-tab-item class="tabContent">
-                            <PagosRevPreciosAbonos
-                                v-if="activeTab == 5"
-                                @datos="getData"
-                                :presBase="datosPresupuestoAnualidades"
-                                :datosGuardados="datosRegimenPagosRevision"
-                            ></PagosRevPreciosAbonos>
-                        </v-tab-item>
-
                         <!--Plazos, responsable y ejecución-->
                         <v-tab-item class="tabContent">
                             <PlazosRespEjecucion
-                                v-if="activeTab == 6"
+                                v-if="activeTab == 5"
                                 @datos="getData"
                                 :datosGuardados="datosEjecucionYotros"
                             ></PlazosRespEjecucion>
@@ -108,7 +97,7 @@
                         <!--Modificaciones y penalidades-->
                         <v-tab-item class="tabContent">
                             <ModificacionesPenalidades
-                            v-if="activeTab == 7"
+                            v-if="activeTab == 6"
                             @datos="getData"
                             :datosGuardados="datosModificacionesPenalidades"
                             :presBase="datosPresupuestoAnualidades"
@@ -118,7 +107,7 @@
                         <!--Cesión, subcontratación, otros -->
                         <v-tab-item class="tabContent">
                             <CesionSubcontrataOtros
-                                v-if="activeTab == 8"
+                                v-if="activeTab == 7"
                                 @datos="getData"
                                 :datosGuardados="datosCesionSubcontrataOtros"
                             ></CesionSubcontrataOtros>
@@ -128,13 +117,12 @@
                         <v-tab-item 
                         class="tabContent">
                             <Finalizar
-                            v-if="activeTab == 9"
+                            v-if="activeTab == 8"
                             :datosGuardados="[
                                 datosObjetoNecesidades,
                                 datosPresupuestoAnualidades,
                                 datosCapacidadSolvencia,
                                 datosGarantias,
-                                datosRegimenPagosRevision,
                                 datosEjecucionYotros,
                                 datosModificacionesPenalidades,
                                 datosCesionSubcontrataOtros
@@ -166,7 +154,6 @@ import ObjetoNecesidades from "@/components/SuministroAbierto/ObjetoNecesidades"
 import PresupuestoLoteAnualidades from "@/components/SuministroAbierto/PresupuestoLoteAnualidades";
 import IncompatibCapacSolvencia from "@/components/SuministroAbierto/IncompatibCapacSolvencia";
 import GarantiasCritAdjudicacion from "@/components/SuministroAbierto/GarantiasCritAdjudicacion";
-import PagosRevPreciosAbonos from "@/components/SuministroAbierto/PagosRevPreciosAbonos";
 import PlazosRespEjecucion from "@/components/SuministroAbierto/PlazosRespEjecucion";
 import ModificacionesPenalidades from "@/components/SuministroAbierto/ModificacionesPenalidades";
 import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcontrataOtros";
@@ -182,7 +169,6 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
             PresupuestoLoteAnualidades, 
             IncompatibCapacSolvencia, 
             GarantiasCritAdjudicacion,
-            PagosRevPreciosAbonos,
             PlazosRespEjecucion,
             ModificacionesPenalidades,
             CesionSubcontrataOtros,
@@ -199,7 +185,6 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
                 datosPresupuestoAnualidades: undefined,
                 datosCapacidadSolvencia: undefined,
                 datosGarantias: undefined,
-                datosRegimenPagosRevision: undefined,
                 datosEjecucionYotros: undefined,
                 datosModificacionesPenalidades: undefined,
                 datosCesionSubcontrataOtros: undefined,
@@ -230,10 +215,9 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
                     this.datosPresupuestoAnualidades = data.seccion2;
                     this.datosCapacidadSolvencia = data.seccion3;
                     this.datosGarantias = data.seccion4;
-                    this.datosRegimenPagosRevision = data.seccion5;
-                    this.datosEjecucionYotros = data.seccion6;
-                    this.datosModificacionesPenalidades = data.seccion7;
-                    this.datosCesionSubcontrataOtros = data.seccion8;
+                    this.datosEjecucionYotros = data.seccion5;
+                    this.datosModificacionesPenalidades = data.seccion6;
+                    this.datosCesionSubcontrataOtros = data.seccion7;
                 }
             },
 
@@ -277,9 +261,6 @@ import Finalizar from "@/components/SuministroAbierto/Finalizar";
                 }
                 else if (data.componente === 'Garantias'){
                     this.datosGarantias = Object.assign(data)
-                }
-                else if (data.componente === 'RegimenPagosRevision'){
-                    this.datosRegimenPagosRevision = Object.assign(data)
                 }
                 else if (data.componente === 'EjecucionYotros'){
                     this.datosEjecucionYotros = Object.assign(data)

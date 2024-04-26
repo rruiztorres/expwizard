@@ -1671,6 +1671,323 @@
       </div>
     </div>
 
+    <!-- METER SECCION NUEVA -->
+
+
+    <!-- REGIMEN DE PAGOS -->
+    <div class="group">
+      <h3>Régimen de pagos</h3>
+      <v-row class="rowGroup">
+        <!-- LA FORMA DE PAGO SERA: -->
+        <v-col cols="12">
+          <h5 class="subtitle">La forma de pago será:</h5>
+            <v-radio-group v-model="datos.formaPago">
+              <v-radio label="Precios unitarios (licitación afectados por % baja)" value="licitacionBaja"></v-radio>
+              <v-radio label="Precios unitarios (ofertados por adjudicatario)" value="ofertadoAdjudicatario"></v-radio>
+              <v-radio label="Precios a tanto alzado" value="tantoAlzado"></v-radio>
+              <v-radio label="Combinación de precios unitarios y a tanto alzado (licitación afectados por % baja)" value="combiLicitacionBaja"></v-radio>
+              <v-radio label="Combinación de precios unitarios y a tanto alzado (ofertados por adjudicatario)" value="combiOfertadoAdjudicatario"></v-radio>
+            </v-radio-group>
+        </v-col>
+
+        <!-- PERIODICIDAD DE LOS PAGOS -->
+        <v-row class="subRow" v-if="datos.lotes.length !== 0">
+          <v-col cols="12" md="2">
+            <h5 class="subtitle">La periodicidad de los pagos sera:</h5>
+            <v-radio-group v-model="datos.periodicidad">
+                <v-radio label="Mensual" :value="true"></v-radio>
+                <v-radio label="Otra" @click="addPayment(0)" :value="false"></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <!-- ESPECIFICAR PAGOS -->
+          <v-col cols="12" md="10" v-if="datos.periodicidad === false">
+            <!-- NO HAY LOTES -->
+            <v-row class="subGroup" v-if="datos.lotes.length === 1">
+              <v-col cols="12" md="2">
+                <h5 class="subtitle"> 
+                    Especificar pagos:<br/>
+                    Base de licitación: <b>{{currencyFormat(datos.lotes[0].baseLote)}}</b>
+                    </h5>
+                <v-btn 
+                @click="addPayment(0)"
+                block color="info" style="margin-top:1.2rem;">Añadir pago</v-btn>
+              </v-col>
+              <v-col cols="12" md="10">
+                <v-data-table dense hide-default-footer class="dataTable"
+                style="margin-top:2.5rem;"
+                :items="datos.lotes[0].especificarPagos"
+                :headers="[
+                  {width:'7%',text:'Año', align:'start', value:'year'},
+                  {width:'32%',text:'Concepto', align:'start', value:'concepto'},
+                  {width:'17%',text:'Importe (sin impuestos)', align:'center', value:'importeSImp'},
+                  {width:'10%',text:'Tipo', align:'center', value:'impAplic'},
+                  {width:'10%',text:'Impuestos', align:'center', value:'impuestos'},
+                  {width:'15%',text:'Total', align:'center', value:'total'},
+                  {width:'8%',text:'Borrar', align:'start', value:'actions'}
+                ]"
+                > 
+                  <!-- AÑO -->
+                  <template v-slot:[`item.year`]="props">
+                    <v-edit-dialog
+                    large persistent
+                    cancel-text="Cancelar"
+                    save-text="Guardar"
+                    :return-value.sync="props.item.year" >                
+                      <span class="editField">{{props.item.year}}</span>
+                      <template v-slot:input>
+                        <v-text-field
+                          v-model="props.item.year"
+                          label="Edit"
+                          single-line
+                        ></v-text-field>
+                      </template>
+                    </v-edit-dialog>
+                  </template>
+
+                  <!-- CONCEPTO -->
+                  <template v-slot:[`item.concepto`]="props">
+                    <v-edit-dialog
+                      large persistent
+                      cancel-text="Cancelar"
+                      save-text="Guardar"
+                      :return-value.sync="props.item.concepto">
+                        <span class="editField" v-if="props.item.concepto !== undefined">{{props.item.concepto}}</span>
+                        <span class="editField" v-else><v-icon small color="cyan">mdi-pencil</v-icon> Añadir concepto</span>
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.concepto"
+                            label="Edit"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                  </template>
+
+                  <!-- IMPORTE -->
+                  <template v-slot:[`item.importeSImp`]="props">
+                    <v-edit-dialog
+                      large persistent
+                      cancel-text="Cancelar"
+                      save-text="Guardar"
+                      :return-value.sync="props.item.importeSImp"
+                      @save="calculateTaxPayment(datos.lotes[0].tipoImpuesto, props.item.importeSImp, props.index, 0)">
+                        <span class="editField">{{currencyFormat(props.item.importeSImp)}}</span>
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.importeSImp"
+                            label="Edit"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                    </v-edit-dialog>      
+                  </template>
+
+                  <!-- TIPO APLICADO -->
+                  <template v-slot:[`item.impAplic`]>
+                    {{datos.lotes[0].tipoImpuesto}} %
+                  </template>
+
+                  <!-- IMPUESTOS -->
+                  <template v-slot:[`item.impuestos`]="props">
+                    {{currencyFormat(calculateTaxPayment(datos.lotes[0].tipoImpuesto, props.item.importeSImp, props.index, 0))}}
+                  </template>
+
+                  <!-- TOTAL -->
+                  <template v-slot:[`item.total`]="props">
+                    {{currencyFormat(props.item.total)}}
+                  </template>
+
+                  <!-- BORRAR -->
+                  <template v-slot:[`item.actions`]="props">
+                    <v-icon :disabled="datos.lotes[0].especificarPagos.length === 1"
+                    color="error" @click="deletePayment(0, props.index)">mdi-delete</v-icon>
+                  </template>
+                
+                </v-data-table>
+              </v-col>
+              <!-- ALERTAS -->
+              <v-col cols="12">
+                <v-alert dense text type="error" v-if="checkPayments(0)">
+                  Atención, la suma de los importes no coincide con el presupuesto base de licitación.
+                </v-alert>
+                <v-alert dense text type="success" v-else>
+                  ¡Datos correctos!
+                </v-alert>
+              </v-col>
+            </v-row>
+            <!-- HAY LOTES -->
+            <v-row class="subGroup" v-else>
+              <v-col cols="12">
+                <v-row class="subGroup" v-for="lote, i in datos.lotes" :key="i">
+                  <v-col cols="12" md="2">
+                    <h5 class="subtitle"> 
+                    <b>{{lote.descripcion}}</b><br/>
+                    Base de licitación: <b>{{currencyFormat(lote.baseLote)}}</b>
+                    </h5>
+                    <v-btn 
+                    @click="addPayment(i)"
+                    block color="info" style="margin-top:1.2rem;">Añadir pago</v-btn>
+                  </v-col>
+                  <v-col cols="12" md="10">
+                    <v-data-table dense hide-default-footer class="dataTable"
+                    style="margin-top:2.5rem;"
+                    :items="lote.especificarPagos"
+                    :headers="[
+                      {width:'7%',text:'Año', align:'start', value:'year'},
+                      {width:'32%',text:'Concepto', align:'start', value:'concepto'},
+                      {width:'17%',text:'Importe (sin impuestos)', align:'center', value:'importeSImp'},
+                      {width:'10%',text:'Tipo', align:'center', value:'impAplic'},
+                      {width:'10%',text:'Impuestos', align:'center', value:'impuestos'},
+                      {width:'15%',text:'Total', align:'center', value:'total'},
+                      {width:'8%',text:'Borrar', align:'start', value:'actions'}
+                    ]"
+                    > 
+                      <!-- AÑO -->
+                      <template v-slot:[`item.year`]="props">
+                        <v-edit-dialog
+                        large persistent
+                        cancel-text="Cancelar"
+                        save-text="Guardar"
+                        :return-value.sync="props.item.year" >                
+                          <span class="editField">{{props.item.year}}</span>
+                          <template v-slot:input>
+                            <v-text-field
+                              v-model="props.item.year"
+                              label="Edit"
+                              single-line
+                            ></v-text-field>
+                          </template>
+                        </v-edit-dialog>
+                      </template>
+
+                      <!-- CONCEPTO -->
+                      <template v-slot:[`item.concepto`]="props">
+                        <v-edit-dialog
+                          large persistent
+                          cancel-text="Cancelar"
+                          save-text="Guardar"
+                          :return-value.sync="props.item.concepto">
+                            <span class="editField" v-if="props.item.concepto !== undefined">{{props.item.concepto}}</span>
+                            <span class="editField" v-else><v-icon small color="cyan">mdi-pencil</v-icon> Añadir concepto</span>
+                            <template v-slot:input>
+                              <v-text-field
+                                v-model="props.item.concepto"
+                                label="Edit"
+                                single-line
+                              ></v-text-field>
+                            </template>
+                        </v-edit-dialog>
+                      </template>
+
+                      <!-- IMPORTE -->
+                      <template v-slot:[`item.importeSImp`]="props">
+                        <v-edit-dialog
+                          large persistent
+                          cancel-text="Cancelar"
+                          save-text="Guardar"
+                          :return-value.sync="props.item.importeSImp"
+                          @save="calculateTaxPayment(lote.tipoImpuesto, props.item.importeSImp, props.index, i)">
+                            <span class="editField">{{currencyFormat(props.item.importeSImp)}}</span>
+                            <template v-slot:input>
+                              <v-text-field
+                                v-model="props.item.importeSImp"
+                                label="Edit"
+                                single-line
+                              ></v-text-field>
+                            </template>
+                        </v-edit-dialog>      
+                      </template>
+
+                      <!-- TIPO APLICADO -->
+                      <template v-slot:[`item.impAplic`]>
+                        {{lote.tipoImpuesto}} %
+                      </template>
+
+                      <!-- IMPUESTOS -->
+                      <template v-slot:[`item.impuestos`]="props">
+                        {{currencyFormat(calculateTaxPayment(lote.tipoImpuesto, props.item.importeSImp, props.index, i))}}
+                      </template>
+
+                      <!-- TOTAL -->
+                      <template v-slot:[`item.total`]="props">
+                        {{currencyFormat(props.item.total)}}
+                      </template>
+
+                      <!-- BORRAR -->
+                      <template v-slot:[`item.actions`]="props">
+                        <v-icon :disabled="lote.especificarPagos.length === 1"
+                        color="error" @click="deletePayment(i, props.index)">mdi-delete</v-icon>
+                      </template>
+                    </v-data-table>
+                  </v-col>
+                  <!-- ALERTAS -->
+                  <v-col cols="12">
+                    <v-alert dense text type="error" v-if="checkPayments(i)">
+                      Atención, la suma de los importes no coincide con el presupuesto base de licitación.
+                    </v-alert>
+                    <v-alert dense text type="success" v-else>
+                      ¡Datos correctos!
+                    </v-alert>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+        <!-- LOTES NO DEFINIDOS -->
+        <v-row class="subRow" v-else>
+          <v-col cols="12">
+              <v-alert dense type="info">Debe definir antes el presupuesto base de licitación</v-alert>
+          </v-col>
+        </v-row>
+      </v-row>
+    </div>
+
+    <div class="group">
+      <h3>Revisión de precios</h3>
+      <v-row class="rowGroup">
+        <v-col cols="12" md="2">
+            <v-radio-group v-model="datos.revision">
+                <v-radio label="Si procede" :value="true"></v-radio>
+                <v-radio label="No procede" :value="false"></v-radio>
+            </v-radio-group>
+        </v-col>
+        <v-col cols="12" md="3" v-if="datos.revision === true">
+            <h5 class="subtitle bSpacer">Justificación:</h5>
+            <v-text-field dense filled v-model="datos.revisionJustificacion"></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="3" v-if="datos.revision === true">
+            <h5 class="subtitle bSpacer">Tipo:</h5>
+            <v-text-field dense filled v-model="datos.revisionTipo"></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="4" v-if="datos.revision === true">
+            <h5 class="subtitle bSpacer">Fórmula: [RD 1359/2011, de 7 de octubre]</h5>
+            <v-text-field dense filled v-model="datos.revisionFormula"></v-text-field>
+        </v-col>
+      </v-row>
+    </div>
+
+    <!-- ABONOS A CUENTA -->
+    <div class="group">
+      <h3>Abonos a cuenta </h3>
+        <v-row class="rowGroup">
+            <v-col cols="12" md="8">
+              <h5><a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-110" target="blank" title="Ver artículo 198.2 LCSP">
+              [art. 198.2 LCSP]</a></h5>
+                <v-radio-group v-model="datos.abonosAcuenta">
+                    <v-radio label="Si proceden, en las condiciones previstas en el punto 19 de este pliego." :value="true"></v-radio>
+                    <v-radio label="No proceden" :value="false"></v-radio>
+                </v-radio-group>
+            </v-col>
+        </v-row>
+    </div>
+
+
+    <!-- END METER SECCION NUEVA -->
+
     <!-- VALOR ESTIMADO -->
     <div class="group">
       <h3>Valor Estimado</h3>
@@ -1820,7 +2137,7 @@ export default {
       rules: {
           required: (value) => !!value || "Este campo es obligatorio.",
           max20base: (value) => value <= 20 || "Se supera el máximo permitido (20% presupuesto base)",
-          zero: (value) => value > 0 || "El importe no puede ser igual a 0",
+          zero: (value) => value > 0 || "El valor no puede ser igual a 0",
           min13: (value) => value > 13 || "El valor mínimo permitido es 13"
       },
       costesGeneralesValid: true,
@@ -1861,6 +2178,8 @@ export default {
       alerta: false,
       alertType: 'info',
       alertMsg: undefined,
+
+      periodicidades: [1,2,3,4,5],
 
       datos: {
         componente: 'PresupuestoAnualidades',
@@ -1922,6 +2241,16 @@ export default {
           plazoInicio: true,
           ampliacionPlazo: false,
           fechaInicioObservaciones: '',
+
+        //REGIMEN DE PAGOS
+          formaPago: undefined,
+          periodicidad: true,
+
+        //REVISION DE PRECIOS
+          revision: false,
+
+        //ABONOS A CUENTA
+          abonosAcuenta: false,
 
         //VALOR ESTIMADO
           importeServicios: 0,
@@ -2206,7 +2535,6 @@ export default {
       }
     },
 
-
     returnTaxes(value){
       switch(value){
         case 21:
@@ -2305,6 +2633,7 @@ export default {
           plazoProrrogaObservaciones: undefined,
           porcentajeModificacion: 0,
           valorEstimadoLote: 0,
+          especificarPagos:[],
           //SE UTILIZAN MAS ADELANTE
           vanRequerido: 0,
           vanMaxExigible: 0,
@@ -2473,6 +2802,42 @@ export default {
       this.iva = this.returnIVA(impuesto, base);
       return parseFloat((this.total + this.iva).toFixed(2));
     },
+
+    addPayment(loteIndex){
+      let newPayment = {
+        year: (new Date()).getFullYear(),
+        concepto: undefined,
+        importeSImp: 0,
+        impuestos: 0,
+        total: 0,
+      }
+      this.datos.lotes[loteIndex].especificarPagos.push(newPayment)
+    },
+
+    calculateTaxPayment(tipo, base, index, lote){
+      let impuestos = parseFloat(base)*(tipo/100);
+      const datosPago = this.datos.lotes[lote].especificarPagos[index];
+
+      this.datos.lotes[lote].especificarPagos[index].impuestos = impuestos;
+      this.datos.lotes[lote].especificarPagos[index].total = (parseInt(datosPago.importeSImp) + impuestos);
+      return impuestos
+    },
+
+    deletePayment(lote, index){
+      this.datos.lotes[lote].especificarPagos.splice(index,1)
+    },
+
+    checkPayments(lote){
+      let suma = 0;
+      this.datos.lotes[lote].especificarPagos.forEach((pago)=>{
+        suma += parseFloat(pago.importeSImp)
+      })
+      if(suma !== parseFloat(this.datos.lotes[lote].baseLote)){
+        return true
+      } else {
+        return false
+      }
+    }
   },
 };
 </script>
