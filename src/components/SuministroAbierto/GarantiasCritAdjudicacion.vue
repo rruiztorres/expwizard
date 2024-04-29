@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="presBase.lotes.length !== 0">
+        <div v-if="presBase">
             <!-- GARANTIAS -->
             <div class="group">
                 <h3>Garantías</h3>
@@ -1115,7 +1115,9 @@
         
 
         beforeDestroy(){
-            this.$emit('datos', this.datos)
+            if(this.presBase){
+                this.$emit('datos', this.datos)
+            }
         },
 
         created(){
@@ -1130,6 +1132,7 @@
                 }
                 
                 if(this.presBase){
+                    console.log("entro")
                     //VALIDACION INCIAL
                     this.checkMaxExigido();
                     this.checkPotPof();

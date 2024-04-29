@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="datos.lotes.length !==0">
+        <div v-if="presBase">
             <!-- INCOMPATIBILIDADES PARA LA LICITACIÓN -->
             <div class="group">
                 <h3>Incompatibilidades para la licitación
@@ -485,8 +485,10 @@
         props:['presBase', 'objetoNecesidades', 'datosGuardados'],
 
         beforeDestroy(){
-            this.datos.lotes = this.presBase.lotes;
-            this.$emit('datos', this.datos)
+            if(this.presBase){
+                this.datos.lotes = this.presBase.lotes;
+                this.$emit('datos', this.datos)
+            }
         },
 
         created(){
