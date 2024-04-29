@@ -1,97 +1,144 @@
 <template>
     <div>
-        <!-- 26 PENALIDADES -->
-        <h3>26.- PENALIDADES</h3>
-        <br/>
-        <v-row class="rowGroup">
-            <!-- 26.1 -->
-            <v-col cols="12">
-                <h5 class="subtitle">26.1.- Por incumplimiento de las condiciones especiales de ejecución [artículo 192.1 LCSP]</h5>
-                <v-radio-group v-model="datos.penConEsp">
-                    <v-radio label="Si" :value="true"></v-radio>
-                    <v-radio label="No" :value="false"></v-radio>
-                </v-radio-group>
-            </v-col>
-
-            <!-- 26.2 -->
-            <v-col cols="12">
-                <h5 class="subtitle">26.2.- Por incumplimiento defectuoso [artículo 192.1 LCSP]</h5>
-                <v-radio-group v-model="datos.penDefectuoso">
-                    <v-radio label="Si" :value="true"></v-radio>
-                    <v-radio label="No" :value="false"></v-radio>
-                </v-radio-group>
-            </v-col>
-
-            <!-- 26.3 -->
-            <v-col cols="12" md="5">
-                <h5 class="subtitle">26.3.- Por incumplir criterios de adjudicación [artículo 145 LCSP]</h5>
-                <v-radio-group v-model="datos.penCritAdj">
-                    <v-radio label="Si" :value="true"></v-radio>
-                    <v-radio label="No" :value="false"></v-radio>
-                </v-radio-group>
-            </v-col>
-                <!-- CASO AFIRMATIVO -->
-                <v-col cols="12" md="3" v-if="datos.penCritAdj === true">
-                <h5 class="subtitle">En caso afirmativo:</h5>
-                <v-radio-group v-model="datos.critPenAdj">
-                    <v-radio label="Cualquiera de los criterios de adjudicación" :value="true"></v-radio>
-                    <v-radio label="El criterio de adjudicación que se especifica a continuación:" :value="false"></v-radio>
-                </v-radio-group>
+        <!-- PENALIDADES -->
+        <div class="group">
+            <h3>Penalidades
+                <v-badge 
+                class="badge" color="#c7d6f2" content="?"
+                title="Punto 26"
+                ></v-badge >
+            </h3>
+            <v-row class="rowGroup">
+                <!-- INCUMPLIMIENTO DE LAS CONDICIONES ESPECIALES DE EJECUCIÓN -->
+                <v-col cols="12">
+                    <h5 class="subtitle">Por incumplimiento de las condiciones especiales de ejecución
+                        <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-104" target="blank" title="Ver artículo 192 LCSP">   
+                        [artículo 192.1 LCSP]</a>
+                        <v-badge 
+                        class="badge" color="#c7d6f2" content="?"
+                        title="Punto 26.1"
+                        ></v-badge >
+                    </h5>
+                    <v-radio-group v-model="datos.penConEsp">
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
+                    </v-radio-group>
                 </v-col>
 
+                <!-- POR INCUMPLIMIENTO DEFECTUOSO -->
+                <v-col cols="12">
+                    <h5 class="subtitle">Por incumplimiento defectuoso
+                    <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-104" target="blank" title="Ver artículo 192 LCSP">   
+                        [artículo 192.1 LCSP]</a>
+                        <v-badge 
+                        class="badge" color="#c7d6f2" content="?"
+                        title="Punto 26.2"
+                        ></v-badge >
+                    </h5>
+                    <v-radio-group v-model="datos.penDefectuoso">
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
+                    </v-radio-group>
+                </v-col>
+
+                <!-- POR INCUMPLIR CRITERIOS DE ADJUDICACIÓN -->
+                <v-row style="margin:0rem 0rem -2rem 0rem;">
+                    <v-col cols="12" md="3">
+                        <h5 class="subtitle">Por incumplir criterios de adjudicación
+                            <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-57" target="blank" title="Ver artículo 145 LCSP">   
+                            [artículo 145 LCSP]</a>
+                            <v-badge 
+                            class="badge" color="#c7d6f2" content="?"
+                            title="Punto 26.3"
+                            ></v-badge >
+                        </h5>
+                        <v-radio-group v-model="datos.penCritAdj">
+                            <v-radio label="Si" :value="true"></v-radio>
+                            <v-radio label="No" :value="false"></v-radio>
+                        </v-radio-group>
+                    </v-col>
+                    <!-- CASO AFIRMATIVO -->
+                    <v-col cols="12" md="3" v-if="datos.penCritAdj === true">
+                    <h5 class="subtitle">En caso afirmativo:</h5>
+                    <v-radio-group v-model="datos.critPenAdj">
+                        <v-radio label="Cualquiera de los criterios de adjudicación" :value="true"></v-radio>
+                        <v-radio label="El criterio de adjudicación que se especifica a continuación:" :value="false"></v-radio>
+                    </v-radio-group>
+                    </v-col>
                     <!-- INDICAR CRITERIO -->
-                    <v-col cols="12" md="4" v-if="datos.penCritAdj === true && datos.critPenAdj === false">
-                    <h5 class="subtitle">Indicar criterio/s:</h5>
+                    <v-col cols="12" md="6" v-if="datos.penCritAdj === true && datos.critPenAdj === false">
+                    <h5 class="subtitle" style="margin-bottom:1.2rem;">Indicar criterio/s:</h5>
                     <v-textarea auto-grow filled v-model="datos.espCritPenAdj"></v-textarea>
                     </v-col>
-            
-            <!-- 26.4 -->
-            <v-col cols="12">
-                <h5 class="subtitle">26.4.- Por demora en el plazo de ejecución:</h5>
-                <v-radio-group v-model="datos.penDemoraPlazoEjec">
-                    <v-radio label="Por incumplimiento de plazo. Las previstas en el artículo 193 de la LCSP" :value="true"></v-radio>
-                    <v-radio label="No" :value="false"></v-radio>
-                </v-radio-group>
-            </v-col>
+                </v-row>
 
-            <!-- 26.5 -->
-            <v-col cols="12">
-                <h5 class="subtitle">26.5.- Por demora en el plazo para la presentación del plan 
-                    de seguridad y salud [artículo 193.5 LCSP]
+                <!-- POR DEMORA EN EL PLAZO DE EJECUCIÓN -->
+                <v-col cols="12">
+                <h5 class="subtitle">Por demora en el plazo de ejecución:
+                    <v-badge 
+                    class="badge" color="#c7d6f2" content="?"
+                    title="Punto 26.4"
+                    ></v-badge >
+                </h5>
+                    <v-radio-group v-model="datos.penDemoraPlazoEjec">
+                        <v-radio label="Por incumplimiento de plazo. Las previstas en el artículo 193 de la LCSP" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
+                    </v-radio-group>
+                </v-col>
+
+                <!-- POR DEMORA EN EL PLAZO PARA LA PRESENTACION DEL PLAN DE SEGURIDAD Y SALUD -->
+                <v-col cols="12">
+                <h5 class="subtitle">Por demora en el plazo para la presentación del plan 
+                    de seguridad y salud 
+                    <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-105" target="blank" title="Ver artículo 193 LCSP">  
+                    [artículo 193.5 LCSP]
+                    </a>
+                    <v-badge 
+                    class="badge" color="#c7d6f2" content="?"
+                    title="Punto 26.5"
+                    ></v-badge >
                 </h5>
                 <v-radio-group v-model="datos.penDemoraPresent">
                     <v-radio label="Si" :value="true"></v-radio>
                     <v-radio label="No" :value="false"></v-radio>
                 </v-radio-group>
             </v-col>
+            </v-row>
+        </div>
 
-            <!-- 26.6 -->
-            <v-col cols="12">
-                <h5 class="subtitle">26.6.- Otras penalidades [artículo 193 LCSP]</h5>
-                <v-row class="rowGroup rowSubGroup">
-                    <v-col cols="12">
-                        <h5 class="subtitle">1.- Por incumplir las condiciones para la subcontratación</h5>
-                        <v-radio-group v-model="datos.penSubcontrata">
-                            <v-radio label="Si" :value="true"></v-radio>
-                            <v-radio label="No" :value="false"></v-radio>
-                        </v-radio-group>
-                    </v-col>
-                </v-row>
-                <v-row class="rowGroup rowSubGroup">
-                    <v-col cols="12">
-                        <h5 class="subtitle">2.- Por incumplir las obligaciones de información y publicidad establecidas
-                            en el anexo XII, sección 2.2 del Reglamento (UE) 1303/2013 del Parlamento europeo y 
-                            Consejo de 17 de diciembre de 2013; cuando el contrato se financie con fondos europeos.
-                        </h5>
-                        <v-radio-group v-model="datos.penFondEurop">
-                            <v-radio label="Si" :value="true"></v-radio>
-                            <v-radio label="No" :value="false"></v-radio>
-                        </v-radio-group>
-                    </v-col>
-                </v-row>
-            </v-col>
+        <!-- OTRAS PENALIDADES -->
+        <div class="group">
+           <h3>Otras penalidades
+                <v-badge 
+                class="badge" color="#c7d6f2" content="?"
+                title="Punto 26.6"
+                ></v-badge >
+            </h3> 
+            <v-row class="rowGroup">
+                <!-- INCUMPLIR LAS CONDICIONES PARA LA SUBCONTRATACIÓN -->
+                <v-col cols="12">
+                    <h5 class="subtitle">Por incumplir las condiciones para la subcontratación</h5>
+                    <v-radio-group v-model="datos.penSubcontrata">
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
+                    </v-radio-group>
+                </v-col>
+                <!-- INCUMPLIR OBLIGACIONES DE INFORMACIÓN PUBLICIDAD FONDOS EUROPEOS -->
+                <v-col cols="12" md="6">
+                    <h5 class="subtitle">Por incumplir las obligaciones de información y publicidad establecidas
+                        en el 
+                        <a href="https://www.boe.es/doue/2013/347/L00320-00469.pdf" target="blank">
+                        anexo XII, sección 2.2 del Reglamento (UE) 1303/2013</a>
+                        del Parlamento europeo y Consejo de 17 de diciembre de 2013; cuando el contrato se financie con fondos europeos.
+                    </h5>
+                    <v-radio-group v-model="datos.penFondEurop">
+                        <v-radio label="Si" :value="true"></v-radio>
+                        <v-radio label="No" :value="false"></v-radio>
+                    </v-radio-group>
+                </v-col>
+            </v-row>
 
-        </v-row>
+        </div>
     </div>
 </template>
 
