@@ -2369,7 +2369,9 @@ export default {
   },
 
   beforeDestroy(){
-    this.$emit('datos', this.datos)
+    if(this.datos.lotes.length > 0){
+      this.$emit('datos', this.datos)
+    }
   },
 
   created(){

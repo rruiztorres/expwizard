@@ -1132,13 +1132,13 @@
                 }
                 
                 if(this.presBase){
-                    console.log("entro")
                     //VALIDACION INCIAL
                     this.checkMaxExigido();
                     this.checkPotPof();
                     this.checkCualPrice();
                     this.checkPuntosValor();   
-                    this.checkPuntosFormulas();        
+                    this.checkPuntosFormulas();
+                    
                 }         
             },
 
