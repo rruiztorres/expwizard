@@ -2,7 +2,8 @@
     <div>
         <!-- RESPONSABLE DEL CONTRATO -->
         <div class="group">
-            <h3>Responsable del contrato
+            <h3 id="Responsable del contrato">
+                Responsable del contrato
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 17"
@@ -24,7 +25,8 @@
 
         <!-- PRESENTACIÓN DE FACTURAS -->
         <div class="group">
-            <h3>Presentación de facturas
+            <h3 id="Presentación de facturas">
+                Presentación de facturas
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 22"
@@ -44,7 +46,8 @@
 
         <!-- COMPROBACIÓN DE PAGOS A SUBCONTRATISTAS O SUMINISTRADORES -->
         <div class="group">
-            <h3>Comprobación de pagos a subcontratistas o suministradores
+            <h3 id="Comprobación de pagos a subcontratistas o suministradores">
+                Comprobación de pagos a subcontratistas o suministradores
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 23"
@@ -65,7 +68,8 @@
 
         <!-- CONDICIONES ESPECIALES DE EJECUCIÓN -->
         <div class="group">
-            <h3 class="bSpacer">Condiciones especiales de ejecución
+            <h3 id="Condiciones especiales de ejecución">
+                Condiciones especiales de ejecución
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 24"
@@ -77,7 +81,7 @@
                     <v-row>
                         <v-col cols="12">
                             <h4 class="subtitle" style="margin:-0.5rem 0rem 1rem 0rem;">Se aplicará lo siguiente respecto de las condiciones especiales de ejecución:</h4>
-                            <h5>
+                            <h5 id="Relacionadas con la innovación, de tipo medioambiental o social">
                                 Relacionadas con la innovación, de tipo medioambiental o social:
                                 <v-badge 
                                 class="badge" color="#c7d6f2" content="?"
@@ -119,7 +123,7 @@
                 <v-col cols="12">
                     <v-row>
                         <v-col cols="3">
-                            <h5  style="margin:-1rem 0rem 1rem 0rem;">
+                            <h5  style="margin:-1rem 0rem 1rem 0rem;" id="Otras condiciones especiales de ejecución">
                                 Otras condiciones especiales de ejecución:
                                 <v-badge 
                                 class="badge" color="#c7d6f2" content="?"
@@ -217,7 +221,7 @@
 <script> 
     export default {
         name: 'PlazosRespEjecucion',
-        props:['datosGuardados'],
+        props:['datosGuardados', 'goToElement'],
         data(){
             return {
                 subdirecciones: [   
@@ -251,7 +255,12 @@
             }
         },
 
+        updated(){
+            this.$emit('datos', this.datos)
+        },
+
         beforeDestroy(){
+            //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
             this.$emit('datos', this.datos)
         },
 
@@ -259,10 +268,26 @@
             this.initialize();
         },
 
+        watch:{
+            goToElement(){
+                this.setElementScroll();
+            }
+        },
+
+
         methods:{
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
+                }
+            },
+
+            setElementScroll(){
+                if(this.goToElement !== undefined){
+                    setTimeout(()=>{
+                        let element = document.getElementById(this.goToElement)
+                        element.scrollIntoView({ block: "start", behavior: "smooth" });
+                        }, 500)
                 }
             },
         }

@@ -2,7 +2,8 @@
     <div>
         <!-- CESIÓN DEL CONTRATO -->
         <div>
-            <h3>Cesión del contrato
+            <h3 id="Cesión del contrato">
+                Cesión del contrato
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 27">
@@ -22,7 +23,8 @@
         </div>
         <!-- SUBCONTRATACIÓN -->
         <div>
-            <h3>Subcontratación
+            <h3 id="Subcontratación">
+                Subcontratación
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 28">
@@ -62,7 +64,8 @@
 
         <!-- FACULTADES DE INSPECCION -->
         <div>
-            <h3>Facultades de inspección de instalaciones y oficinas del contratista
+            <h3 id="Facultades de inspección de instalaciones">
+                Facultades de inspección de instalaciones y oficinas del contratista
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 29">
@@ -92,7 +95,8 @@
 
         <!-- PLAZO DE RECEPCIÓN -->
         <div>
-            <h3>Plazo de recepción
+            <h3 id="Plazo de recepción">
+                Plazo de recepción
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 30">
@@ -126,7 +130,8 @@
 
         <!-- GARANTIA -->
         <div>
-            <h3>Plazo de garantía
+            <h3 id="Plazo de garantía">
+                Plazo de garantía
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 31">
@@ -162,6 +167,8 @@
 <script>
     export default {
         name: 'CesionSubcontrataOtros',
+        props:['goToElement'],
+        
         data(){
             return {
                 datos: {
@@ -182,11 +189,23 @@
             }
         },
 
+        watch:{
+            goToElement(){
+                this.setElementScroll();
+            }
+        },
+
         created(){
             this.initialize();
+            this.setElementScroll();
+        },
+
+        updated(){
+            this.$emit('datos', this.datos)
         },
 
         beforeDestroy(){
+            //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
             this.$emit('datos', this.datos)
         },
 
@@ -195,7 +214,16 @@
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
                 }
-            }
+            },
+
+            setElementScroll(){
+                if(this.goToElement !== undefined){
+                    setTimeout(()=>{
+                        let element = document.getElementById(this.goToElement)
+                        element.scrollIntoView({ block: "start", behavior: "smooth" });
+                        }, 500)
+                }
+            },
         }
     }
 </script>

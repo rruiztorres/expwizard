@@ -2,8 +2,9 @@
   <div>
     <!-- PRESUPUESTO BASE Y DIVISIÓN EN LOTES -->
     <div class="group">
-      <h3>Presupuesto base de licitación y Lotes
-          <v-badge 
+      <h3 id="Presupuesto base de licitación y Lotes">
+        Presupuesto base de licitación y Lotes
+        <v-badge 
           class="badge" color="#c7d6f2" content="?"
           title="Punto 3.1 (Presupuesto Base de Licitación) - Punto 5 (Lotes)"
           ></v-badge >
@@ -365,7 +366,8 @@
 
     <!-- TRAMITACIÓN -->
     <div class="group">
-      <h3>Tramitación
+      <h3 id="Tramitación">
+        Tramitación
         <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 3.1 (Presupuesto Base de Licitación)"></v-badge >
@@ -404,7 +406,8 @@
     
     <!-- DESGLOSE -->
     <div class="group">
-      <h3>Desglose
+      <h3 id="Desglose">
+        Desglose
         <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 3.2 (Desglose)"></v-badge >
@@ -448,7 +451,8 @@
 
     <!-- ANUALIDADES -->
     <div class="group">
-      <h3>Anualidades
+      <h3 id="Anualidades">
+        Anualidades
         <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 3.3 (Anualidades)"></v-badge >
@@ -587,7 +591,8 @@
 
     <!-- MODIFICACIÓN DEL CONTRATO -->
     <div class="group">
-      <h3>Modificación del contrato
+      <h3 id="Modificación del contrato">
+        Modificación del contrato
         <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 24.1 (Modificaciones previstas)"></v-badge >
@@ -719,7 +724,7 @@
 
     <!-- PLAZO DE EJECUCIÓN O DURACION -->
     <div class="group">
-      <h3>Plazo de ejecución o duración</h3>
+      <h3 id="Plazo de ejecución o duración">Plazo de ejecución o duración</h3>
       <div class="rowGroup" v-if="datos.lotes.length !== 0">
         <!-- SE DEFINE COMO (plazo ejecución - duración) -->
         <v-row dense class="subRow">
@@ -1671,12 +1676,9 @@
       </div>
     </div>
 
-    <!-- METER SECCION NUEVA -->
-
-
     <!-- REGIMEN DE PAGOS -->
     <div class="group">
-      <h3>Régimen de pagos</h3>
+      <h3 id="Régimen de pagos">Régimen de pagos</h3>
       <v-row class="rowGroup">
         <!-- LA FORMA DE PAGO SERA: -->
         <v-col cols="12">
@@ -1945,7 +1947,7 @@
     </div>
 
     <div class="group">
-      <h3>Revisión de precios</h3>
+      <h3 id="Revisión de precios">Revisión de precios</h3>
       <v-row class="rowGroup">
         <v-col cols="12" md="2">
             <v-radio-group v-model="datos.revision">
@@ -1972,7 +1974,7 @@
 
     <!-- ABONOS A CUENTA -->
     <div class="group">
-      <h3>Abonos a cuenta </h3>
+      <h3 id="Abonos a cuenta">Abonos a cuenta </h3>
         <v-row class="rowGroup">
             <v-col cols="12" md="8">
               <h5><a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-110" target="blank" title="Ver artículo 198.2 LCSP">
@@ -1985,12 +1987,9 @@
         </v-row>
     </div>
 
-
-    <!-- END METER SECCION NUEVA -->
-
     <!-- VALOR ESTIMADO -->
     <div class="group">
-      <h3>Valor Estimado</h3>
+      <h3 id="Valor Estimado">Valor Estimado</h3>
       <v-row class="rowGroup" v-if="datos.lotes.length !== 0">
         <v-col cols="12">
           <h5>Total contrato</h5>
@@ -2060,7 +2059,7 @@
 
     <!-- LUGAR DE PRESTACIÓN -->
     <div class="group">
-      <h3>Lugar de entrega:</h3>
+      <h3 id="Lugar de entrega">Lugar de entrega:</h3>
       <v-row class="rowGroup">
         <v-col cols="12">
           <v-textarea filled auto-grow v-model="datos.lugarPrestacion"></v-textarea>
@@ -2070,7 +2069,7 @@
 
     <!-- DOCUMENTOS QUE REVISTEN CARACTER CONTRACTUAL -->
     <div class="group">
-      <h3>Documentos que revisten carácter contractual</h3>
+      <h3 id="Documentos que revisten carácter contractual">Documentos que revisten carácter contractual</h3>
       <v-row class="rowGroup">
         <v-col cols="12">
         <h5>A los efectos del artículo 35 de la LCSP, la relación de documentos que revisten carácter contractual está enumerada en la CLÁUSULA 6 en el orden en que aparecen</h5>
@@ -2084,7 +2083,7 @@
 
     <!-- PROCEDIMIENTO -->
     <div class="group">
-      <h3>Procedimiento</h3>
+      <h3 id="Procedimiento">Procedimiento</h3>
       <v-row class="rowGroup">
         <v-col cols="12">
           <h5>Seleccionar tramitación del procedimiento 
@@ -2114,7 +2113,7 @@ import {currencyFormat} from "@/assets/mixins/currencyFormat";
 
 export default {
   name: "PresupuestoLoteAnualidades",
-  props:['datosGuardados'],
+  props:['datosGuardados', 'goToElement'],
   components: {AplicacionPres},
   mixins: [currencyFormat],
   
@@ -2272,6 +2271,13 @@ export default {
   },
 
   watch:{
+    goToElement(){
+        if(this.goToElement !== undefined){
+          this.setElementScroll()
+        }
+    },
+
+
     datos: {
       deep: true,
       handler(datos){
@@ -2368,7 +2374,14 @@ export default {
     },
   },
 
+  updated(){
+    if(this.datos.lotes.length > 0){
+      this.$emit('datos', this.datos)
+    }
+  },
+
   beforeDestroy(){
+    //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
     if(this.datos.lotes.length > 0){
       this.$emit('datos', this.datos)
     }
@@ -2376,9 +2389,19 @@ export default {
 
   created(){
     this.initialize();
+    if(this.goToElement){
+      this.setElementScroll();
+    }
   },
- 
+
   methods: {
+    setElementScroll(){
+      setTimeout(()=>{
+          let element = document.getElementById(this.goToElement)
+          element.scrollIntoView({ block: "start", behavior: "smooth" });
+        }, 500)
+    },
+
     initialize(){
     if(this.datosGuardados !== undefined){
         this.datos = this.datosGuardados

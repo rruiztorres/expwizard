@@ -3,7 +3,8 @@
         <div v-if="presBase">
             <!-- INCOMPATIBILIDADES PARA LA LICITACIÓN -->
             <div class="group">
-                <h3>Incompatibilidades para la licitación
+                <h3 id="Incompatibilidades para la licitación">
+                    Incompatibilidades para la licitación
                     <v-badge 
                     class="badge" color="#c7d6f2" content="?"
                     title="Punto 8.1 (Incompatibilidades para la licitación)">
@@ -37,11 +38,14 @@
             
             <!-- CAPACIDAD Y SOLVENCIA -->
             <div class="group">
-                <h3>Capacidad y solvencia</h3>
+                <h3 id="Capacidad y solvencia">
+                    Capacidad y solvencia
+                    </h3>
                 <v-row class="rowGroup">
                     <!-- REQUISITOS DE SOLVENCIA -->     
                     <v-col cols="12">
-                        <h4 class="subtitle">Requisitos de solvencia
+                        <h4 class="subtitle" id="Requisitos de solvencia">
+                            Requisitos de solvencia
                             <v-badge 
                             class="badge" color="#c7d6f2" content="?"
                             title="Punto 9.1 (Requisitos de solvencia)"></v-badge >
@@ -371,7 +375,8 @@
                     
                     <!-- INTEGRACIÓN DE LA SOLVENCIA -->
                     <v-col cols="12">
-                        <h4 class="subtitle">Integración de la solvencia
+                        <h4 class="subtitle" id="Integración de la solvencia">
+                            Integración de la solvencia
                             <v-badge 
                             class="badge" color="#c7d6f2" content="?"
                             title=""></v-badge >
@@ -391,7 +396,7 @@
                     <v-col cols="12">
                         <v-row>
                             <v-col cols="12">
-                                <h4 class="subtitle">Concreción de las condiciones de solvencia</h4>
+                                <h4 id="Concreción de las condiciones de solvencia" class="subtitle">Concreción de las condiciones de solvencia</h4>
                                 <h5 class="subtitle">1.- Obligación de adscribir medios personales o materiales</h5>
                                 <v-radio-group v-model="datos.obligacionMediosMateriales">
                                     <v-radio label="Si se exige, mediante compromiso en la declaración responsable complementaria al DEUC" :value="true"></v-radio>
@@ -422,7 +427,7 @@
                     <v-col cols="12">
                         <v-row>
                             <v-col cols="12" md="6">
-                                <h5 class="subtitle">Habilitación empresaria exigible</h5>
+                                <h5 id="Habilitación empresaria exigible" class="subtitle">Habilitación empresaria exigible</h5>
                                 <v-radio-group v-model="datos.habilitacionExigible">
                                     <v-radio label="La siguiente habilitación:" :value="true"></v-radio>
                                     <v-radio label="Ninguna en especial" :value="false" @click="datos.especificarHabilitacion = undefined"></v-radio>
@@ -482,9 +487,17 @@
             }
         },
         mixins: [currencyFormat],
-        props:['presBase', 'objetoNecesidades', 'datosGuardados'],
+        props:['presBase', 'objetoNecesidades', 'datosGuardados', 'goToElement'],
+
+        updated(){
+            if(this.presBase){
+                this.datos.lotes = this.presBase.lotes;
+                this.$emit('datos', this.datos)
+            }
+        },
 
         beforeDestroy(){
+            //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
             if(this.presBase){
                 this.datos.lotes = this.presBase.lotes;
                 this.$emit('datos', this.datos)
@@ -495,7 +508,23 @@
             this.initialize();
         },
 
+    
+        watch:{
+            goToElement(){
+                this.setElementScroll();
+            }
+        },
+
         methods:{
+            setElementScroll(){
+                if(this.goToElement !== undefined){
+                    setTimeout(()=>{
+                        let element = document.getElementById(this.goToElement)
+                        element.scrollIntoView({ block: "start", behavior: "smooth" });
+                        }, 500)
+                }
+            },
+
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados

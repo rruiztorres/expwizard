@@ -2,7 +2,8 @@
     <div>
         <!-- PENALIDADES -->
         <div class="group">
-            <h3>Penalidades
+            <h3 id="Penalidades">
+                Penalidades
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 26"
@@ -11,7 +12,8 @@
             <v-row class="rowGroup">
                 <!-- INCUMPLIMIENTO DE LAS CONDICIONES ESPECIALES DE EJECUCIÓN -->
                 <v-col cols="12">
-                    <h5 class="subtitle">Por incumplimiento de las condiciones especiales de ejecución
+                    <h5 class="subtitle" id="Por incumplimiento de las condiciones especiales de ejecución">
+                        Por incumplimiento de las condiciones especiales de ejecución
                         <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-104" target="blank" title="Ver artículo 192 LCSP">   
                         [artículo 192.1 LCSP]</a>
                         <v-badge 
@@ -27,7 +29,8 @@
 
                 <!-- POR INCUMPLIMIENTO DEFECTUOSO -->
                 <v-col cols="12">
-                    <h5 class="subtitle">Por incumplimiento defectuoso
+                    <h5 class="subtitle" id="Por incumplimiento defectuoso">
+                    Por incumplimiento defectuoso
                     <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-104" target="blank" title="Ver artículo 192 LCSP">   
                         [artículo 192.1 LCSP]</a>
                         <v-badge 
@@ -42,9 +45,10 @@
                 </v-col>
 
                 <!-- POR INCUMPLIR CRITERIOS DE ADJUDICACIÓN -->
-                <v-row style="margin:0rem 0rem -2rem 0rem;">
-                    <v-col cols="12" md="3">
-                        <h5 class="subtitle">Por incumplir criterios de adjudicación
+                <v-row style="margin:0rem;">
+                    <v-col cols="12" md="4">
+                        <h5 class="subtitle" id="Por incumplir criterios de adjudicación">
+                            Por incumplir criterios de adjudicación
                             <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-57" target="blank" title="Ver artículo 145 LCSP">   
                             [artículo 145 LCSP]</a>
                             <v-badge 
@@ -66,7 +70,7 @@
                     </v-radio-group>
                     </v-col>
                     <!-- INDICAR CRITERIO -->
-                    <v-col cols="12" md="6" v-if="datos.penCritAdj === true && datos.critPenAdj === false">
+                    <v-col cols="12" md="5" v-if="datos.penCritAdj === true && datos.critPenAdj === false">
                     <h5 class="subtitle" style="margin-bottom:1.2rem;">Indicar criterio/s:</h5>
                     <v-textarea auto-grow filled v-model="datos.espCritPenAdj"></v-textarea>
                     </v-col>
@@ -74,7 +78,8 @@
 
                 <!-- POR DEMORA EN EL PLAZO DE EJECUCIÓN -->
                 <v-col cols="12">
-                <h5 class="subtitle">Por demora en el plazo de ejecución:
+                <h5 class="subtitle" id="Por demora en el plazo de ejecución">
+                    Por demora en el plazo de ejecución:
                     <v-badge 
                     class="badge" color="#c7d6f2" content="?"
                     title="Punto 26.4"
@@ -88,8 +93,8 @@
 
                 <!-- POR DEMORA EN EL PLAZO PARA LA PRESENTACION DEL PLAN DE SEGURIDAD Y SALUD -->
                 <v-col cols="12">
-                <h5 class="subtitle">Por demora en el plazo para la presentación del plan 
-                    de seguridad y salud 
+                <h5 class="subtitle" id="Por demora en el plazo para la presentación del plan de seguridad y salud">
+                    Por demora en el plazo para la presentación del plan de seguridad y salud
                     <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-105" target="blank" title="Ver artículo 193 LCSP">  
                     [artículo 193.5 LCSP]
                     </a>
@@ -108,7 +113,8 @@
 
         <!-- OTRAS PENALIDADES -->
         <div class="group">
-           <h3>Otras penalidades
+           <h3 id="Otras penalidades">
+                Otras penalidades
                 <v-badge 
                 class="badge" color="#c7d6f2" content="?"
                 title="Punto 26.6"
@@ -144,21 +150,42 @@
 
 <script>
     export default {
-        name:'ModificacionesPenalidades',
-        props: ['datosGuardados', 'presBase'],
+        name:'Penalidades',
+        props: ['datosGuardados', 'presBase', 'goToElement'],
         
-        beforeDestroy(){
-           this.$emit('datos', this.datos);
+        
+        updated(){
+            this.$emit('datos', this.datos)
         },
 
+        beforeDestroy(){
+            //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
+            this.$emit('datos', this.datos)
+        },
+        
         created(){
             this.initialize();
+        },
+
+        watch:{
+            goToElement(){
+                this.setElementScroll();
+            }
         },
 
         methods:{
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados
+                }
+            },
+
+            setElementScroll(){
+                if(this.goToElement !== undefined){
+                    setTimeout(()=>{
+                        let element = document.getElementById(this.goToElement)
+                        element.scrollIntoView({ block: "start", behavior: "smooth" });
+                        }, 500)
                 }
             },
         },

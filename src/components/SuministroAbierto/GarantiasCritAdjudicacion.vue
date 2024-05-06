@@ -3,13 +3,16 @@
         <div v-if="presBase">
             <!-- GARANTIAS -->
             <div class="group">
-                <h3>Garantías</h3>
+                <h3 id="Garantías">
+                    Garantías
+                </h3>
                 <v-row class="rowGroup">
                     <v-col cols="12">
                         <!--PROVISIONAL -->
                         <v-row class="subRow">
                             <v-col cols="12" md="2">
-                                <h5 class="subtitle">Provisional 
+                                <h5 class="subtitle" id="Provisional">
+                                    Provisional 
                                     <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-18" target="blank" title="Ver artículo 106 LCSP">
                                     [art. 106.2 LCSP]</a>
                                     <v-badge 
@@ -177,7 +180,8 @@
                         <v-row class="subRow">
                             <!-- SELECTOR -->
                             <v-col cols="12" md="2">
-                                <h5 class="subtitle">Complementaria 
+                                <h5 class="subtitle" id="Complementaria">
+                                    Complementaria
                                     <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-19" target="blank" title="Ver artículo 107 LCSP">
                                     [art. 107.2 LCSP]</a>
                                     <v-badge 
@@ -211,11 +215,14 @@
 
             <!--CRITERIOS DE ADJUDICACION-->
             <div class="group">
-                <h3>Criterios de adjudicación</h3>
+                <h3 id="Criterios de adjudicación">
+                    Criterios de adjudicación
+                </h3>
                 <v-row class="rowGroup">
                     <!-- PREPONDERANCIA DE CRITERIOS -->
                     <v-col cols="12">
-                        <h5>Preponderancia de criterios
+                        <h5 id="Preponderancia de criterios">
+                            Preponderancia de criterios
                             <v-badge 
                             class="badge" color="#c7d6f2" content="?"
                             title="Punto 11.1 - Preponderancia de criterios">
@@ -490,7 +497,7 @@
 
             <!-- PUNTUACION DE LOS CRITERIOS CUALITATIVOS QUE DEPENDEN DE UN JUICIO DE VALOR -->
             <div class="group">
-                <h3>Puntuación de los criterios cualitativos que dependen de un juicio de valor (POT)</h3>
+                <h3 id="Puntuación criterios cualitativos">Puntuación de los criterios cualitativos que dependen de un juicio de valor (POT)</h3>
                 <v-row class="rowGroup">
                     <v-col cols="12">
                         <!-- HAY LOTES -->
@@ -736,7 +743,7 @@
                     </v-col>
                     <!-- UMBRAL MÍNIMO -->
                     <v-col cols="12" md="5">
-                        <h5>Umbral mínimo en los criterios cualitativos que dependen de un jucio de valor
+                        <h5 id="Umbral juicio valor">Umbral mínimo en los criterios cualitativos que dependen de un jucio de valor
                             <a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-58" target="blank" title="Ver artículo 146 LCSP">[artículo 146.3 LCSP]
                             </a>
                         </h5>
@@ -751,7 +758,7 @@
 
             <!-- PUNTUACION DE LOS CRITERIOS EVALUABLES MEDIANTE FÓRMULAS -->
             <div class="group">
-                <h3>Puntuación de los criterios evaluables mediante fórmulas (POF)</h3>
+                <h3 id="Puntuación criterios fórmulas">Puntuación de los criterios evaluables mediante fórmulas (POF)</h3>
                 <v-row class="rowGroup">
                     <v-col cols="12">
                         <!-- HAY LOTES -->
@@ -1002,7 +1009,7 @@
 
             <!-- OFERTAS CON VALORES ANORMALES -->
             <div class="group">
-                <h3>Ofertas con valores anormales</h3>
+                <h3 id="Ofertas con valores anormales">Ofertas con valores anormales</h3>
                 <v-row class="rowGroup">
                     <v-col cols="12" md="5">
                         <h5 class="subtitle">Criterio:</h5>
@@ -1054,7 +1061,7 @@
 
             <!-- PLAZO PARA LA ADJUDICACION -->
             <div class="group">
-                <h3>Plazo para la adjudicación</h3>
+                <h3 id="Plazo para la adjudicación">Plazo para la adjudicación</h3>
                 <v-row class="rowGroup">
                     <v-col cols="12" md="3">
                         <h5 class="subtitle">Se adjudicará el contrato dentro del plazo</h5>
@@ -1084,7 +1091,7 @@
 
     export default {
         name: 'GarantiasCritAdjudicacion',
-        props:['presBase', 'datosGuardados'],
+        props:['presBase', 'datosGuardados', 'goToElement'],
         mixins: [currencyFormat],
         data(){
             return {
@@ -1112,20 +1119,43 @@
                 }
             }
         },
-        
 
-        beforeDestroy(){
+        updated(){
             if(this.presBase){
                 this.$emit('datos', this.datos)
             }
         },
 
+        beforeDestroy(){
+            //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
+            if(this.presBase){
+                this.$emit('datos', this.datos)
+            }
+        },
+        
         created(){
-            this.initialize();            
+            this.initialize();
+            this.setElementScroll();            
+        },
+
+    
+        watch:{
+            goToElement(){
+                this.setElementScroll(); 
+            }
         },
 
 
         methods:{
+            setElementScroll(){
+                if(this.goToElement !== undefined){
+                    setTimeout(()=>{
+                        let element = document.getElementById(this.goToElement)
+                        element.scrollIntoView({ block: "start", behavior: "smooth" });
+                        }, 500)
+                }
+            },
+
             initialize(){
                 if(this.datosGuardados !== undefined){
                     this.datos = this.datosGuardados

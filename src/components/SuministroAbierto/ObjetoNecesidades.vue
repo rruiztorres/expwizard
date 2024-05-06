@@ -4,7 +4,7 @@
     <div class="group">
       <v-row class="row">
         <v-col cols="12">
-          <h3>Objeto del contrato
+          <h3 id="Objeto del contrato">Objeto del contrato
             <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 1"></v-badge >
@@ -109,7 +109,8 @@
     <div class="group">
       <v-row class="row">
         <v-col cols="12">
-          <h3>Necesidades a satisfacer y circunstancias del contrato
+          <h3 id="Necesidades a satisfacer y circunstancias del contrato">
+            Necesidades a satisfacer y circunstancias del contrato
             <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 2"></v-badge >
@@ -136,7 +137,7 @@ import Provincias from "@/components/common/Provincias"
 export default {
 name: "objeto_necesidades",
 components: {CPVTable, Comunidades, Provincias},
-props:['datosGuardados'],
+props:['datosGuardados', 'goToElement'],
 
   data() {
     return {
@@ -171,15 +172,36 @@ props:['datosGuardados'],
     this.initialize();
   },
 
-  beforeDestroy(){
-    this.$emit('datos', this.datos)
+  watch:{
+    goToElement(){
+      this.setElementScroll();
+    }
   },
+
+  updated(){
+      this.$emit('datos', this.datos)
+  },
+
+  beforeDestroy(){
+    //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
+      this.$emit('datos', this.datos)
+  },
+
 
   methods: {
     initialize(){
       if(this.datosGuardados !== undefined){
         this.datos = this.datosGuardados
       }        
+    },
+
+    setElementScroll(){
+        if(this.goToElement !== undefined){
+            setTimeout(()=>{
+                let element = document.getElementById(this.goToElement)
+                element.scrollIntoView({ block: "start", behavior: "smooth" });
+                }, 500)
+        }
     },
   },
 };
