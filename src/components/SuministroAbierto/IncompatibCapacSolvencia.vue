@@ -396,7 +396,11 @@
                     <v-col cols="12">
                         <v-row>
                             <v-col cols="12">
-                                <h4 id="Concreción de las condiciones de solvencia" class="subtitle">Concreción de las condiciones de solvencia</h4>
+                                <h4 id="Concreción de las condiciones de solvencia" class="subtitle">Concreción de las condiciones de solvencia
+                                    <small><a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a7-8" target="blank" title="Ver artículo 76 LCSP">
+                                    [artículo 76 LCSP]
+                                    </a></small>
+                                </h4>
                                 <h5 class="subtitle">1.- Obligación de adscribir medios personales o materiales</h5>
                                 <v-radio-group v-model="datos.obligacionMediosMateriales">
                                     <v-radio label="Si se exige, mediante compromiso en la declaración responsable complementaria al DEUC" :value="true"></v-radio>
@@ -427,7 +431,11 @@
                     <v-col cols="12">
                         <v-row>
                             <v-col cols="12" md="6">
-                                <h5 id="Habilitación empresaria exigible" class="subtitle">Habilitación empresaria exigible</h5>
+                                <h4 id="Habilitación empresaria exigible" class="subtitle" style="margin-bottom:-0.5rem;">
+                                    Habilitación empresaria exigible
+                                    <small><a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a6-7" target="blank" title="Ver artículo 65 LCSP">[artículo 65.2 LCSP]
+                                    </a></small>
+                                </h4>
                                 <v-radio-group v-model="datos.habilitacionExigible">
                                     <v-radio label="La siguiente habilitación:" :value="true"></v-radio>
                                     <v-radio label="Ninguna en especial" :value="false" @click="datos.especificarHabilitacion = undefined"></v-radio>

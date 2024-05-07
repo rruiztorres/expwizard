@@ -1,90 +1,109 @@
 <template> 
-    <div id="mainWrapper">
+    <div id="wrapper">
+       
         <h2>Mis Expedientes</h2>
-        <v-row>
-            <v-col cols="12">
-                <br/>
-                <v-card>
-                    <v-row class="actions">
-                        <v-col cols="12" md="4">
-                            <h3>Acciones globales</h3>
-                            <v-btn 
-                                class="actionBtn" 
-                                width="45%" 
-                                color="error" 
-                                :disabled="selected.length === 0"
-                                @click="deleteExp(selected)"
-                            >Borrar selección
-                            </v-btn>
-                            <v-btn 
-                                class="actionBtn" 
-                                width="45%" 
-                                color="info" 
-                                :disabled="selected.length === 0"
-                            >Actualizar Estado
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="12" md="8">
-                            <v-text-field
-                            class="searchBar"
-                            v-model="search"
-                            append-icon="mdi-magnify"
-                            label="Buscar"
-                            single-line
-                            hide-details
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                </v-card>
-                
-                <br/> 
-                <v-data-table
-                    :headers="expHeaders"
-                    :items="expedientes"
-                    :items-per-page="12"
-                    :search="search"
-                    show-select
-                    item-key="id_expediente"
-                    v-model="selected"
-                    group-by="tipo"
-                >   
-                    <template v-slot:[`item.edit`] = "props">
-                        <v-btn 
-                        class="greenButton"
-                        title="Editar"
-                        @click="edit(props.item)"
-                        icon dark><v-icon>mdi-lead-pencil</v-icon>
-                        </v-btn>
-                    </template>
 
-                    <template v-slot:[`item.downloads`]="props">
-                        <v-btn 
-                        class="redButton"
-                        title="Descargar PDF"
-                        @click="getInfo(props.item.id)"
-                        icon dark><v-icon>mdi-file-pdf-box</v-icon>
-                        </v-btn>
-                        <span style="margin-right: 0.2rem;"></span>
-                        <v-btn 
-                        class="blueButton"
-                        title="Descargar Word"
-                        @click="getInfo(props.item.id)"
-                        icon dark><v-icon>mdi-file-word-box</v-icon>
-                        </v-btn>
-                    </template>
+        <!-- ACCIONES GLOBALES -->
+        <v-card class="sectionWrapper">
+            <v-row dense>
+                <v-col cols="12">   
+                    <h3>Acciones globales</h3>
+                </v-col>
+                <v-col cols="12" md="6" lg="2">
+                    <v-btn
+                        block
+                        color="error" 
+                        :disabled="selected.length === 0"
+                        @click="deleteExp(selected)">
+                    Borrar selección
+                    </v-btn>
+                </v-col>
+                <v-col cols="12" md="6" lg="2">
+                    <v-btn
+                        block
+                        color="info" 
+                        :disabled="selected.length === 0">
+                    Actualizar Estado
+                    </v-btn>
+                </v-col>
+                <v-col cols="12" md="12" lg="8">
+                    <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Buscar"
+                    hide-details
+                    filled dense
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+        </v-card>
+        
+        <!-- DATA TABLE -->
+        <v-card class="sectionWrapper">
+            <v-data-table
+                :headers="expHeaders"
+                :items="expedientes"
+                :items-per-page="-1"
+                :search="search"
+                show-select
+                hide-default-footer
+                item-key="id_expediente"
+                v-model="selected"
+                group-by="tipo"
+            >   
 
-                    <template v-slot:[`item.fecha`]="props">
-                        {{(props.item.fecha.split("T"))[0]}}
-                    </template>
+                <!-- BARRA AGRUPAR PERSONALIZADA -->
+                <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                    <th colspan="10">
+                        <!-- ABRIR / CERRAR PESTAÑA -->
+                        <v-icon @click="toggle">{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                        <!-- TEXTO -->
+                        <span style="font-weight:400; font-size:125%; margin:0rem 0rem 0rem 1rem;">
+                            <span style="font-weight:500; margin-left:0.2rem;">{{items[0].data.expData.tipo}}</span></span>
+                    </th>
+                </template>
 
-                    <template v-slot:[`item.estado`]="props">
-                        <v-chip :color="getColor(props.item.estado)" label dark>
-                            {{props.item.estado}}
-                        </v-chip>
-                    </template>
-                </v-data-table>
-            </v-col>
-        </v-row>
+                <!-- BOTON EDITAR -->
+                <template v-slot:[`item.edit`] = "props">
+                    <v-btn
+                    color="success"
+                    title="Editar"
+                    @click="edit(props.item)"
+                    small><v-icon small>mdi-lead-pencil</v-icon> Editar
+                    </v-btn>
+                </template>
+               
+                <!-- FECHA -->
+                <template v-slot:[`item.fecha`]="props">
+                    {{getFormatDate((props.item.fecha.split("T"))[0])}}
+                </template>
+
+                <!-- ESTADO -->
+                <template v-slot:[`item.estado`]="props">
+                    <v-chip :color="getColor(props.item.estado)" label dark>
+                        {{props.item.estado}}
+                    </v-chip>
+                </template>
+
+                 <!-- BOTONES DESCARGA -->
+                <template v-slot:[`item.downloads`]="props">
+                    <v-btn
+                    class="actionButton"
+                    color="error"
+                    title="Descargar PDF"
+                    @click="dummy(props.item)"
+                    icon large dark><v-icon style="font-size: 2.5rem;">mdi-file-pdf-box</v-icon>
+                    </v-btn>
+                    <v-btn
+                    class="actionButton"
+                    color="info"
+                    title="Descargar Word"
+                    @click="dummy(props.item)"
+                    icon large dark><v-icon style="font-size: 2.5rem;">mdi-file-word-box</v-icon>
+                    </v-btn>
+                </template>
+            </v-data-table>
+        </v-card>
     </div>
 </template>
 
@@ -109,6 +128,7 @@ import axios from 'axios';
                     { text: "Descargar", align: "start", sortable: true, value: "downloads" },
                 ],
                 expedientes: [],
+                toggle: false,
             }
         },
         mounted(){
@@ -116,6 +136,16 @@ import axios from 'axios';
         },
 
         methods:{
+            dummy(data){
+                console.log(data)
+            },
+
+            getFormatDate(date){
+                const inputDate = date.split("-")
+                let formatDate = `${inputDate[2]} / ${inputDate[1]}/${inputDate[0]}`;
+                return formatDate
+            },
+
             async initialize(){
                 await axios
                 .get(`${process.env.VUE_APP_API_ROUTE}/getExpedientesByUser/` + localStorage.usrName)
@@ -148,46 +178,34 @@ import axios from 'axios';
 </script>
 
 <style scoped>
-    #mainWrapper{
-        margin: auto;
+    #wrapper {
+        width:98vw;
+        margin:0 auto;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
-    h2 {
+    .sectionWrapper {
+        padding:1rem;
+        margin-bottom: 1rem;
+    }
+
+    h2, h3 {
         font-weight: 400 !important;
     }
 
-    .actions{
-        padding: 0.5rem;
-    }
-
-    .actionBtn {
-        margin-right: 0.5rem;
-    }
-
-    .actionIcon{
-        margin-left: 0.15rem;
-    }
-
-    .searchBar {
-        margin-top: 1.5rem;
+    h2{
+        margin-bottom:1rem;
     }
     
-    .blueButton {
-        background-color: #1E88E5;
-        opacity: 0.25;
+    .actionButton{
+        opacity: 0.5;
     }
-
-    .blueButton:hover, .redButton:hover, .greenButton:hover{
+    
+    .actionButton:hover{
         opacity: 1;
     }
 
-    .redButton {
-        background-color: red;
-        opacity: 0.25;
-    }
 
-    .greenButton {
-        background-color: green;
-        opacity: 0.25;
-    }
+
 </style>
