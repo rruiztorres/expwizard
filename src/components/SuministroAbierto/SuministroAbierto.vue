@@ -117,24 +117,13 @@
             </v-col>
         </v-row>
 
+        <!-- LISTA DE CONTENIDOS -->
         <v-overlay :value="showContentList" absolute>
             <ListaContenidos
                 @close="(data)=>showContentList=data"
                 @goTo="(data)=>{element=data[0][0]; goToTab(data[0][1])}"
             ></ListaContenidos>
         </v-overlay>
-        <v-dialog max-width="40rem" v-model="confirmExitDialog">
-            <v-card class="exitDialogContainer">
-                <h1>ATENCIÓN</h1>
-                <p>Parece que ya se han introducido algunos datos en el modelo.</p>
-                <h3>¿Desea salir sin guardar los cambios?</h3>
-                <v-card-actions>
-                    <v-btn width="50%" class="error" @click="confirmExitDialog = !confirmExitDialog">Cancelar</v-btn>
-                    <v-btn width="50%" class="success" @click="back">Salir sin guardar</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
 
         <!-- VENTANA GUARDAR -->
         <v-overlay :value="storeWindow">
@@ -165,6 +154,18 @@
             <v-alert v-else type="success">GUARDADO CORRECTO!</v-alert>
         </v-overlay>
 
+        <!-- CONFIRMAR SALIDA CON DATOS SIN GUARDAR TODO: -->
+        <v-dialog max-width="40rem" v-model="confirmExitDialog">
+            <v-card class="exitDialogContainer">
+                <h1>ATENCIÓN</h1>
+                <p>Parece que ya se han introducido algunos datos en el modelo.</p>
+                <h3>¿Desea salir sin guardar los cambios?</h3>
+                <v-card-actions>
+                    <v-btn width="50%" class="error" @click="confirmExitDialog = !confirmExitDialog">Cancelar</v-btn>
+                    <v-btn width="50%" class="success" @click="back">Salir sin guardar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
         <!-- SNACKBAR INFO -->
         <div class="text-center ma-2">
@@ -188,7 +189,6 @@
 import axios from 'axios';
 
 import {renderDoc} from "@/assets/mixins/renderDoc";
-
 
 import ListaContenidos from "@/components/SuministroAbierto/ListaContenidos";
 import ObjetoNecesidades from "@/components/SuministroAbierto/ObjetoNecesidades";

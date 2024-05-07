@@ -2371,499 +2371,499 @@ export default {
         apartado MODIFICACIÓN DEL CONTRATO*/
         this.estimateValueTotals()   
               }
-    },
-  },
-
-  updated(){
-    if(this.datos.lotes.length > 0){
-      this.$emit('datos', this.datos)
-    }
-  },
-
-  beforeDestroy(){
-    //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
-    if(this.datos.lotes.length > 0){
-      this.$emit('datos', this.datos)
-    }
-  },
-
-  created(){
-    this.initialize();
-    if(this.goToElement){
-      this.setElementScroll();
-    }
-  },
-
-  methods: {
-    setElementScroll(){
-      setTimeout(()=>{
-          let element = document.getElementById(this.goToElement)
-          element.scrollIntoView({ block: "start", behavior: "smooth" });
-        }, 500)
+        },
     },
 
-    initialize(){
-    if(this.datosGuardados !== undefined){
-        this.datos = this.datosGuardados
-      }
-    },
-
-    applyGlobalExtension(){
-      /*Aplica el valor de la prórroga a todos los lotes existentes
-      siempre que exista al menos un elemento en el array de lotes.
-      */
-      if(this.datos.lotes.length !== 0){
-        const datos = {
-          plazoProrroga: this.datos.lotes[0].plazoProrroga,
-          tipoPlazoProrroga: this.datos.lotes[0].tipoPlazoProrroga,
-          importeProrrogas: this.datos.lotes[0].importeProrrogas,
-          plazoProrrogaObservaciones: this.datos.lotes[0].plazoProrrogaObservaciones
+    updated(){
+        if(this.datos.lotes.length > 0){
+        this.$emit('datos', this.datos)
         }
+    },
 
+    beforeDestroy(){
+        //NECESARIO PARA COMPARTIR DATOS ENTRE SECCIONES
+        if(this.datos.lotes.length > 0){
+        this.$emit('datos', this.datos)
+        }
+    },
+
+    created(){
+        this.initialize();
+        if(this.goToElement){
+        this.setElementScroll();
+        }
+    },
+
+    methods: {
+        setElementScroll(){
+        setTimeout(()=>{
+            let element = document.getElementById(this.goToElement)
+            element.scrollIntoView({ block: "start", behavior: "smooth" });
+            }, 500)
+        },
+
+        initialize(){
+        if(this.datosGuardados !== undefined){
+            this.datos = this.datosGuardados
+        }
+        },
+
+        applyGlobalExtension(){
+        /*Aplica el valor de la prórroga a todos los lotes existentes
+        siempre que exista al menos un elemento en el array de lotes.
+        */
+        if(this.datos.lotes.length !== 0){
+            const datos = {
+            plazoProrroga: this.datos.lotes[0].plazoProrroga,
+            tipoPlazoProrroga: this.datos.lotes[0].tipoPlazoProrroga,
+            importeProrrogas: this.datos.lotes[0].importeProrrogas,
+            plazoProrrogaObservaciones: this.datos.lotes[0].plazoProrrogaObservaciones
+            }
+
+            this.datos.lotes.forEach((lote)=>{
+            lote.plazoProrroga = datos.plazoProrroga,
+            lote.tipoPlazoProrroga = datos.tipoPlazoProrroga,
+            lote.importeProrrogas = datos.importeProrrogas,
+            lote.plazoProrrogaObservaciones = datos.plazoProrrogaObservaciones
+            })
+        }
+        },
+
+        resetTipoPlazoMaximo(){
         this.datos.lotes.forEach((lote)=>{
-          lote.plazoProrroga = datos.plazoProrroga,
-          lote.tipoPlazoProrroga = datos.tipoPlazoProrroga,
-          lote.importeProrrogas = datos.importeProrrogas,
-          lote.plazoProrrogaObservaciones = datos.plazoProrrogaObservaciones
+            lote.plazoMaximoEjecucion = {
+                plazoMaxExec: 0,
+                plazoMaxExecTipo: 'Meses',
+                plazoMaxExecObserv: undefined,
+            }
         })
-      }
-    },
+        },
 
-    resetTipoPlazoMaximo(){
-      this.datos.lotes.forEach((lote)=>{
-        lote.plazoMaximoEjecucion = {
-            plazoMaxExec: 0,
-            plazoMaxExecTipo: 'Meses',
-            plazoMaxExecObserv: undefined,
-        }
-      })
-    },
-
-    resetPlazosParciales(){
-      this.datos.lotes.forEach((lote)=>{
-        lote.plazosParciales = [{
-          ppDescripcion: 'Nuevo plazo',
-          ppDuracion: 0,
-          ppTipo: 'Meses',
-        }]
-      })
-    },
-
-    resetLotePeriodo(){
-      this.datos.lotes.forEach((lote)=>{
-        lote.periodo = {
-          inicio: undefined,
-          fin: undefined,
-          observaciones: undefined
-        };
-      })
-    },
-
-    applyGlobalMaxExec(){
-      if(this.datos.lotes.length !== 0){
-        const datos = {
-          plazoMaxExec: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExec,
-          plazoMaxExecTipo: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecTipo,
-          plazoMaxExecObserv: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecObserv,
-        }
-
+        resetPlazosParciales(){
         this.datos.lotes.forEach((lote)=>{
-          lote.plazoMaximoEjecucion = datos
-        })
-      }
-    },
-    
-    applyGlobalPartials(){
-      if(this.datos.lotes.length !== 0){
-        const datos = this.datos.lotes[0].plazosParciales;
-        this.datos.lotes.forEach((lote)=>{
-          lote.plazosParciales = datos;
-        })
-      }
-    },
-
-    checkPartials(){
-      let alert = false;
-      this.datos.lotes.forEach((lote)=>{
-        lote.plazosParciales.forEach((plazo)=>{
-          if(plazo.ppDuracion == 0){
-            alert = true
-          }
-        })
-      })
-      return alert;
-    },
-
-    returnLocalDate(date){
-      const localDate = date.split("-")
-      return (`${localDate[2]} / ${localDate[1]} / ${localDate[0]}`)
-    },
-
-    estimateValueTotals(){
-      let modificaciones = 0;         //IMPORTE MAXIMO MODIFICACIONES PREVISTAS
-      let servicios = 0;              //IMPORTE DE LOS SERVICIOS
-      let prorrogas = 0;              //IMPORTE DE LAS PRORROGAS
-
-      this.datos.lotes.forEach((lote)=>{
-        if(parseInt(lote.porcentajeModificacion) > 0){
-          modificaciones = modificaciones + lote.baseLote * (lote.porcentajeModificacion / 100)
-        }
-        servicios = servicios + (parseFloat(lote.baseLote))
-        prorrogas = prorrogas + (parseFloat(lote.importeProrrogas))
-        lote.valorEstimadoLote = parseFloat(lote.baseLote) + (parseFloat(lote.importeProrrogas)) + (lote.baseLote * (lote.porcentajeModificacion / 100))
-      })
-      this.datos.importeModificacion = modificaciones;
-      this.datos.importeServicios = servicios;
-      this.datos.importeProrrogas = prorrogas;
-      this.datos.totalEstimadoContrato = this.datos.importeModificacion + this.datos.importeServicios + this.datos.importeProrrogas;
-    },
-
-    checkExtensions(){
-      let alert = false;
-      this.datos.lotes.forEach((lote)=>{
-        if(lote.importeProrrogas == 0 || lote.plazoProrroga == 0){
-          alert = true
-        } 
-      })
-      return alert;
-    },
-
-    getBatchImporteServicios(lotes){
-      let importe = 0;
-      lotes.forEach((lote)=>{
-        importe = parseFloat(importe) + parseFloat(lote.baseLote)
-      });
-      this.datos.presupuestoBaseLicitacion = importe;
-      return importe
-    },
-
-    getBatchModificacionesPrevistas(lotes){
-      let maxModif = 0;
-      lotes.forEach((lote)=>{
-        maxModif = parseFloat(lote.baseLote) * (parseInt(lote.porcentajeModificacion)/100)
-      })
-      this.datos.importeModificacion = maxModif;
-      return maxModif
-    },
-
-    throwMsg(type, msg, timeout){
-      this.alertType = type;
-      this.alertMsg = msg
-      this.alerta = true;
-      setTimeout(()=>{this.alerta = false}, timeout)
-    },
-
-    calculoImporteModif(base, modif1, modif2){
-      if (modif1 !== undefined || modif2 !== undefined){
-        this.datos.totalModificaciones = (parseFloat(base) + parseFloat(modif1) + parseFloat(modif2)).toFixed(2);
-        return (this.datos.totalModificaciones)
-      }
-    },
-
-    returnTaxes(value){
-      switch(value){
-        case 21:
-          return 'IVA (21%)'
-        case 7:
-          return 'IGIC (7%)'
-        case 10:
-          return 'IVA (10%)'
-        case 5:
-          return 'IVA (5%)'
-        case 4:
-          return 'IVA (4%)'
-        case 0:
-          return 'IVA (0%)'
-        default:
-          return 'IVA (21%)'
-      }
-    },
-
-
-    deleteLote(idLote){
-      for(this.index in this.datos.lotes){
-        if(this.datos.lotes[this.index].idLote === idLote){
-          this.datos.lotes.splice(this.index,1)
-        }
-      }
-    },
-
-    resetPlazos(){
-    /* Si hay un cambio de seleccion en "Se define como" se resetean los valores
-    de los plazos para evitar valores residuales */ 
-      this.datos.lotes.forEach((lote)=>{
-        lote.plazoMaximoEjecucion = {
-            plazoMaxExec: 0,
-            plazoMaxExecTipo: 'Meses',
-            plazoMaxExecObserv: undefined,
-          };
-        lote.plazosParciales = [
-          {
+            lote.plazosParciales = [{
             ppDescripcion: 'Nuevo plazo',
             ppDuracion: 0,
             ppTipo: 'Meses',
-          }
-        ];
-        lote.periodo = {
-          inicio:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
-          fin: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
-          observaciones: undefined,
-        }
-      })
-      this.datos.plazoMeses = undefined;
-    },
+            }]
+        })
+        },
 
-    createLotes(){
-      this.datos.lotes = [];
-      this.datos.lotesGuardados = false;
-      for (let i = 0; i < this.datos.numLotes; i++){
-        this.newLote = {
-          idLote: i+1,
-          descripcion: 'Introducir descripción del lote',
-          baseLote: 0,
-          tipoImpuesto: 21,
-          nombreImpuesto: 'IVA',
-          totalImpuestos: 0,
-          totalImpIncl: 0,
-          totalLote: 0,
-          costesDirectos: 0,
-          costesIndirectos: 0,
-          porcCostesGenerales: 13,
-          costesGenerales: 0,
-          porcBeneficioIndustrial: 6,
-          beneficioIndustrial: 0,
-          totalCostes: 0,
-          selectAnualidades: 2,
-          anualidades:[],
-          plazoMaximoEjecucion:{
-            plazoMaxExec: 0,
-            plazoMaxExecTipo: 'Meses',
-            plazoMaxExecObserv: undefined,
-          },
-          plazosParciales: [
-            {
-              ppDescripcion: 'Nuevo plazo',
-              ppDuracion: 0,
-              ppTipo: 'Meses',
+        resetLotePeriodo(){
+        this.datos.lotes.forEach((lote)=>{
+            lote.periodo = {
+            inicio: undefined,
+            fin: undefined,
+            observaciones: undefined
+            };
+        })
+        },
+
+        applyGlobalMaxExec(){
+        if(this.datos.lotes.length !== 0){
+            const datos = {
+            plazoMaxExec: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExec,
+            plazoMaxExecTipo: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecTipo,
+            plazoMaxExecObserv: this.datos.lotes[0].plazoMaximoEjecucion.plazoMaxExecObserv,
             }
-          ],
-          periodo:{
+
+            this.datos.lotes.forEach((lote)=>{
+            lote.plazoMaximoEjecucion = datos
+            })
+        }
+        },
+        
+        applyGlobalPartials(){
+        if(this.datos.lotes.length !== 0){
+            const datos = this.datos.lotes[0].plazosParciales;
+            this.datos.lotes.forEach((lote)=>{
+            lote.plazosParciales = datos;
+            })
+        }
+        },
+
+        checkPartials(){
+        let alert = false;
+        this.datos.lotes.forEach((lote)=>{
+            lote.plazosParciales.forEach((plazo)=>{
+            if(plazo.ppDuracion == 0){
+                alert = true
+            }
+            })
+        })
+        return alert;
+        },
+
+        returnLocalDate(date){
+        const localDate = date.split("-")
+        return (`${localDate[2]} / ${localDate[1]} / ${localDate[0]}`)
+        },
+
+        estimateValueTotals(){
+        let modificaciones = 0;         //IMPORTE MAXIMO MODIFICACIONES PREVISTAS
+        let servicios = 0;              //IMPORTE DE LOS SERVICIOS
+        let prorrogas = 0;              //IMPORTE DE LAS PRORROGAS
+
+        this.datos.lotes.forEach((lote)=>{
+            if(parseInt(lote.porcentajeModificacion) > 0){
+            modificaciones = modificaciones + lote.baseLote * (lote.porcentajeModificacion / 100)
+            }
+            servicios = servicios + (parseFloat(lote.baseLote))
+            prorrogas = prorrogas + (parseFloat(lote.importeProrrogas))
+            lote.valorEstimadoLote = parseFloat(lote.baseLote) + (parseFloat(lote.importeProrrogas)) + (lote.baseLote * (lote.porcentajeModificacion / 100))
+        })
+        this.datos.importeModificacion = modificaciones;
+        this.datos.importeServicios = servicios;
+        this.datos.importeProrrogas = prorrogas;
+        this.datos.totalEstimadoContrato = this.datos.importeModificacion + this.datos.importeServicios + this.datos.importeProrrogas;
+        },
+
+        checkExtensions(){
+        let alert = false;
+        this.datos.lotes.forEach((lote)=>{
+            if(lote.importeProrrogas == 0 || lote.plazoProrroga == 0){
+            alert = true
+            } 
+        })
+        return alert;
+        },
+
+        getBatchImporteServicios(lotes){
+        let importe = 0;
+        lotes.forEach((lote)=>{
+            importe = parseFloat(importe) + parseFloat(lote.baseLote)
+        });
+        this.datos.presupuestoBaseLicitacion = importe;
+        return importe
+        },
+
+        getBatchModificacionesPrevistas(lotes){
+        let maxModif = 0;
+        lotes.forEach((lote)=>{
+            maxModif = parseFloat(lote.baseLote) * (parseInt(lote.porcentajeModificacion)/100)
+        })
+        this.datos.importeModificacion = maxModif;
+        return maxModif
+        },
+
+        throwMsg(type, msg, timeout){
+        this.alertType = type;
+        this.alertMsg = msg
+        this.alerta = true;
+        setTimeout(()=>{this.alerta = false}, timeout)
+        },
+
+        calculoImporteModif(base, modif1, modif2){
+        if (modif1 !== undefined || modif2 !== undefined){
+            this.datos.totalModificaciones = (parseFloat(base) + parseFloat(modif1) + parseFloat(modif2)).toFixed(2);
+            return (this.datos.totalModificaciones)
+        }
+        },
+
+        returnTaxes(value){
+        switch(value){
+            case 21:
+            return 'IVA (21%)'
+            case 7:
+            return 'IGIC (7%)'
+            case 10:
+            return 'IVA (10%)'
+            case 5:
+            return 'IVA (5%)'
+            case 4:
+            return 'IVA (4%)'
+            case 0:
+            return 'IVA (0%)'
+            default:
+            return 'IVA (21%)'
+        }
+        },
+
+
+        deleteLote(idLote){
+        for(this.index in this.datos.lotes){
+            if(this.datos.lotes[this.index].idLote === idLote){
+            this.datos.lotes.splice(this.index,1)
+            }
+        }
+        },
+
+        resetPlazos(){
+        /* Si hay un cambio de seleccion en "Se define como" se resetean los valores
+        de los plazos para evitar valores residuales */ 
+        this.datos.lotes.forEach((lote)=>{
+            lote.plazoMaximoEjecucion = {
+                plazoMaxExec: 0,
+                plazoMaxExecTipo: 'Meses',
+                plazoMaxExecObserv: undefined,
+            };
+            lote.plazosParciales = [
+            {
+                ppDescripcion: 'Nuevo plazo',
+                ppDuracion: 0,
+                ppTipo: 'Meses',
+            }
+            ];
+            lote.periodo = {
             inicio:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
             fin: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
             observaciones: undefined,
-          },
-          plazoProrroga: 0,
-          tipoPlazoProrroga: 'meses',
-          importeProrrogas: 0,
-          plazoProrrogaObservaciones: undefined,
-          porcentajeModificacion: 0,
-          valorEstimadoLote: 0,
-          especificarPagos:[],
-          //SE UTILIZAN MAS ADELANTE
-          vanRequerido: 0,
-          vanMaxExigible: 0,
-          alert: null,
-          importeExigidoProvisional: 0,
-          provisionalJustif: undefined,
-          percCualitativos: 0,
-          relPrecio: 0,
-          pot: 0,
-          pof: 0,
-          puntosJuicioValor:[{
-            nombreCriterio: undefined,
-            nPaginas: 1,
-            puntMaxima: 0,
-          }],
-          puntosJuicioValorAlert: false,
-          puntosJuicioValorAlertText: undefined,
-          puntosFormulas:[{
-            nombreCriterio: 'Precio (proposición económica)',
-            nPaginas: 1,
-            puntMaxima: 0,
-          }],
-          puntosFormulasAlert: false,
-          puntosFormulasAlertText: undefined,
-        }
-        this.datos.lotes.push(this.newLote)
-      }
-
-    },
-
-    createTerm(index){
-      const newTerm = {
-        ppDescripcion: 'Nuevo plazo',
-        ppDuracion: 0,
-        ppTipo: 'Meses',
-      }
-      this.datos.lotes[index].plazosParciales.push(newTerm)
-    },
-
-    deleteTerm(loteIndex, termIndex){
-      this.datos.lotes[loteIndex].plazosParciales.splice(termIndex,1)
-    },
-
-    checkTerms(){
-      let alert = false;
-      this.datos.lotes.forEach((lote)=>{
-        lote.plazosParciales.forEach((plazo)=>{
-          if(plazo.ppDuracion == 0){
-            alert = true;
-          }
+            }
         })
-      })
-      return alert
-    },
+        this.datos.plazoMeses = undefined;
+        },
 
-    checkMaxTerms(){
-      let alert = false;
-      this.datos.lotes.forEach((lote)=>{
-        if(lote.plazoMaximoEjecucion.plazoMaxExec == 0){
-          alert = true;
+        createLotes(){
+        this.datos.lotes = [];
+        this.datos.lotesGuardados = false;
+        for (let i = 0; i < this.datos.numLotes; i++){
+            this.newLote = {
+            idLote: i+1,
+            descripcion: 'Introducir descripción del lote',
+            baseLote: 0,
+            tipoImpuesto: 21,
+            nombreImpuesto: 'IVA',
+            totalImpuestos: 0,
+            totalImpIncl: 0,
+            totalLote: 0,
+            costesDirectos: 0,
+            costesIndirectos: 0,
+            porcCostesGenerales: 13,
+            costesGenerales: 0,
+            porcBeneficioIndustrial: 6,
+            beneficioIndustrial: 0,
+            totalCostes: 0,
+            selectAnualidades: 2,
+            anualidades:[],
+            plazoMaximoEjecucion:{
+                plazoMaxExec: 0,
+                plazoMaxExecTipo: 'Meses',
+                plazoMaxExecObserv: undefined,
+            },
+            plazosParciales: [
+                {
+                ppDescripcion: 'Nuevo plazo',
+                ppDuracion: 0,
+                ppTipo: 'Meses',
+                }
+            ],
+            periodo:{
+                inicio:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+                fin: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+                observaciones: undefined,
+            },
+            plazoProrroga: 0,
+            tipoPlazoProrroga: 'meses',
+            importeProrrogas: 0,
+            plazoProrrogaObservaciones: undefined,
+            porcentajeModificacion: 0,
+            valorEstimadoLote: 0,
+            especificarPagos:[],
+            //SE UTILIZAN MAS ADELANTE
+            vanRequerido: 0,
+            vanMaxExigible: 0,
+            alert: null,
+            importeExigidoProvisional: 0,
+            provisionalJustif: undefined,
+            percCualitativos: 0,
+            relPrecio: 0,
+            pot: 0,
+            pof: 0,
+            puntosJuicioValor:[{
+                nombreCriterio: undefined,
+                nPaginas: 1,
+                puntMaxima: 0,
+            }],
+            puntosJuicioValorAlert: false,
+            puntosJuicioValorAlertText: undefined,
+            puntosFormulas:[{
+                nombreCriterio: 'Precio (proposición económica)',
+                nPaginas: 1,
+                puntMaxima: 0,
+            }],
+            puntosFormulasAlert: false,
+            puntosFormulasAlertText: undefined,
+            }
+            this.datos.lotes.push(this.newLote)
         }
-      })
-      return alert;
-    },
 
-    updateLotes(){
-      this.datos.lotes.forEach((lote)=>{
-        lote.totalImpuestos = this.calcularImpuestos(lote.baseLote, parseFloat(lote.tipoImpuesto));
-        lote.nombreImpuesto = this.returnTaxes(lote.tipoImpuesto);
-        lote.totalLote = parseFloat(lote.baseLote) + parseFloat(lote.totalImpuestos);
-        lote.costesDirectos = this.calcularCostesDirectos(lote.baseLote, parseInt(lote.porcBeneficioIndustrial), parseInt(lote.porcCostesGenerales))
-        lote.costesGenerales = this.calcularCostesGenerales(lote.costesDirectos, parseInt(lote.porcCostesGenerales))
-        lote.beneficioIndustrial = this.calcularBeneficioIndustrial(lote.costesDirectos, parseInt(lote.porcBeneficioIndustrial))
-        lote.costesIndirectos = lote.costesGenerales + lote.beneficioIndustrial;
-        lote.totalCostes = lote.baseLote + (lote.costesDirectos + lote.costesIndirectos);
-        lote.totalImpIncl = lote.baseLote + lote.totalImpuestos;
-      })
-    },
+        },
 
-    calcularImpuestos(pBase, percImpuesto){
-      return ((percImpuesto / 100) * pBase);
-    },
+        createTerm(index){
+        const newTerm = {
+            ppDescripcion: 'Nuevo plazo',
+            ppDuracion: 0,
+            ppTipo: 'Meses',
+        }
+        this.datos.lotes[index].plazosParciales.push(newTerm)
+        },
 
-    calcularCostesDirectos(pbase, porcBenInd, percCostGen){
-      /*Por defecto => Presupuesto base / 1.19 */
-      return pbase/(1+((porcBenInd + percCostGen)/100));
-    },
+        deleteTerm(loteIndex, termIndex){
+        this.datos.lotes[loteIndex].plazosParciales.splice(termIndex,1)
+        },
 
-    calcularCostesGenerales(costesDirectos, percCostGen){
-      /* Por defecto => Costes Directos * 0.13 */
-      return costesDirectos * ((percCostGen)/100);
-    },
+        checkTerms(){
+        let alert = false;
+        this.datos.lotes.forEach((lote)=>{
+            lote.plazosParciales.forEach((plazo)=>{
+            if(plazo.ppDuracion == 0){
+                alert = true;
+            }
+            })
+        })
+        return alert
+        },
 
-    calcularBeneficioIndustrial(costesDirectos, percBenInd){
-      /* Por defecto => Costes Directos * 0.06 */
-      return costesDirectos * ((percBenInd)/100);
-    },
-  
+        checkMaxTerms(){
+        let alert = false;
+        this.datos.lotes.forEach((lote)=>{
+            if(lote.plazoMaximoEjecucion.plazoMaxExec == 0){
+            alert = true;
+            }
+        })
+        return alert;
+        },
 
-    returnIVA(percImpuesto, pBase) {
-      return (parseFloat((pBase * (percImpuesto/100)).toFixed(2)))
-    },
+        updateLotes(){
+        this.datos.lotes.forEach((lote)=>{
+            lote.totalImpuestos = this.calcularImpuestos(lote.baseLote, parseFloat(lote.tipoImpuesto));
+            lote.nombreImpuesto = this.returnTaxes(lote.tipoImpuesto);
+            lote.totalLote = parseFloat(lote.baseLote) + parseFloat(lote.totalImpuestos);
+            lote.costesDirectos = this.calcularCostesDirectos(lote.baseLote, parseInt(lote.porcBeneficioIndustrial), parseInt(lote.porcCostesGenerales))
+            lote.costesGenerales = this.calcularCostesGenerales(lote.costesDirectos, parseInt(lote.porcCostesGenerales))
+            lote.beneficioIndustrial = this.calcularBeneficioIndustrial(lote.costesDirectos, parseInt(lote.porcBeneficioIndustrial))
+            lote.costesIndirectos = lote.costesGenerales + lote.beneficioIndustrial;
+            lote.totalCostes = lote.baseLote + (lote.costesDirectos + lote.costesIndirectos);
+            lote.totalImpIncl = lote.baseLote + lote.totalImpuestos;
+        })
+        },
+
+        calcularImpuestos(pBase, percImpuesto){
+        return ((percImpuesto / 100) * pBase);
+        },
+
+        calcularCostesDirectos(pbase, porcBenInd, percCostGen){
+        /*Por defecto => Presupuesto base / 1.19 */
+        return pbase/(1+((porcBenInd + percCostGen)/100));
+        },
+
+        calcularCostesGenerales(costesDirectos, percCostGen){
+        /* Por defecto => Costes Directos * 0.13 */
+        return costesDirectos * ((percCostGen)/100);
+        },
+
+        calcularBeneficioIndustrial(costesDirectos, percBenInd){
+        /* Por defecto => Costes Directos * 0.06 */
+        return costesDirectos * ((percBenInd)/100);
+        },
     
 
-    colorLotes(){
-      if(this.datos.lotesGuardados === false){
-        return "success"
-      } else {
-        return "grey"
-      }
-    },
+        returnIVA(percImpuesto, pBase) {
+        return (parseFloat((pBase * (percImpuesto/100)).toFixed(2)))
+        },
+        
 
-    makeAnualidades(lote) {
-      this.datos.anualidadesGuardadas = false;
-      lote.anualidades = [];
-      let fecha = new Date();
-      let ano = fecha.getFullYear();
-      //SI ES TRAMITACION ANTICIPADA EMPEZAMOS EN EL AÑO SIGUIENTE
-      if(!this.datos.tramitacion){
-        ano = ano+1
-      }
-      for (let i = 0; i < lote.selectAnualidades; i++) {
-        this.newData = {
-          year: ano + i,
-          importeSinImp: 0,
-          impAplicable: lote.nombreImpuesto,
-          valueImp: lote.tipoImpuesto,
-          totalImp: 0,
-          totalImpInc: 0,
-        };
-        lote.anualidades.push(this.newData);
-      }
-      this.checkAnnuality();
-    },
-
-    saveAnualidad(props){
-      const data = props.item;
-      data.totalImp = parseFloat(data.importeSinImp) * ((data.valueImp / 100));
-      data.totalImpInc = parseFloat(data.importeSinImp) + data.totalImp;
-
-      //VALIDAR Y LANZAR ALERTA EN SU CASO
-      this.checkAnnuality();
-    },
-
-    checkAnnuality(){
-      this.datos.lotes.forEach((lote)=>{
-        this.total = 0;
-        lote.anualidades.forEach((anualidad)=>{
-          this.total += parseFloat(anualidad.importeSinImp)
-        })  
-        //EVALUAMOS Y LANZAMOS ALERTA EN SU CASO
-        if(this.total > parseFloat(lote.baseLote)){
-          lote.alert = 'mayorQuePbase'
-        } else if (this.total === 0){
-          lote.alert = 'igualcero'
-        } else if (this.total !== parseFloat(lote.baseLote)){
-          lote.alert = 'notEqual'
-        } else if (this.total == parseFloat(lote.baseLote)) {
-          lote.alert = 'dataOK'
+        colorLotes(){
+        if(this.datos.lotesGuardados === false){
+            return "success"
+        } else {
+            return "grey"
         }
-      })
-    },
-  
-    returnTotal(impuesto, base) {
-      this.total = parseFloat(base);
-      this.iva = this.returnIVA(impuesto, base);
-      return parseFloat((this.total + this.iva).toFixed(2));
-    },
+        },
 
-    addPayment(loteIndex){
-      let newPayment = {
-        year: (new Date()).getFullYear(),
-        concepto: undefined,
-        importeSImp: 0,
-        impuestos: 0,
-        total: 0,
-      }
-      this.datos.lotes[loteIndex].especificarPagos.push(newPayment)
+        makeAnualidades(lote) {
+        this.datos.anualidadesGuardadas = false;
+        lote.anualidades = [];
+        let fecha = new Date();
+        let ano = fecha.getFullYear();
+        //SI ES TRAMITACION ANTICIPADA EMPEZAMOS EN EL AÑO SIGUIENTE
+        if(!this.datos.tramitacion){
+            ano = ano+1
+        }
+        for (let i = 0; i < lote.selectAnualidades; i++) {
+            this.newData = {
+            year: ano + i,
+            importeSinImp: 0,
+            impAplicable: lote.nombreImpuesto,
+            valueImp: lote.tipoImpuesto,
+            totalImp: 0,
+            totalImpInc: 0,
+            };
+            lote.anualidades.push(this.newData);
+        }
+        this.checkAnnuality();
+        },
+
+        saveAnualidad(props){
+        const data = props.item;
+        data.totalImp = parseFloat(data.importeSinImp) * ((data.valueImp / 100));
+        data.totalImpInc = parseFloat(data.importeSinImp) + data.totalImp;
+
+        //VALIDAR Y LANZAR ALERTA EN SU CASO
+        this.checkAnnuality();
+        },
+
+        checkAnnuality(){
+        this.datos.lotes.forEach((lote)=>{
+            this.total = 0;
+            lote.anualidades.forEach((anualidad)=>{
+            this.total += parseFloat(anualidad.importeSinImp)
+            })  
+            //EVALUAMOS Y LANZAMOS ALERTA EN SU CASO
+            if(this.total > parseFloat(lote.baseLote)){
+            lote.alert = 'mayorQuePbase'
+            } else if (this.total === 0){
+            lote.alert = 'igualcero'
+            } else if (this.total !== parseFloat(lote.baseLote)){
+            lote.alert = 'notEqual'
+            } else if (this.total == parseFloat(lote.baseLote)) {
+            lote.alert = 'dataOK'
+            }
+        })
+        },
+    
+        returnTotal(impuesto, base) {
+        this.total = parseFloat(base);
+        this.iva = this.returnIVA(impuesto, base);
+        return parseFloat((this.total + this.iva).toFixed(2));
+        },
+
+        addPayment(loteIndex){
+        let newPayment = {
+            year: (new Date()).getFullYear(),
+            concepto: undefined,
+            importeSImp: 0,
+            impuestos: 0,
+            total: 0,
+        }
+        this.datos.lotes[loteIndex].especificarPagos.push(newPayment)
+        },
+
+        calculateTaxPayment(tipo, base, index, lote){
+        let impuestos = parseFloat(base)*(tipo/100);
+        const datosPago = this.datos.lotes[lote].especificarPagos[index];
+
+        this.datos.lotes[lote].especificarPagos[index].impuestos = impuestos;
+        this.datos.lotes[lote].especificarPagos[index].total = (parseInt(datosPago.importeSImp) + impuestos);
+        return impuestos
+        },
+
+        deletePayment(lote, index){
+        this.datos.lotes[lote].especificarPagos.splice(index,1)
+        },
+
+        checkPayments(lote){
+        let suma = 0;
+        this.datos.lotes[lote].especificarPagos.forEach((pago)=>{
+            suma += parseFloat(pago.importeSImp)
+        })
+        if(suma !== parseFloat(this.datos.lotes[lote].baseLote)){
+            return true
+        } else {
+            return false
+        }
+        }
     },
-
-    calculateTaxPayment(tipo, base, index, lote){
-      let impuestos = parseFloat(base)*(tipo/100);
-      const datosPago = this.datos.lotes[lote].especificarPagos[index];
-
-      this.datos.lotes[lote].especificarPagos[index].impuestos = impuestos;
-      this.datos.lotes[lote].especificarPagos[index].total = (parseInt(datosPago.importeSImp) + impuestos);
-      return impuestos
-    },
-
-    deletePayment(lote, index){
-      this.datos.lotes[lote].especificarPagos.splice(index,1)
-    },
-
-    checkPayments(lote){
-      let suma = 0;
-      this.datos.lotes[lote].especificarPagos.forEach((pago)=>{
-        suma += parseFloat(pago.importeSImp)
-      })
-      if(suma !== parseFloat(this.datos.lotes[lote].baseLote)){
-        return true
-      } else {
-        return false
-      }
-    }
-  },
 };
 </script>
 
