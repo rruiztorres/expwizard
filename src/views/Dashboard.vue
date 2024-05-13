@@ -34,6 +34,16 @@
         </v-row>
       </v-container>
 
+      <!-- GESTION USUARIOS -->
+      <v-container v-if="active === 'gestionUsuarios'">
+        <v-row class="rowWrapper">
+          <v-col cols="12">
+            <GestionUsuarios
+            ></GestionUsuarios>
+          </v-col>
+        </v-row>
+      </v-container>
+
       <!-- SELECTOR DE TIPOS EXPEDIENTE -->   
       <v-container v-if="active === 'selector'">
         <v-row class="rowWrapper">
@@ -61,12 +71,13 @@
 </template>
 
 <script>
-import UserMenu from "@/components/common/UserMenu"
-import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto"
+import UserMenu from "@/components/common/UserMenu";
+import SuministroAbierto from "@/components/SuministroAbierto/SuministroAbierto";
 
 
-import Selector from "@/components/common/Selector"
-import MisExpedientes from "@/components/common/MisExpedientes"
+import Selector from "@/components/common/Selector";
+import MisExpedientes from "@/components/common/MisExpedientes";
+import GestionUsuarios from "@/components/common/GestionUsuarios";
 
   export default {
     components: {
@@ -74,6 +85,7 @@ import MisExpedientes from "@/components/common/MisExpedientes"
       SuministroAbierto,
       Selector,
       MisExpedientes,
+      GestionUsuarios
     },
 
     data () {
