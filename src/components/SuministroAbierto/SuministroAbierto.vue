@@ -127,31 +127,40 @@
 
         <!-- VENTANA GUARDAR -->
         <v-overlay :value="storeWindow">
-            <v-card v-if="savingResultWindow === false"
-            light width="90vw" max-width="40rem">
-                <v-card-title class="saveCardTitle">Guardar Expediente</v-card-title>
-                <v-card-text>
-                    <br/>
-                    <v-text-field filled label="Titulo del Expediente"
-                    v-model="saveTitle"
-                    ></v-text-field>
-                    <v-textarea filled auto-grow label="Descripción del Expediente"
-                    v-model="saveDesc"
-                    ></v-textarea>
-                </v-card-text>
+            <v-form ref="form" v-model="valid" lazy-validation>
+                <v-card v-if="savingResultWindow === false"
+                light width="90vw" max-width="40rem">
+                    <v-card-title class="saveCardTitle">Guardar Expediente</v-card-title>
+                    <v-card-text>
+                        <br/>
+                        <v-text-field 
+                        :rules="[rules.nonEmpty]"
+                        filled label="Titulo del Expediente"
+                        v-model="saveTitle"
+                        ></v-text-field>
+                        <v-textarea 
+                        :rules="[rules.max255, rules.nonEmpty]"
+                        counter
+                        filled auto-grow label="Descripción del Expediente"
+                        v-model="saveDesc"
+                        ></v-textarea>
+                    </v-card-text>
 
-                <v-card-text>
-                    <v-alert type="error" :value="saveAlert">Debe indicar un <b>título de expediente válido</b> para poder guardar el expediente</v-alert>
-                </v-card-text>
+                    <v-card-text>
+                        <v-alert 
+                        type="error" 
+                        :value="saveAlert">Debe indicar un <b>título de expediente válido</b> para poder guardar el expediente</v-alert>
+                    </v-card-text>
 
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="error" @click="storeWindow = !storeWindow">CANCELAR</v-btn>
-                    <v-btn color="success" @click="save" :disabled="saveAlert">GUARDAR</v-btn>
-                </v-card-actions>  
-            </v-card>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="error" @click="storeWindow = !storeWindow">CANCELAR</v-btn>
+                        <v-btn color="success" @click="save" :disabled="!valid">GUARDAR</v-btn>
+                    </v-card-actions>  
+                </v-card>
+                <v-alert v-else type="success">GUARDADO CORRECTO!</v-alert>
+            </v-form>
             
-            <v-alert v-else type="success">GUARDADO CORRECTO!</v-alert>
         </v-overlay>
 
         <!-- CONFIRMAR SALIDA CON DATOS SIN GUARDAR TODO: -->
@@ -222,6 +231,7 @@ import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcont
                 tab: 0,
                 element: undefined,
                 snackbar: true,
+                valid: false,
 
                 datosObjetoNecesidades: undefined,
                 datosPresupuestoAnualidades: undefined,
@@ -241,13 +251,18 @@ import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcont
                 saveAlert: false,
 
                 menuBtn:[
-                    {disable: false, color: 'grey', text:'Lista', icon: 'mdi-clipboard-list', action: ()=>this.showContentList = true},
+                    {disable: false, color: 'grey', text:'Índice', icon: 'mdi-clipboard-list', action: ()=>this.showContentList = true},
                     {disable: false, color: 'warning', text:'Validar', icon: 'mdi-alert-circle-check', action:this.dummy},
                     {disable: false, color: 'info', text:'Word', icon: 'mdi-file-word', action:this.createWord},
                     {disable: false, color: 'error', text:'PDF', icon: 'mdi-file-pdf-box', action:this.dummy},
                     {disable: false, color: 'success', text:'Guardar', icon: 'mdi-content-save', action: ()=>{this.storeWindow = true}},
                     {disable: false, color: 'error', text:'Salir', icon: 'mdi-exit-run', action:this.exit},
                 ],
+
+                rules:{
+                    max255: (value) => value.length < 255|| 'La longitud máxima es de 255 caracteres.',
+                    nonEmpty: (value) => !value.length < 1 || 'Este campo es obligatorio'
+                }
             }
         },
         
@@ -258,6 +273,10 @@ import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcont
         methods:{
             dummy(data){
                 console.log(data)
+            },
+
+            validate() {
+                this.$refs.form.validate();
             },
 
             createWord(){
@@ -274,12 +293,7 @@ import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcont
             },
 
             async save(){
-                if(this.edited){
-                    this.expEditId = this.datosExpGuardado.id_expediente;
-                } else {
-                    this.expEditId = undefined;
-                }
-
+                //REUNIMOS DATOS
                 this.data = {
                     expData: {
                         nombre: this.saveTitle,
@@ -296,19 +310,37 @@ import CesionSubcontrataOtros from "@/components/SuministroAbierto/CesionSubcont
                     seccion6: this.datosModificacionesPenalidades,
                     seccion7: this.datosCesionSubcontrataOtros,
                 };
-                
-                //ERRORES DE GUARDADO
-                if(this.data.expData.nombre === undefined || this.data.expData.nombre === ''){
-                    this.saveAlert = true;
-                } else {
+
+                if(this.expEditId === undefined){
+                    //CASO EXPEDIENTE NUEVO
                     await axios
                     .post(`${process.env.VUE_APP_API_ROUTE}/postExpediente`, this.data)
                     .then( (data) => {
                         if(data.status === 201){
                             this.savingResultWindow = true;
-                            setTimeout(()=>{this.storeWindow = false}, 1500)
+                            setTimeout(()=>{this.storeWindow = false; this.savingResultWindow = false}, 1500)
                         }
                     })
+                    .catch((error)=>{
+                        console.log(error)
+                        this.savingResultWindow = true;
+                        setTimeout(()=> {this.storeWindow = false; this.savingResultWindow = false}, 2500)
+                    })
+                } else {
+                    //CASO EDICIÓN DE UNO EXISTENTE
+                    await axios
+                    .put(`${process.env.VUE_APP_API_ROUTE}/expedientes/submitUpdate`, this.data)
+                    .then((data)=>{
+                        if (data.status === 201){
+                            this.savingResultWindow = true;
+                            setTimeout(()=>{this.storeWindow = false; this.savingResultWindow = false}, 1500)
+                        }
+                    })
+                    .catch((error)=>{
+                        console.log(error)
+                        this.savingResultWindow = true;
+                        setTimeout(()=> {this.storeWindow = false; this.savingResultWindow = false}, 2500)
+                    }  )
                 }
             },
 

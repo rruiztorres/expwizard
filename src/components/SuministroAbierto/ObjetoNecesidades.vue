@@ -4,7 +4,7 @@
     <div class="group">
       <v-row class="row">
         <v-col cols="12">
-          <h3 id="Objeto del contrato">Objeto del contrato
+          <h3 id="Título del expediente">Título del expediente
             <v-badge 
             class="badge" color="#c7d6f2" content="?"
             title="Punto 1"></v-badge >
@@ -74,11 +74,20 @@
     <div class="group">
       <v-row class="row">
         <!-- REGULACION ARMONIZADA -->
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="3">
           <h3>Regulación Armonizada</h3>
             <v-radio-group row v-model="datos.regArmonizada">
               <v-radio label="Si" :value="true"></v-radio>
               <v-radio label="No" :value="false"></v-radio>
+            </v-radio-group>
+        </v-col>
+
+        <!-- CRITERIOS -->
+        <v-col cols="12" md="3">
+          <h3>Criterios</h3>
+            <v-radio-group row v-model="datos.criterios">
+              <v-radio label="Un único criterio" :value="true"></v-radio>
+              <v-radio label="Varios criterios" :value="false"></v-radio>
             </v-radio-group>
         </v-col>
 
@@ -160,6 +169,7 @@ props:['datosGuardados', 'goToElement'],
         selectComunidadesAutonomas: undefined,
         selectProvincias: '',
         regArmonizada: false,
+        criterios: false,
         clasifCPV: '',
 
         //SECCION 2

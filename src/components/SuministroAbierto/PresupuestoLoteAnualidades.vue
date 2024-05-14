@@ -13,7 +13,7 @@
         <v-col cols="12" md="3">
           <h5>¿Se dividirá en lotes?</h5>
           <v-radio-group v-model="datos.divisionLotes">
-            <v-radio 
+            <v-radio
               label="No es posible" 
               value="no es posible"></v-radio>
             <v-radio
@@ -1698,7 +1698,7 @@
             <h5 class="subtitle">La periodicidad de los pagos sera:</h5>
             <v-radio-group v-model="datos.periodicidad">
                 <v-radio label="Mensual" :value="true"></v-radio>
-                <v-radio label="Otra" @click="addPayment(0)" :value="false"></v-radio>
+                <v-radio label="Otra" @click="initializePayments()" :value="false"></v-radio>
             </v-radio-group>
           </v-col>
 
@@ -1805,18 +1805,21 @@
                     <v-icon :disabled="datos.lotes[0].especificarPagos.length === 1"
                     color="error" @click="deletePayment(0, props.index)">mdi-delete</v-icon>
                   </template>
-                
+
+                  <!-- ALERTAS -->
+                  <template v-slot:footer>
+                    <div style="border-top: 4px solid white;">
+                      <v-alert dense text type="error" v-if="checkPayments(0)">
+                        Atención, la suma de los importes no coincide con el presupuesto base de licitación.
+                      </v-alert>
+                      <v-alert dense text type="success" v-else>
+                        ¡Datos correctos!
+                      </v-alert>
+                    </div>
+                  </template>
                 </v-data-table>
               </v-col>
-              <!-- ALERTAS -->
-              <v-col cols="12">
-                <v-alert dense text type="error" v-if="checkPayments(0)">
-                  Atención, la suma de los importes no coincide con el presupuesto base de licitación.
-                </v-alert>
-                <v-alert dense text type="success" v-else>
-                  ¡Datos correctos!
-                </v-alert>
-              </v-col>
+
             </v-row>
             <!-- HAY LOTES -->
             <v-row class="subGroup" v-else>
@@ -1921,17 +1924,21 @@
                         <v-icon :disabled="lote.especificarPagos.length === 1"
                         color="error" @click="deletePayment(i, props.index)">mdi-delete</v-icon>
                       </template>
+                      
+                      <!-- ALERTAS -->
+                      <template v-slot:footer>
+                        <div style="border-top: 4px solid white;">
+                          <v-alert dense text type="error" v-if="checkPayments(i)">
+                            Atención, la suma de los importes no coincide con el presupuesto base de licitación.
+                          </v-alert>
+                          <v-alert dense text type="success" v-else>
+                            ¡Datos correctos!
+                          </v-alert>
+                        </div>
+                      </template>
                     </v-data-table>
                   </v-col>
-                  <!-- ALERTAS -->
-                  <v-col cols="12">
-                    <v-alert dense text type="error" v-if="checkPayments(i)">
-                      Atención, la suma de los importes no coincide con el presupuesto base de licitación.
-                    </v-alert>
-                    <v-alert dense text type="success" v-else>
-                      ¡Datos correctos!
-                    </v-alert>
-                  </v-col>
+ 
                 </v-row>
               </v-col>
             </v-row>
@@ -1978,7 +1985,7 @@
         <v-row class="rowGroup">
             <v-col cols="12" md="8">
               <h5><a href="https://www.boe.es/eli/es/l/2017/11/08/9/con#a1-110" target="blank" title="Ver artículo 198.2 LCSP">
-              [art. 198.2 LCSP]</a></h5>
+              [art. 198.3 LCSP]</a></h5>
                 <v-radio-group v-model="datos.abonosAcuenta">
                     <v-radio label="Si proceden, en las condiciones previstas en el punto 19 de este pliego." :value="true"></v-radio>
                     <v-radio label="No proceden" :value="false"></v-radio>
@@ -2296,22 +2303,6 @@ export default {
           datos.descripcionDesgloseCategoria = undefined;
         }
 
-        /*Presupuesto base de licitación y lotes: Necesario para generar
-        el pliego a Word. TODO: repasar si esto es imprescindible 
-        */
-        if(datos.divisionLotes !== 'no es posible'){
-          if(datos.divisionLotes === "posible no divisible"){
-            datos.numLotes = 1
-            datos.posibleNoDivisible = true
-            datos.hayDivisionLotes = false
-            datos.posibleDivisible = false
-          } else {
-            this.datos.numLotes = 2
-            datos.posibleNoDivisible = false
-            datos.hayDivisionLotes = true
-            datos.posibleDivisible = true
-          }
-        } 
         /*Presupuesto base de licitación y lotes: En caso de que la selección de la 
         justificación de "si es posible pero no se divide" sea distinta a false (otra causa)
         añade a la justificación el texto que aparece en la selección del radio group
@@ -2614,79 +2605,78 @@ export default {
         },
 
         createLotes(){
-        this.datos.lotes = [];
-        this.datos.lotesGuardados = false;
-        for (let i = 0; i < this.datos.numLotes; i++){
-            this.newLote = {
-            idLote: i+1,
-            descripcion: 'Introducir descripción del lote',
-            baseLote: 0,
-            tipoImpuesto: 21,
-            nombreImpuesto: 'IVA',
-            totalImpuestos: 0,
-            totalImpIncl: 0,
-            totalLote: 0,
-            costesDirectos: 0,
-            costesIndirectos: 0,
-            porcCostesGenerales: 13,
-            costesGenerales: 0,
-            porcBeneficioIndustrial: 6,
-            beneficioIndustrial: 0,
-            totalCostes: 0,
-            selectAnualidades: 2,
-            anualidades:[],
-            plazoMaximoEjecucion:{
-                plazoMaxExec: 0,
-                plazoMaxExecTipo: 'Meses',
-                plazoMaxExecObserv: undefined,
-            },
-            plazosParciales: [
-                {
-                ppDescripcion: 'Nuevo plazo',
-                ppDuracion: 0,
-                ppTipo: 'Meses',
-                }
-            ],
-            periodo:{
-                inicio:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
-                fin: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
-                observaciones: undefined,
-            },
-            plazoProrroga: 0,
-            tipoPlazoProrroga: 'meses',
-            importeProrrogas: 0,
-            plazoProrrogaObservaciones: undefined,
-            porcentajeModificacion: 0,
-            valorEstimadoLote: 0,
-            especificarPagos:[],
-            //SE UTILIZAN MAS ADELANTE
-            vanRequerido: 0,
-            vanMaxExigible: 0,
-            alert: null,
-            importeExigidoProvisional: 0,
-            provisionalJustif: undefined,
-            percCualitativos: 0,
-            relPrecio: 0,
-            pot: 0,
-            pof: 0,
-            puntosJuicioValor:[{
-                nombreCriterio: undefined,
-                nPaginas: 1,
-                puntMaxima: 0,
-            }],
-            puntosJuicioValorAlert: false,
-            puntosJuicioValorAlertText: undefined,
-            puntosFormulas:[{
-                nombreCriterio: 'Precio (proposición económica)',
-                nPaginas: 1,
-                puntMaxima: 0,
-            }],
-            puntosFormulasAlert: false,
-            puntosFormulasAlertText: undefined,
+          this.datos.lotes = [];
+          this.datos.lotesGuardados = false;
+          for (let i = 0; i < this.datos.numLotes; i++){
+              const newLote = {
+                idLote: i+1,
+                descripcion: 'Introducir descripción del lote',
+                baseLote: 0,
+                tipoImpuesto: 21,
+                nombreImpuesto: 'IVA',
+                totalImpuestos: 0,
+                totalImpIncl: 0,
+                totalLote: 0,
+                costesDirectos: 0,
+                costesIndirectos: 0,
+                porcCostesGenerales: 13,
+                costesGenerales: 0,
+                porcBeneficioIndustrial: 6,
+                beneficioIndustrial: 0,
+                totalCostes: 0,
+                selectAnualidades: 2,
+                anualidades:[],
+                plazoMaximoEjecucion:{
+                    plazoMaxExec: 0,
+                    plazoMaxExecTipo: 'Meses',
+                    plazoMaxExecObserv: undefined,
+                },
+                plazosParciales: [
+                    {
+                    ppDescripcion: 'Nuevo plazo',
+                    ppDuracion: 0,
+                    ppTipo: 'Meses',
+                    }
+                ],
+                periodo:{
+                    inicio:  new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+                    fin: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+                    observaciones: undefined,
+                },
+                plazoProrroga: 0,
+                tipoPlazoProrroga: 'meses',
+                importeProrrogas: 0,
+                plazoProrrogaObservaciones: undefined,
+                porcentajeModificacion: 0,
+                valorEstimadoLote: 0,
+                especificarPagos:[],
+                //SE UTILIZAN MAS ADELANTE
+                vanRequerido: 0,
+                vanMaxExigible: 0,
+                alert: null,
+                importeExigidoProvisional: 0,
+                provisionalJustif: undefined,
+                percCualitativos: 0,
+                relPrecio: 0,
+                pot: 0,
+                pof: 0,
+                puntosJuicioValor:[{
+                    nombreCriterio: undefined,
+                    nPaginas: 1,
+                    puntMaxima: 0,
+                }],
+                puntosJuicioValorAlert: false,
+                puntosJuicioValorAlertText: undefined,
+                puntosFormulas:[{
+                    nombreCriterio: 'Precio (proposición económica)',
+                    nPaginas: 1,
+                    puntMaxima: 0,
+                }],
+                puntosFormulasAlert: false,
+                puntosFormulasAlertText: undefined,
+              }
+              this.datos.lotes.push(newLote)
             }
-            this.datos.lotes.push(this.newLote)
-        }
-
         },
 
         createTerm(index){
@@ -2826,6 +2816,18 @@ export default {
         this.total = parseFloat(base);
         this.iva = this.returnIVA(impuesto, base);
         return parseFloat((this.total + this.iva).toFixed(2));
+        },
+
+        initializePayments(){
+          this.datos.lotes.forEach((lote)=>{
+            lote.especificarPagos = [{
+              year: (new Date()).getFullYear(),
+              concepto: undefined,
+              importeSImp: 0,
+              impuestos: lote.tipoImpuesto,
+              total: 0,
+            }]
+          })
         },
 
         addPayment(loteIndex){

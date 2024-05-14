@@ -126,12 +126,21 @@
                                             >{{currencyFormat(calculateVANMaxReq(props.item))}}</b>
                                         </template>
 
+                                        <!-- ALERTAS -->
+                                        <template v-slot:footer>
+                                            <div style="background-color:white; border-top:4px solid white;">
+                                                <v-alert text dense v-if="vanRules()" type="error">
+                                                    Hay valores exigidos que superan el máximo exigible o bien son igual a cero. Por favor, compruebe los datos.
+                                                </v-alert>
+                                                <v-alert text dense v-else type="success">
+                                                    Datos correctos.
+                                                </v-alert>
+                                            </div>
+                                        </template>
+
                                     </v-data-table>
                                     <br/>
-                                    <!-- ALERTAS -->
-                                    <v-alert dense text v-if="vanRules()" type="error">
-                                        Hay valores exigidos que superan el máximo exigible o bien son igual a cero. Por favor, compruebe los datos.
-                                    </v-alert>
+                                    
                                 </div>
                                 <!-- NO HAY LOTES -->
                                 <div v-else>
@@ -173,13 +182,22 @@
                                         <!-- MAXIMO EXIGIBLE -->
                                         <template v-slot:[`item.vanMaxExigible`]="props">
                                             <b>{{currencyFormat(calculateVANMaxReq(props.item))}}</b>
-                                        </template>                              
+                                        </template> 
+
+                                        <!-- ALERTAS -->
+                                        <template v-slot:footer>
+                                            <div style="background-color:white; border-top:4px solid white;">
+                                                <v-alert type="error" text dense v-if="vanRules()" style="padding:0.5rem;">
+                                                    El importe exigido es igual a cero o superior al máximo exigible. Por favor, revise los datos
+                                                </v-alert>
+                                                <v-alert type="success" text dense v-else style="padding:0.5rem;">
+                                                    Datos correctos
+                                                </v-alert>
+                                            </div>
+                                        </template>                             
                                     </v-data-table>
                                     <br/>
-                                    <!-- ALERTAS -->
-                                    <v-alert type="error" dense v-if="vanRules()" style="padding:0.5rem;">
-                                        El importe exigido es igual a cero o superior al máximo exigible. Por favor, revise los datos
-                                    </v-alert>
+                                   
                                 </div>
                                 <br/>
                             </div>
@@ -478,7 +496,7 @@
                     empresasExcluidas: undefined,
 
                     //CAPACIDAD Y SOLVENCIA
-                    requisitos: true,
+                    requisitos: false,
                     patrimonioNeto: undefined,
                     solvenciaEconFinanc: undefined,
                     ratioActivos: undefined,

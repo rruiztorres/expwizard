@@ -59,7 +59,7 @@
             return{
                 search: null,
                 lista:[
-                    {id: 1, name:'1.- Objeto del Contrato', element:['Objeto del Contrato', 0]},
+                    {id: 1, name:'1.- Título del expediente', element:['Título del expediente', 0]},
                     {id: 2, name:'2.- Necesidades a satisfacer y circunstancias del contrato', element: ['Necesidades a satisfacer y circunstancias del contrato', 0]},
                     {id: 3, name:'3.- Presupuesto base de licitación y anualidades', element: ['Presupuesto base de licitación y Lotes', 1], children:[
                         {id: 4, name:'3.1.- Presupuesto base de licitación', element:['Presupuesto base de licitación y Lotes', 1]},
